@@ -1,1 +1,10 @@
-<p>internet-checksum works!</p>
+<app-hex-data (hexData)="data.set($event)"></app-hex-data>
+
+<div id="hex-data-view">
+	<input type="text" placeholder="Partial" inputData (dataFromUser)="getPartial($event)">
+</div>
+
+
+<div id="partial-data">
+	{{ partialData() }}
+</div>

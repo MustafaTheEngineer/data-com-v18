@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { InputDataDirective } from '../input-data.directive';
 import { MessageService } from '../message.service';
 
@@ -11,12 +11,12 @@ import { MessageService } from '../message.service';
 })
 export class HexDataComponent {
   messageService = inject(MessageService);
-  hexData = signal('');
+  hexData = output<string>();
   warning = signal('');
 
   isHex(input: string) {
     if (!input.length) {
-      this.hexData.set('');
+      this.hexData.emit('');
 	  this.warning.set('');
       return;
     }
@@ -26,7 +26,7 @@ export class HexDataComponent {
 	  }
     } else {
       this.warning.set('');
-	  this.hexData.set(input)
+	  this.hexData.emit(input)
     }
   }
 

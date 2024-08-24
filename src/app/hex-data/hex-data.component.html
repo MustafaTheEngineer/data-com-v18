@@ -1,4 +1,2 @@
 <input type="text" id="hex-input" placeholder="HEX Data" inputData (dataFromUser)="isHex($event)">
-@if (warning().length) {
-	<label for="hex-input" class="warning"> {{ warning() }} </label>
-}
+<label for="hex-input" class="warning" [style.opacity]="warning().length ? 1 : 0"> - {{ warning() }}  </label>

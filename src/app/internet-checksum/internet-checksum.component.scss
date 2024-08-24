@@ -1,0 +1,13 @@
+::ng-deep {
+	app-hex-data {
+		display: grid;
+		gap: var(--margin-xxs);
+	}
+}
+
+:host {
+	display: grid;
+	gap: var(--margin-xxs);
+	margin: 0 var(--margin-xxl);
+	text-align: center;
+}

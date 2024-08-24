@@ -1,10 +1,8 @@
-label {
-  background-color: #e0115f;
-  display: inline-block;
+:host{
+	padding: 0 var(--margin-xxl);
 }
 
-input,
 label {
-  margin: var(--margin-xxs);
-  padding: var(--margin-xxs);
+  color: #e0115f;
+  font-size: 0.8rem;
 }
