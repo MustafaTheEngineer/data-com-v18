@@ -1,1 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
+
+$background-color: #000000;
+$color: #FFFFFF;
+$border-color: #FFFFFF;
+$font-size: 8vw;
+
+:root {
+	font-size: 20px;
+	--margin-xxs: 0.25rem;
+	--margin-xs: 0.5rem;
+	--margin-s: 0.75rem;
+	--margin-m: 1rem;
+	--margin-l: 1.25rem;
+	--margin-xl: 1.75rem;
+	--margin-xxl: 2.5rem;
+  }
+
+*{
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: $background-color;
+	color: $color;
+	border-color: $border-color;
+	margin-top: 50px;
+	font-size: $font-size;
+}
+
+input{
+	font-size: $font-size;
+}
+
+button{
+	background-color: $background-color;
+	color: $color;
+	font-size: $font-size;
+}
+
+img{
+	color: $color;
+	background-color: $background-color;
+}
+
+ul{
+	list-style: none;
+}
+
+a {
+	color: $color;
+}

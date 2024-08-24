@@ -1,0 +1,7 @@
+@for (item of colors(); track $index) {
+<div>
+  <input type="text" [placeholder]="item.title" />
+</div>
+}
+
+<button (click)="setColors()">Set Colors</button>

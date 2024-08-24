@@ -1,0 +1,14 @@
+:host{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+div{
+	display: flex;
+	justify-content: center;
+
+	&:not(:first-child){
+		margin: 10px 0;
+	}
+}

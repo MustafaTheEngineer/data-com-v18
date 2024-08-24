@@ -1,0 +1,25 @@
+@if (!sidebar()) {
+	<button id="sidebar-icon" (click)="sidebarClick()">
+		<img src="icons/list.svg" alt="Settings" />
+	  </button>
+}
+
+@if (sidebar()) {
+<div id="sidebar-container">
+  <div id="sidebar">
+    <ul>
+      <li>
+        <a routerLink=""> Home </a>
+      </li>
+	  <li>
+        <a routerLink="settings"> Settings </a>
+      </li>
+	  <li>
+        <a routerLink="hex-data"> Hex Data </a>
+      </li>
+    </ul>
+  </div>
+
+  <div id="sidebar-blank" (click)="sidebarClick()"></div>
+</div>
+}
