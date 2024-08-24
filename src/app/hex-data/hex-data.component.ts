@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { InputDataDirective } from '../input-data.directive';
+import { MessageService } from '../message.service';
 
 @Component({
   selector: 'app-hex-data',
@@ -9,16 +10,24 @@ import { InputDataDirective } from '../input-data.directive';
   styleUrl: './hex-data.component.scss',
 })
 export class HexDataComponent {
-	hexData = signal('');
+  messageService = inject(MessageService);
+  hexData = signal('');
+  warning = signal('');
 
-  isHex(input: String) {
-	if (!input.length) {
-		this.hexData.set('');
-		return;
-	}
-	if (Number.isNaN(Number('0x' + input))) {
-		console.log('Not Hex');
-		return;
+  isHex(input: string) {
+    if (!input.length) {
+      this.hexData.set('');
+	  this.warning.set('');
+      return;
+    }
+    if (Number.isNaN(Number('0x' + input))) {
+      this.warning.set('Value is not hexadecimal');
+	  if (!this.warning().length) {
 	  }
+    } else {
+      this.warning.set('');
+	  this.hexData.set(input)
+    }
   }
+
 }

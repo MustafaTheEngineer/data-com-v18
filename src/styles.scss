@@ -3,10 +3,10 @@
 $background-color: #000000;
 $color: #FFFFFF;
 $border-color: #FFFFFF;
-$font-size: 8vw;
+$font-size: 20px;
 
 :root {
-	font-size: 20px;
+	font-size: $font-size;
 	--margin-xxs: 0.25rem;
 	--margin-xs: 0.5rem;
 	--margin-s: 0.75rem;

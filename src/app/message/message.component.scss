@@ -1,5 +1,33 @@
-div {
+:host {
 	position: fixed;
-	bottom: 0;
-	left: 0;
+	bottom: 10px;
+	left: 50%;
+	transform: translate(-50%, 0);
+	width: 100%;
+	font-size: 1rem;
+	margin: var(--margin-s);
+}
+
+p {
+	margin: var(--margin-s) 0;
+	position: relative;
+}
+
+.warning {
+	background-color: #E0115F;
+}
+
+.info {
+	background-color: #629fed;
+}
+
+.success {
+	background-color:  	#7cb46b;
+}
+
+.close-message {
+	position: fixed;
+	right: 20px;
+	z-index: 5;
+	cursor: pointer;
 }
