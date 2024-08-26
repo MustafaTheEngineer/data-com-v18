@@ -1,13 +1,72 @@
 ::ng-deep {
-	app-hex-data {
-		display: grid;
-		gap: var(--margin-xxs);
-	}
+  app-hex-data {
+    display: grid;
+    gap: var(--margin-xxs);
+  }
 }
 
-:host {
-	display: grid;
-	gap: var(--margin-xxs);
-	margin: 0 var(--margin-xxl);
+#partial-data {
+  text-align: center;
+  margin: var(--margin-s);
+}
+
+#hex-data-view {
+  display: grid;
+  justify-content: center;
+}
+
+#checksum-container {
+  display: grid;
+  grid-template-columns: auto;
+  margin-bottom: calc(var(--margin-xxl) + var(--margin-s));
+
+  #sender-title,
+  #receiver-title {
+    text-align: center;
+  }
+}
+
+.process {
 	text-align: center;
+  .process-text {
+    display: grid;
+    align-content: center;
+  }
+
+  .process-sum-container {
+	display: inline-block;
+
+	.process-sum {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	
+		.sum-line {
+		  border-top: 1px solid #ffffff;
+		  margin: 5px 0;
+		  width: 100%;
+		}
+	  }
+  }
+}
+
+.controls {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+
+  button {
+    padding: var(--margin-xxs);
+    font-size: 0.8rem;
+	display: inline-block;
+	width: 100%;
+  }
+}
+
+#sender-title {
+	opacity: 0;
+	font-size: 1.2rem;
+	border-bottom: 1px solid white;
+	margin-bottom: var(--margin-xxs);
 }

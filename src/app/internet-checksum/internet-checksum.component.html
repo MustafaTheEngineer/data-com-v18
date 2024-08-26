@@ -1,10 +1,54 @@
 <app-hex-data (hexData)="data.set($event)"></app-hex-data>
 
 <div id="hex-data-view">
-	<input type="text" placeholder="Partial" inputData (dataFromUser)="getPartial($event)">
+  <input type="text" placeholder="Partial" inputData (dataFromUser)="getPartial($event)">
 </div>
-
 
 <div id="partial-data">
-	{{ partialData() }}
+  {{ partialData().toUpperCase() }}
 </div>
+
+<div id="checksum-container">
+  <div id="sender-title" #senderHeader>Sender</div>
+  <div id="sender">
+    @for (item of senderProcessView(); track $index) {
+    <div class="process" #senderProcess>
+      <div class="process-text">
+        {{ item.text }}
+      </div>
+      <div class="process-sum-container">
+        <div class="process-sum">
+          <span>
+            {{ item.number1.toUpperCase() }}
+          </span>
+          <span>
+            {{ item.number2.toUpperCase() }}
+          </span>
+
+          <span class="sum-line"> </span>
+
+          <span>
+            {{ item.result.toUpperCase() }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+    }
+  </div>
+  <!--<div id="receiver-title">Receiver</div>
+  <div id="receiver">
+    <div class="process">Process</div>
+  </div>-->
+</div>
+
+<div class="controls">
+  <button>
+    Previous
+  </button>
+  <button (click)="nextProcess()">
+    Next
+  </button>
+</div>
+
+{{ domAnimation() }}
