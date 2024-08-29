@@ -50,8 +50,13 @@
 	  }
   }
 
+  .add-carry {
+	opacity: 0;
+  }
+
   span {
 	display: inline-block;
+	margin: 0 var(--margin-xxs);
   }
 }
 

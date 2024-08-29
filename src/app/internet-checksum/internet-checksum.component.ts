@@ -27,6 +27,8 @@ type ChecksumData = {
 export class InternetChecksumComponent {
   partial = signal(4);
   data = signal('');
+  animationStep = signal(0);
+
   partialData = computed(() => {
     if (this.partial() < 2) return this.data();
 
@@ -94,45 +96,13 @@ export class InternetChecksumComponent {
 
     return sumView;
   });
-  animationStep = signal(1);
-
-  senderProcessView = signal<ChecksumData[]>([]);
+  senderProcessView = computed(() =>
+    this.senderProcess().slice(0, this.animationStep())
+  );
   senderProcessDom = viewChildren<ElementRef>('senderProcess');
   carry = viewChildren<ElementRef>('carry');
   addCarry = viewChildren<ElementRef>('addCarry');
-  carryProcess = computed(() => {
-    if (this.addCarry().length) {
-      console.log(
-        this.addCarry()[
-          this.addCarry().length - 1
-        ].nativeElement.getBoundingClientRect().y
-      );
-      anime({
-        targets: this.carry()[this.carry().length - 1].nativeElement,
-        easing: 'easeOutElastic(1, .8)',
-        backgroundColor: '#FF8F42',
-        duration: 5000,
-        keyframes: [
-          {
-            translateY:
-              this.addCarry()[
-                this.addCarry().length - 1
-              ].nativeElement.getBoundingClientRect().y - this.carry()[
-				this.carry().length - 1
-			  ].nativeElement.getBoundingClientRect().y,
-          },
-		  {
-            translateX:
-              this.addCarry()[
-                this.addCarry().length - 1
-              ].nativeElement.getBoundingClientRect().x - this.carry()[
-				this.carry().length - 1
-			  ].nativeElement.getBoundingClientRect().x,
-          },
-        ],
-      });
-    }
-  });
+  carryProcess = computed(() => {});
 
   domAnimation = computed(() => {
     if (this.senderProcessDom().length == 1) {
@@ -181,14 +151,54 @@ export class InternetChecksumComponent {
   nextProcess() {
     if (this.animationStep() > this.senderProcess().length - 1) {
       this.animationStep.set(0);
-      this.senderProcessView.set([]);
-    } else if (this.animationStep() < 0) {
+    }
+
+    if (!this.animationStep()) {
+      this.animationStep.update((value) => ++value);
+      return;
+    }
+
+    if (this.senderProcessView()[this.animationStep() - 1].text === 'Carry') {
+      if (this.addCarry().length) {
+        anime({
+          targets: this.carry()[this.carry().length - 1].nativeElement,
+          easing: 'easeOutElastic(1, .8)',
+          duration: 2000,
+          keyframes: [
+            {
+              translateY:
+                this.addCarry()[
+                  this.addCarry().length - 1
+                ].nativeElement.getBoundingClientRect().y -
+                this.carry()[
+                  this.carry().length - 1
+                ].nativeElement.getBoundingClientRect().y,
+            },
+            {
+              translateX:
+                this.addCarry()[
+                  this.addCarry().length - 1
+                ].nativeElement.getBoundingClientRect().x -
+                this.carry()[
+                  this.carry().length - 1
+                ].nativeElement.getBoundingClientRect().x,
+            },
+          ],
+          begin: () => {
+            this.animationStep.update((value) => ++value);
+          },
+        });
+      }
+    } else {
+      this.animationStep.update((value) => ++value);
+    }
+  }
+
+  previousProcess() {
+    if (this.animationStep() < 0) {
       this.animationStep.set(this.senderProcess().length - 1);
     }
 
-    this.senderProcessView.update((value) =>
-      this.senderProcess().slice(0, this.animationStep())
-    );
-    this.animationStep.update((value) => ++value);
+    this.animationStep.update((value) => --value);
   }
 }
