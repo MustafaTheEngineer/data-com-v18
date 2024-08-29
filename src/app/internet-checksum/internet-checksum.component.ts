@@ -1,4 +1,11 @@
-import { Component, computed, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  signal,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { HexDataComponent } from '../hex-data/hex-data.component';
 import { InputDataDirective } from '../input-data.directive';
 import anime from 'animejs';
@@ -85,33 +92,69 @@ export class InternetChecksumComponent {
       ).toString(16),
     });
 
-	anime({
-		targets: this.senderHeader()?.nativeElement,
-		easing: 'easeInOutQuad',
-		opacity: [0, 1],
-		duration: 500,
-	})
-
     return sumView;
   });
-
   animationStep = signal(1);
 
   senderProcessView = signal<ChecksumData[]>([]);
-
-  senderHeader = viewChild<ElementRef>('senderHeader')
   senderProcessDom = viewChildren<ElementRef>('senderProcess');
+  carry = viewChildren<ElementRef>('carry');
+  addCarry = viewChildren<ElementRef>('addCarry');
+  carryProcess = computed(() => {
+    if (this.addCarry().length) {
+      console.log(
+        this.addCarry()[
+          this.addCarry().length - 1
+        ].nativeElement.getBoundingClientRect().y
+      );
+      anime({
+        targets: this.carry()[this.carry().length - 1].nativeElement,
+        easing: 'easeOutElastic(1, .8)',
+        backgroundColor: '#FF8F42',
+        duration: 5000,
+        keyframes: [
+          {
+            translateY:
+              this.addCarry()[
+                this.addCarry().length - 1
+              ].nativeElement.getBoundingClientRect().y - this.carry()[
+				this.carry().length - 1
+			  ].nativeElement.getBoundingClientRect().y,
+          },
+		  {
+            translateX:
+              this.addCarry()[
+                this.addCarry().length - 1
+              ].nativeElement.getBoundingClientRect().x - this.carry()[
+				this.carry().length - 1
+			  ].nativeElement.getBoundingClientRect().x,
+          },
+        ],
+      });
+    }
+  });
 
   domAnimation = computed(() => {
-	if (this.senderProcessDom().length) {
-		anime({
-			targets: this.senderProcessDom()[this.senderProcessDom().length - 1].nativeElement,
-			easing: 'easeInOutQuad',
-			opacity: [0, 1],
-			duration: 500,
-		})	
-	}
-  })
+    if (this.senderProcessDom().length == 1) {
+      anime({
+        targets: '#sender-title',
+        easing: 'easeInOutQuad',
+        opacity: [0, 1],
+        duration: 500,
+      });
+    }
+
+    if (this.senderProcessDom().length) {
+      anime({
+        targets:
+          this.senderProcessDom()[this.senderProcessDom().length - 1]
+            .nativeElement,
+        easing: 'easeInOutQuad',
+        opacity: [0, 1],
+        duration: 500,
+      });
+    }
+  });
 
   getPartial(partial: string) {
     if (Number.isInteger(Number(partial)) === false) return;
@@ -136,14 +179,16 @@ export class InternetChecksumComponent {
   }
 
   nextProcess() {
-	if (this.animationStep() > this.senderProcess().length - 1) {
-		this.animationStep.set(0)
-		this.senderProcessView.set([])
-	} else if(this.animationStep() < 0 ) {
-		this.animationStep.set(this.senderProcess().length - 1);
-	}
-    this.senderProcessView.update((value) => 
-      this.senderProcess().slice(0, this.animationStep()));
+    if (this.animationStep() > this.senderProcess().length - 1) {
+      this.animationStep.set(0);
+      this.senderProcessView.set([]);
+    } else if (this.animationStep() < 0) {
+      this.animationStep.set(this.senderProcess().length - 1);
+    }
+
+    this.senderProcessView.update((value) =>
+      this.senderProcess().slice(0, this.animationStep())
+    );
     this.animationStep.update((value) => ++value);
   }
 }

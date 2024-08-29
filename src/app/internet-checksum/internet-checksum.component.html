@@ -9,7 +9,7 @@
 </div>
 
 <div id="checksum-container">
-  <div id="sender-title" #senderHeader>Sender</div>
+  <div id="sender-title">Sender</div>
   <div id="sender">
     @for (item of senderProcessView(); track $index) {
     <div class="process" #senderProcess>
@@ -18,18 +18,43 @@
       </div>
       <div class="process-sum-container">
         <div class="process-sum">
-          <span>
-            {{ item.number1.toUpperCase() }}
-          </span>
-          <span>
-            {{ item.number2.toUpperCase() }}
-          </span>
+          <div>
+            @for (char of item.number1.toUpperCase(); track $index) {
+            <span>
+              {{ char }}
+            </span>
+            }
+          </div>
+          <div>
+            @for (char of item.number2.toUpperCase(); track $index) {
+            @if (item.number2.length === 1) {
+            <span #addCarry>
+              {{ char }}
+            </span>
+            } @else {
+            <span>
+              {{ char }}
+            </span>
+            }
+
+            }
+          </div>
 
           <span class="sum-line"> </span>
 
-          <span>
-            {{ item.result.toUpperCase() }}
-          </span>
+          <div>
+            @for (char of item.result.toUpperCase(); track $index) {
+            @if (item.result.length > partial() && $index === 0) {
+            <span #carry>
+              {{ char }}
+            </span>
+            } @else {
+            <span>
+              {{ char }}
+            </span>
+            }
+            }
+          </div>
         </div>
       </div>
 
@@ -52,3 +77,4 @@
 </div>
 
 {{ domAnimation() }}
+{{ carryProcess() }}

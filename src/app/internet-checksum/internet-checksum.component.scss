@@ -18,7 +18,7 @@
 #checksum-container {
   display: grid;
   grid-template-columns: auto;
-  margin-bottom: calc(var(--margin-xxl) + var(--margin-s));
+  margin-bottom: calc(var(--margin-xxl) + var(--margin-xxl));
 
   #sender-title,
   #receiver-title {
@@ -31,6 +31,7 @@
   .process-text {
     display: grid;
     align-content: center;
+	margin: var(--margin-s) 0;
   }
 
   .process-sum-container {
@@ -47,6 +48,10 @@
 		  width: 100%;
 		}
 	  }
+  }
+
+  span {
+	display: inline-block;
   }
 }
 
