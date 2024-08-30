@@ -9,10 +9,66 @@
 </div>
 
 <div id="checksum-container">
-  <div id="sender-title">Sender</div>
+  <div id="sender-title" #anime>Sender</div>
   <div id="sender">
-    @for (item of senderProcessView(); track $index) {
-    <div class="process" #senderProcess>
+    @for (item of senderProcess(); track $index) {
+    <div class="process" #anime>
+      <div class="process-text">
+        {{ item.text }}
+      </div>
+      <div class="process-sum-container">
+        <div class="process-sum">
+          <div>
+            @for (char of item.number1.toUpperCase(); track $index) {
+            <span>
+              {{ char }}
+            </span>
+            }
+          </div>
+          <div>
+            @for (char of item.number2.toUpperCase(); track $index) {
+            @if (item.number2.length === 1) {
+            <span #anime class="add-carry">
+              {{ char }}
+            </span>
+            } @else {
+            <span>
+              {{ char }}
+            </span>
+            }
+
+            }
+          </div>
+
+          <span class="sum-line"> </span>
+
+          <div>
+            @for (char of item.result.toUpperCase(); track $index) {
+            @if (item.result.length > partial() && $index === 0) {
+            <span #anime class="carry" style="background-color: #FF8F42;">
+              {{ char }}
+            </span>
+            } @else {
+            <span>
+              {{ char }}
+            </span>
+            }
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+    }
+  </div>
+
+
+
+
+  <!--<div id="receiver-title">Receiver</div>
+  <div id="receiver">
+    @for (item of receiverProces(); track $index) {
+    <div class="process" #receiverProcess>
       <div class="process-text">
         {{ item.text }}
       </div>
@@ -45,7 +101,7 @@
           <div>
             @for (char of item.result.toUpperCase(); track $index) {
             @if (item.result.length > partial() && $index === 0) {
-            <span #carry style="background-color: #FF8F42;">
+            <span #carry class="carry" style="background-color: #FF8F42;">
               {{ char }}
             </span>
             } @else {
@@ -60,11 +116,10 @@
 
     </div>
     }
-  </div>
-  <!--<div id="receiver-title">Receiver</div>
-  <div id="receiver">
-    <div class="process">Process</div>
   </div>-->
+
+
+
 </div>
 
 <div class="controls">
@@ -75,6 +130,3 @@
     Next
   </button>
 </div>
-
-{{ domAnimation() }}
-{{ carryProcess() }}

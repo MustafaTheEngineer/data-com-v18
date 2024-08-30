@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   ElementRef,
+  Signal,
   signal,
   viewChild,
   viewChildren,
@@ -27,7 +28,7 @@ type ChecksumData = {
 export class InternetChecksumComponent {
   partial = signal(4);
   data = signal('');
-  animationStep = signal(0);
+  animationStep = 0;
 
   partialData = computed(() => {
     if (this.partial() < 2) return this.data();
@@ -96,34 +97,68 @@ export class InternetChecksumComponent {
 
     return sumView;
   });
-  senderProcessView = computed(() =>
-    this.senderProcess().slice(0, this.animationStep())
-  );
-  senderProcessDom = viewChildren<ElementRef>('senderProcess');
-  carry = viewChildren<ElementRef>('carry');
-  addCarry = viewChildren<ElementRef>('addCarry');
-  carryProcess = computed(() => {});
 
-  domAnimation = computed(() => {
-    if (this.senderProcessDom().length == 1) {
-      anime({
-        targets: '#sender-title',
-        easing: 'easeInOutQuad',
-        opacity: [0, 1],
-        duration: 500,
-      });
+  receiverProcess = computed(() => [
+    ...this.senderProcess().slice(0, this.senderProcess().length - 1),
+    {
+      text: 'Sum partial data',
+      number1: this.senderProcess()[this.senderProcess().length - 2].result,
+      number2: this.senderProcess()[this.senderProcess().length - 1].result,
+      result: (
+        Number(
+          '0x' + this.senderProcess()[this.senderProcess().length - 2].result
+        ) +
+        Number(
+          '0x' + this.senderProcess()[this.senderProcess().length - 1].result
+        )
+      ).toString(16),
+    },
+  ]);
+
+  animeDom = viewChildren<ElementRef>('anime');
+
+  animations: Signal<anime.AnimeParams[]> = computed(() => {
+    const result: anime.AnimeParams[] = [];
+
+    for (let i = 0; i < this.animeDom().length; i++) {
+      if (this.animeDom()[i].nativeElement.className === 'carry') {
+        result.push({
+          targets: this.animeDom()[i + 1].nativeElement,
+          easing: 'easeInOutQuad',
+          opacity: [0, 1],
+          duration: 500,
+        });
+
+        result.push({
+          targets: this.animeDom()[i].nativeElement,
+          easing: 'easeOutElastic(1, .8)',
+          duration: 2000,
+          keyframes: [
+            {
+              translateY:
+                this.animeDom()[i + 2].nativeElement.getBoundingClientRect().y -
+                this.animeDom()[i].nativeElement.getBoundingClientRect().y,
+            },
+            {
+              translateX:
+                this.animeDom()[i + 2].nativeElement.getBoundingClientRect().x -
+                this.animeDom()[i].nativeElement.getBoundingClientRect().x,
+            },
+          ],
+        });
+
+		i += 2;
+      } else {
+        result.push({
+          targets: this.animeDom()[i].nativeElement,
+          easing: 'easeInOutQuad',
+          opacity: [0, 1],
+          duration: 500,
+        });
+      }
     }
 
-    if (this.senderProcessDom().length) {
-      anime({
-        targets:
-          this.senderProcessDom()[this.senderProcessDom().length - 1]
-            .nativeElement,
-        easing: 'easeInOutQuad',
-        opacity: [0, 1],
-        duration: 500,
-      });
-    }
+    return result;
   });
 
   getPartial(partial: string) {
@@ -149,56 +184,13 @@ export class InternetChecksumComponent {
   }
 
   nextProcess() {
-    if (this.animationStep() > this.senderProcess().length - 1) {
-      this.animationStep.set(0);
+    if (this.animationStep > this.animations().length - 1) {
+      this.animationStep = 0;
     }
+    anime(this.animations()[this.animationStep]);
 
-    if (!this.animationStep()) {
-      this.animationStep.update((value) => ++value);
-      return;
-    }
-
-    if (this.senderProcessView()[this.animationStep() - 1].text === 'Carry') {
-      if (this.addCarry().length) {
-        anime({
-          targets: this.carry()[this.carry().length - 1].nativeElement,
-          easing: 'easeOutElastic(1, .8)',
-          duration: 2000,
-          keyframes: [
-            {
-              translateY:
-                this.addCarry()[
-                  this.addCarry().length - 1
-                ].nativeElement.getBoundingClientRect().y -
-                this.carry()[
-                  this.carry().length - 1
-                ].nativeElement.getBoundingClientRect().y,
-            },
-            {
-              translateX:
-                this.addCarry()[
-                  this.addCarry().length - 1
-                ].nativeElement.getBoundingClientRect().x -
-                this.carry()[
-                  this.carry().length - 1
-                ].nativeElement.getBoundingClientRect().x,
-            },
-          ],
-          begin: () => {
-            this.animationStep.update((value) => ++value);
-          },
-        });
-      }
-    } else {
-      this.animationStep.update((value) => ++value);
-    }
+    this.animationStep += 1;
   }
 
-  previousProcess() {
-    if (this.animationStep() < 0) {
-      this.animationStep.set(this.senderProcess().length - 1);
-    }
-
-    this.animationStep.update((value) => --value);
-  }
+  async previousProcess() {}
 }
