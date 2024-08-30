@@ -65,10 +65,10 @@
 
 
 
-  <!--<div id="receiver-title">Receiver</div>
+  <div id="receiver-title" #anime>Receiver</div>
   <div id="receiver">
-    @for (item of receiverProces(); track $index) {
-    <div class="process" #receiverProcess>
+    @for (item of receiverProcess(); track $index) {
+    <div class="process" #anime>
       <div class="process-text">
         {{ item.text }}
       </div>
@@ -84,7 +84,7 @@
           <div>
             @for (char of item.number2.toUpperCase(); track $index) {
             @if (item.number2.length === 1) {
-            <span #addCarry class="add-carry">
+            <span #anime class="add-carry">
               {{ char }}
             </span>
             } @else {
@@ -101,7 +101,7 @@
           <div>
             @for (char of item.result.toUpperCase(); track $index) {
             @if (item.result.length > partial() && $index === 0) {
-            <span #carry class="carry" style="background-color: #FF8F42;">
+            <span #anime class="carry" style="background-color: #FF8F42;">
               {{ char }}
             </span>
             } @else {
@@ -116,7 +116,7 @@
 
     </div>
     }
-  </div>-->
+  </div>
 
 
 

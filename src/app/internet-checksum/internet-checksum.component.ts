@@ -98,22 +98,30 @@ export class InternetChecksumComponent {
     return sumView;
   });
 
-  receiverProcess = computed(() => [
-    ...this.senderProcess().slice(0, this.senderProcess().length - 1),
-    {
-      text: 'Sum partial data',
-      number1: this.senderProcess()[this.senderProcess().length - 2].result,
-      number2: this.senderProcess()[this.senderProcess().length - 1].result,
-      result: (
-        Number(
-          '0x' + this.senderProcess()[this.senderProcess().length - 2].result
-        ) +
-        Number(
-          '0x' + this.senderProcess()[this.senderProcess().length - 1].result
-        )
-      ).toString(16),
-    },
-  ]);
+  receiverProcess = computed(() => {
+    if (this.senderProcess().length) {
+      return [
+        ...this.senderProcess().slice(0, this.senderProcess().length - 1),
+        {
+          text: 'Sum partial data',
+          number1: this.senderProcess()[this.senderProcess().length - 2].result,
+          number2: this.senderProcess()[this.senderProcess().length - 1].result,
+          result: (
+            Number(
+              '0x' +
+                this.senderProcess()[this.senderProcess().length - 2].result
+            ) +
+            Number(
+              '0x' +
+                this.senderProcess()[this.senderProcess().length - 1].result
+            )
+          ).toString(16),
+        },
+      ];
+    }
+
+    return [];
+  });
 
   animeDom = viewChildren<ElementRef>('anime');
 
@@ -147,7 +155,7 @@ export class InternetChecksumComponent {
           ],
         });
 
-		i += 2;
+        i += 2;
       } else {
         result.push({
           targets: this.animeDom()[i].nativeElement,
@@ -160,6 +168,7 @@ export class InternetChecksumComponent {
 
     return result;
   });
+  animationsCompleted: anime.AnimeInstance[] = [];
 
   getPartial(partial: string) {
     if (Number.isInteger(Number(partial)) === false) return;
@@ -186,11 +195,31 @@ export class InternetChecksumComponent {
   nextProcess() {
     if (this.animationStep > this.animations().length - 1) {
       this.animationStep = 0;
+      this.animationsCompleted.forEach((completed) => {
+        completed.restart();
+        completed.pause();
+      });
+      this.animationsCompleted = [];
+      return;
     }
-    anime(this.animations()[this.animationStep]);
+    const animeInstance = anime(this.animations()[this.animationStep]);
+    this.animationsCompleted.push(animeInstance);
 
-    this.animationStep += 1;
+    ++this.animationStep;
   }
 
-  async previousProcess() {}
+  previousProcess() {
+	console.log(this.animationStep);
+    if (this.animationStep === 0) {
+      this.animations().forEach(() => {
+        this.nextProcess();
+      });
+      return;
+    }
+    this.animationsCompleted[this.animationStep - 1].restart();
+    this.animationsCompleted[this.animationStep - 1].pause();
+    this.animationsCompleted.pop();
+
+    --this.animationStep;
+  }
 }
