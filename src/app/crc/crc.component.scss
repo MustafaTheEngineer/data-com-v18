@@ -11,3 +11,34 @@
 		}
 	}
 }
+
+.division-op {
+	display: grid;
+	margin: var(--margin-xxl);
+
+	.left-side {
+		grid-column-start: 1;
+		grid-column-end: 1;
+		justify-self: right;
+		padding-right: var(--margin-xxs);
+	}
+
+	.right-side {
+		grid-column-start: 2;
+		grid-column-end: 2;
+	}
+
+	.divider, .quotient {
+		border-left: 2px solid white;
+		padding: var(--margin-xxs) var(--margin-l);
+	}
+
+	.divider {
+		border-bottom: 2px solid white;
+	}
+
+	.negative-step {
+		border-bottom: 2px solid white;
+		margin-bottom: var(--margin-xs);
+	}
+}

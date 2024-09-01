@@ -1,6 +1,14 @@
-import { Component, computed, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  signal,
+  viewChildren,
+  WritableSignal,
+} from '@angular/core';
 import { BinaryDataComponent } from '../binary-data/binary-data.component';
 import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
+import anime from 'animejs';
 
 type DivOps = {
   dividendSteps: number[][];
@@ -22,6 +30,7 @@ type DataTransaction = {
   styleUrl: './crc.component.scss',
 })
 export class CrcComponent {
+  animationStep = 0;
   senderData = signal('');
   receiverData = signal('');
 
@@ -78,21 +87,38 @@ export class CrcComponent {
       stepIndex++;
     }
 
-	const remainder = dividendSteps[dividendSteps.length - 1];
-
-    console.log({
-      quotient,
-      dividendSteps,
-      negativeSteps,
-	  remainder,
-    } satisfies DivOps);
+    const remainder = dividendSteps[dividendSteps.length - 1];
 
     return {
       quotient,
       dividendSteps,
       negativeSteps,
-	  remainder,
+      remainder,
     } satisfies DivOps;
+  });
+
+  anime = viewChildren<ElementRef>('anime');
+  animations = computed(() => {
+    const result: anime.AnimeParams[][] = [];
+    const quotientNodes = this.anime().filter(
+      (el) => el.nativeElement.className === 'quotient'
+    )[0].nativeElement.children;
+    const dividendSteps = this.anime().filter(
+      (el) => el.nativeElement.className === 'dividend-step-container'
+    );
+
+    result.push([
+      {
+        targets: dividendSteps[0].nativeElement.children[0],
+        backgroundColor: '#0047AB',
+		duration: 1000,
+		easing: 'easeOutExpo'
+      },
+    ]);
+
+    console.log(result);
+
+    return result;
   });
 
   setData(data: string) {
@@ -132,5 +158,13 @@ export class CrcComponent {
       (value[index] === '0' ? '1' : '0') +
       value.substring(index + 1)
     );
+  }
+
+  nextStep() {
+    this.animations()[this.animationStep].forEach((value) => {
+      anime(value);
+    });
+
+    ++this.animationStep;
   }
 }

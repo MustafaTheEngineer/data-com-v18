@@ -45,40 +45,158 @@
 </div>
 
 <div>
-	P(X) = @for (item of dataPoly(); track $index; let last = $last) {
-	@if (item == 0) {
-	1
-	} @else {
-	X
-	@if (item !== 1) {
-	<sup>
-	  {{ item }}
-	</sup>
-	}
-	}
-	@if (!last) {
-	+
-	}
-	}
-  </div>
+  P(X) = @for (item of dataPoly(); track $index; let last = $last) {
+  @if (item == 0) {
+  1
+  } @else {
+  X
+  @if (item !== 1) {
+  <sup>
+    {{ item }}
+  </sup>
+  }
+  }
+  @if (!last) {
+  +
+  }
+  }
+</div>
 
 <div>
-	X<sup> {{ dividend()[0] }}</sup>.G(X) = @for (item of dividend(); track $index; let last = $last) {
-	@if (item == 0) {
-	1
-	} @else {
-	X
-	@if (item !== 1) {
-	<sup>
-	  {{ item }}
-	</sup>
-	}
-	}
-	@if (!last) {
-	+
-	}
-	}
-  </div>
-  
+  X<sup>
+    {{ dividend()[0] }}</sup>.G(X) = @for (item of dividend(); track $index; let last = $last) {
+  @if (item == 0) {
+  1
+  } @else {
+  X
+  @if (item !== 1) {
+  <sup>
+    {{ item }}
+  </sup>
+  }
+  }
+  @if (!last) {
+  +
+  }
+  }
+</div>
 
-  {{ division() }}
+<div class="division-op">
+  <div class="left-side">
+    @for (item of division().dividendSteps; track $index; let last =
+    $last) {
+    @if(item.length === 0){
+    0
+    }
+
+    <div class="dividend-step-container" #anime>
+      @for (poly of item; track $index; let last = $last) {
+      @if (poly == 0) {
+      <span class="dividend-node">
+        1
+      </span>
+
+      } @else {
+      <span class="dividend-node">
+        X
+        @if (poly !== 1) {
+        <sup>
+          {{ poly }}
+        </sup>
+        }
+      </span>
+      }
+      @if (!last) {
+      +
+      }
+      }
+    </div>
+
+    @if (!last) {
+    <div class="negative-step" #anime>
+      @for (poly of division().negativeSteps[$index]; track $index; let last = $last) {
+      <span>
+        @if (poly == 0) {
+        <span class="negative-node">
+          1
+        </span>
+        } @else {
+        <span class="negative-node">
+          X
+          @if (poly !== 1) {
+          <sup>
+            {{ poly }}
+          </sup>
+          }
+        </span>
+        }
+        @if (!last) {
+        +
+        }
+      </span>
+      }
+    </div>
+    }
+    }
+
+
+  </div>
+
+  <div class="right-side">
+    <div class="divider">
+      @for (divider of dividerPoly(); track $index; let last = $last) {
+      @if (divider == 0) {
+      <span class="divider-node">
+        1
+      </span>
+      } @else {
+      <span class="divider-node">
+        X
+        @if (divider !== 1) {
+        <sup>
+          {{ divider }}
+        </sup>
+        }
+      </span>
+      }
+      @if (!last) {
+      +
+      }
+      }
+    </div>
+
+    <div class="quotient" #anime>
+      @for (quotient of division().quotient; track $index; let last = $last) {
+      @if (quotient == 0) {
+      <span class="quotient-node">
+        1
+      </span>
+      } @else {
+      <span class="quotient-node">
+        X
+        @if (quotient !== 1) {
+        <sup>
+          {{ quotient }}
+        </sup>
+        }
+      </span>
+      }
+      @if (!last) {
+      +
+      }
+      }
+    </div>
+  </div>
+</div>
+
+<div>
+	<button>
+		Previous
+	</button>
+
+	<button (click)="nextStep()">
+		Next
+	</button>
+</div>
+
+{{ animations() }}
