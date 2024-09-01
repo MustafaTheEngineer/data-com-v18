@@ -1,0 +1,84 @@
+<app-binary-data class="block-input" (binaryData)="setData($event)"></app-binary-data>
+<app-decimal-data class="block-input" placeholder="Divider (GX) length" (decimalData)="setDivider($event)" inputmode="numeric"></app-decimal-data>
+
+
+<div>
+  Sender:
+  @for (item of senderData(); track $index) {
+  <span (click)="toggleSender($index)">
+    {{ item }} </span>
+  }
+</div>
+
+<div>
+  Receiver:
+  @for (item of receiverData(); track $index) {
+  <span (click)="toggleReceiver($index)" [style.background-color]="senderData()[$index] === receiverData()[$index] ? 'inherit' : 'red'">
+    {{ item }} </span>
+  }
+</div>
+
+<div>
+  G(X) = @for (item of dividerPoly(); track $index) {
+  X <sup>
+    <app-decimal-data placeholder="" [value]="item.toString()" class="poly-input" inputmode="numeric" (decimalData)="setDividerPoly($event, $index)"></app-decimal-data>
+  </sup>
+  }
+</div>
+
+<div>
+  G(X) = @for (item of dividerPolyView(); track $index; let last = $last) {
+  @if (item == 0) {
+  1
+  } @else {
+  X
+  @if (item !== 1) {
+  <sup>
+    {{ item }}
+  </sup>
+  }
+  }
+  @if (!last) {
+  +
+  }
+  }
+</div>
+
+<div>
+	P(X) = @for (item of dataPoly(); track $index; let last = $last) {
+	@if (item == 0) {
+	1
+	} @else {
+	X
+	@if (item !== 1) {
+	<sup>
+	  {{ item }}
+	</sup>
+	}
+	}
+	@if (!last) {
+	+
+	}
+	}
+  </div>
+
+<div>
+	X<sup> {{ dividend()[0] }}</sup>.G(X) = @for (item of dividend(); track $index; let last = $last) {
+	@if (item == 0) {
+	1
+	} @else {
+	X
+	@if (item !== 1) {
+	<sup>
+	  {{ item }}
+	</sup>
+	}
+	}
+	@if (!last) {
+	+
+	}
+	}
+  </div>
+  
+
+  {{ division() }}

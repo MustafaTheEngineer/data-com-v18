@@ -22,7 +22,6 @@ export class MessageComponent {
   messages = viewChildren<ElementRef>('message');
 
   animation = computed(() => {
-    console.log(this.messages());
     if (!this.messages().length) return;
     anime({
       targets: this.messages()[this.messages().length - 1].nativeElement,

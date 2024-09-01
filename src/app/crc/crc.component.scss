@@ -1,0 +1,13 @@
+::ng-deep {
+	.block-input{
+		label {
+			display: block;
+		}
+	}
+
+	.poly-input {
+		input {
+			width: 30px;
+		}
+	}
+}

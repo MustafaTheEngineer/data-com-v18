@@ -209,7 +209,6 @@ export class InternetChecksumComponent {
   }
 
   previousProcess() {
-	console.log(this.animationStep);
     if (this.animationStep === 0) {
       this.animations().forEach(() => {
         this.nextProcess();

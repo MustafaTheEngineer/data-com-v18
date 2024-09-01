@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { SettingsComponent } from './settings/settings.component';
 import { HexDataComponent } from './hex-data/hex-data.component';
 import { InternetChecksumComponent } from './internet-checksum/internet-checksum.component';
+import { CrcComponent } from './crc/crc.component';
 
 export const routes: Routes = [
 	{
@@ -14,5 +15,7 @@ export const routes: Routes = [
 	{
 		path: 'internet-checksum', component: InternetChecksumComponent
 	},
-	
+	{
+		path: 'crc', component: CrcComponent
+	},
 ];
