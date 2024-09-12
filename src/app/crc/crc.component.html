@@ -188,6 +188,25 @@
 </div>
 
 <div>
+  X<sup>
+    {{ senderDividend()[0] }}</sup>.G(X) = @for (item of senderDividend(); track $index; let last = $last) {
+  @if (item == 0) {
+  1
+  } @else {
+  X
+  @if (item !== 1) {
+  <sup>
+    {{ item }}
+  </sup>
+  }
+  }
+  @if (!last) {
+  +
+  }
+  }
+</div>
+
+<div>
   <button>
     Previous
   </button>
@@ -196,5 +215,3 @@
     Next
   </button>
 </div>
-
-<!--{{ animations() }}-->

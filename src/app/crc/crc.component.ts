@@ -36,9 +36,7 @@ export class CrcComponent {
 
   dividerLength = signal(0);
   dividerPoly = signal<number[]>([]);
-  dividerPolyView = computed(() =>
-    [...this.dividerPoly()].sort((a, b) => b - a)
-  );
+  dividerPolyView = computed(() => this.dividerPoly().sort((a, b) => b - a));
   dataPoly = computed(() => {
     const result: number[] = [];
 
@@ -96,6 +94,11 @@ export class CrcComponent {
       remainder,
     } satisfies DivOps;
   });
+
+  senderDividend = computed(() => [
+    ...this.dividend(),
+    ...this.division().dividendSteps[this.division().dividendSteps.length - 1],
+  ]);
 
   anime = viewChildren<ElementRef>('anime');
   animations = computed(() => {
@@ -221,8 +224,6 @@ export class CrcComponent {
         ++quotientIndex;
       }
     }
-
-    //console.log(nodes[0].children.item(0).children[0].innerText.trim())
 
     return result;
   });
