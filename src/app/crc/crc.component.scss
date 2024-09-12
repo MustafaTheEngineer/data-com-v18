@@ -14,13 +14,18 @@
 
 .division-op {
 	display: grid;
-	margin: var(--margin-xxl);
+	font-size: 0.8rem;
+	margin: var(--margin-xs);
 
 	.left-side {
 		grid-column-start: 1;
 		grid-column-end: 1;
 		justify-self: right;
 		padding-right: var(--margin-xxs);
+
+		.dividend-step-container{
+			opacity: 0;
+		}
 	}
 
 	.right-side {
@@ -33,6 +38,10 @@
 		padding: var(--margin-xxs) var(--margin-l);
 	}
 
+	.quotient span{
+		opacity: 0;
+	}
+
 	.divider {
 		border-bottom: 2px solid white;
 	}
@@ -40,5 +49,9 @@
 	.negative-step {
 		border-bottom: 2px solid white;
 		margin-bottom: var(--margin-xs);
+
+		span {
+			opacity: 0;
+		}
 	}
 }

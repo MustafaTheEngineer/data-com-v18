@@ -90,7 +90,7 @@
     }
 
     <div class="dividend-step-container" #anime>
-      @for (poly of item; track $index; let last = $last) {
+      @for (poly of item; track $index; let first = $first) {
       @if (poly == 0) {
       <span class="dividend-node">
         1
@@ -98,6 +98,9 @@
 
       } @else {
       <span class="dividend-node">
+        @if (!first) {
+        +
+        }
         X
         @if (poly !== 1) {
         <sup>
@@ -106,34 +109,29 @@
         }
       </span>
       }
-      @if (!last) {
-      +
-      }
       }
     </div>
 
     @if (!last) {
     <div class="negative-step" #anime>
-      @for (poly of division().negativeSteps[$index]; track $index; let last = $last) {
-      <span>
-        @if (poly == 0) {
-        <span class="negative-node">
-          1
-        </span>
-        } @else {
-        <span class="negative-node">
-          X
-          @if (poly !== 1) {
-          <sup>
-            {{ poly }}
-          </sup>
-          }
-        </span>
-        }
-        @if (!last) {
+      @for (poly of division().negativeSteps[$index]; track $index; let first = $first) {
+      @if (poly == 0) {
+      <span class="negative-node">
+        1
+      </span>
+      } @else {
+      <span class="negative-node">
+        @if (!first) {
         +
         }
+        X
+        @if (poly !== 1) {
+        <sup>
+          {{ poly }}
+        </sup>
+        }
       </span>
+      }
       }
     </div>
     }
@@ -143,7 +141,7 @@
   </div>
 
   <div class="right-side">
-    <div class="divider">
+    <div class="divider" #anime>
       @for (divider of dividerPoly(); track $index; let last = $last) {
       @if (divider == 0) {
       <span class="divider-node">
@@ -166,13 +164,16 @@
     </div>
 
     <div class="quotient" #anime>
-      @for (quotient of division().quotient; track $index; let last = $last) {
+      @for (quotient of division().quotient; track $index; let first = $first) {
       @if (quotient == 0) {
       <span class="quotient-node">
         1
       </span>
       } @else {
       <span class="quotient-node">
+        @if (!first) {
+        +
+        }
         X
         @if (quotient !== 1) {
         <sup>
@@ -181,22 +182,19 @@
         }
       </span>
       }
-      @if (!last) {
-      +
-      }
       }
     </div>
   </div>
 </div>
 
 <div>
-	<button>
-		Previous
-	</button>
+  <button>
+    Previous
+  </button>
 
-	<button (click)="nextStep()">
-		Next
-	</button>
+  <button (click)="nextStep()">
+    Next
+  </button>
 </div>
 
-{{ animations() }}
+<!--{{ animations() }}-->

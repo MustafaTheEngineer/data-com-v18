@@ -100,23 +100,129 @@ export class CrcComponent {
   anime = viewChildren<ElementRef>('anime');
   animations = computed(() => {
     const result: anime.AnimeParams[][] = [];
-    const quotientNodes = this.anime().filter(
-      (el) => el.nativeElement.className === 'quotient'
-    )[0].nativeElement.children;
-    const dividendSteps = this.anime().filter(
-      (el) => el.nativeElement.className === 'dividend-step-container'
-    );
+    const nodes = this.anime().map((node) => node.nativeElement);
+    const divider =
+      nodes[nodes.findIndex((node) => node.className === 'divider')];
+    const quotient =
+      nodes[nodes.findIndex((node) => node.className === 'quotient')];
+    let quotientIndex = 0;
 
-    result.push([
-      {
-        targets: dividendSteps[0].nativeElement.children[0],
-        backgroundColor: '#0047AB',
-		duration: 1000,
-		easing: 'easeOutExpo'
-      },
-    ]);
+    for (let i = 0; i < nodes.length; i++) {
+      if (
+        nodes[i].className === 'dividend-step-container' &&
+        nodes[i + 1].className !== 'negative-step'
+      ) {
+        result.push([
+          {
+            targets: nodes[i],
+            opacity: [0, 1],
+            easing: 'easeOutExpo',
+          },
+        ]);
+        return result;
+      }
 
-    console.log(result);
+      if (nodes[i].className === 'dividend-step-container') {
+        result.push([
+          {
+            targets: nodes[i],
+            opacity: [0, 1],
+            easing: 'easeOutExpo',
+          },
+          {
+            targets: nodes[i].children[0],
+            backgroundColor: '#0047AB',
+            easing: 'easeOutExpo',
+          },
+          {
+            targets: divider.children[0],
+            backgroundColor: '#0047AB',
+            easing: 'easeOutExpo',
+          },
+        ]);
+
+        result.push([
+          {
+            targets: nodes[i].children[0],
+            backgroundColor: '#000000',
+            easing: 'easeOutExpo',
+          },
+          {
+            targets: divider.children[0],
+            backgroundColor: '#000000',
+            easing: 'easeOutExpo',
+          },
+          {
+            targets: quotient.children[quotientIndex],
+            opacity: [0, 1],
+            backgroundColor: '#0047AB',
+            delay: 100,
+            easing: 'easeOutExpo',
+          },
+        ]);
+      }
+
+      if (nodes[i + 1] && nodes[i + 1].className === 'negative-step') {
+        result.push([
+          {
+            targets: divider.children,
+            backgroundColor: '#0047AB',
+            delay: anime.stagger(750),
+            easing: 'easeOutExpo',
+            complete: function (anim) {
+              anim.restart();
+              anim.pause();
+            },
+          },
+          {
+            targets: nodes[i + 1].children,
+            opacity: [0, 1],
+            delay: anime.stagger(750),
+            easing: 'easeOutExpo',
+          },
+        ]);
+
+        const removeArray: anime.AnimeParams[] = [
+          {
+            targets: quotient.children[quotientIndex],
+            backgroundColor: '#000000',
+            delay: 100,
+            easing: 'easeOutExpo',
+          },
+          {
+            targets: divider.children,
+            backgroundColor: '#000000',
+            easing: 'easeOutExpo',
+          },
+        ];
+
+        for (const negative of this.division().negativeSteps[quotientIndex]) {
+          const subtractIndex =
+            this.division().dividendSteps[quotientIndex].indexOf(negative);
+
+          if (subtractIndex !== -1) {
+            removeArray.push({
+              targets: nodes[i].children[subtractIndex],
+              backgroundColor: '#ff0000',
+              easing: 'easeOutExpo',
+            });
+
+            removeArray.push({
+              targets:
+                nodes[i + 1].children[
+                  this.division().negativeSteps[quotientIndex].indexOf(negative)
+                ],
+              backgroundColor: '#ff0000',
+              easing: 'easeOutExpo',
+            });
+          }
+        }
+
+        ++quotientIndex;
+      }
+    }
+
+    //console.log(nodes[0].children.item(0).children[0].innerText.trim())
 
     return result;
   });
@@ -161,6 +267,10 @@ export class CrcComponent {
   }
 
   nextStep() {
+    if (this.animationStep > this.animations().length - 1) {
+      this.animationStep = 0;
+    }
+
     this.animations()[this.animationStep].forEach((value) => {
       anime(value);
     });
