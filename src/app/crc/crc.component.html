@@ -184,6 +184,11 @@
       }
       }
     </div>
+
+	<div>
+		{{ animationMessage() }}
+	</div>
+
   </div>
 </div>
 
@@ -207,112 +212,112 @@
 </div>
 
 <div class="division-op">
-	<div class="left-side">
-	  @for (item of receiverDivisionOp().dividendSteps; track $index; let last =
-	  $last) {
-	  @if(item.length === 0){
-	  0
-	  }
-  
-	  <div class="dividend-step-container" #receiverAnime>
-		@for (poly of item; track $index; let first = $first) {
-		@if (poly == 0) {
-		<span class="dividend-node">
-		  1
-		</span>
-  
-		} @else {
-		<span class="dividend-node">
-		  @if (!first) {
-		  +
-		  }
-		  X
-		  @if (poly !== 1) {
-		  <sup>
-			{{ poly }}
-		  </sup>
-		  }
-		</span>
-		}
-		}
-	  </div>
-  
-	  @if (!last) {
-	  <div class="negative-step" #receiverAnime>
-		@for (poly of receiverDivisionOp().negativeSteps[$index]; track $index; let first = $first) {
-		@if (poly == 0) {
-		<span class="negative-node">
-		  1
-		</span>
-		} @else {
-		<span class="negative-node">
-		  @if (!first) {
-		  +
-		  }
-		  X
-		  @if (poly !== 1) {
-		  <sup>
-			{{ poly }}
-		  </sup>
-		  }
-		</span>
-		}
-		}
-	  </div>
-	  }
-	  }
-  
-  
-	</div>
-  
-	<div class="right-side">
-	  <div class="divider" #receiverAnime>
-		@for (divider of dividerPoly(); track $index; let last = $last) {
-		@if (divider == 0) {
-		<span class="divider-node">
-		  1
-		</span>
-		} @else {
-		<span class="divider-node">
-		  X
-		  @if (divider !== 1) {
-		  <sup>
-			{{ divider }}
-		  </sup>
-		  }
-		</span>
-		}
-		@if (!last) {
-		+
-		}
-		}
-	  </div>
-  
-	  <div class="quotient" #receiverAnime>
-		@for (quotient of receiverDivisionOp().quotient; track $index; let first = $first) {
-		@if (quotient == 0) {
-		<span class="quotient-node">
-		  1
-		</span>
-		} @else {
-		<span class="quotient-node">
-		  @if (!first) {
-		  +
-		  }
-		  X
-		  @if (quotient !== 1) {
-		  <sup>
-			{{ quotient }}
-		  </sup>
-		  }
-		</span>
-		}
-		}
-	  </div>
-	</div>
+  <div class="left-side">
+    @for (item of receiverDivisionOp().dividendSteps; track $index; let last =
+    $last) {
+    @if(item.length === 0){
+    0
+    }
+
+    <div class="dividend-step-container" #receiverAnime>
+      @for (poly of item; track $index; let first = $first) {
+      @if (poly == 0) {
+      <span class="dividend-node">
+        1
+      </span>
+
+      } @else {
+      <span class="dividend-node">
+        @if (!first) {
+        +
+        }
+        X
+        @if (poly !== 1) {
+        <sup>
+          {{ poly }}
+        </sup>
+        }
+      </span>
+      }
+      }
+    </div>
+
+    @if (!last) {
+    <div class="negative-step" #receiverAnime>
+      @for (poly of receiverDivisionOp().negativeSteps[$index]; track $index; let first = $first) {
+      @if (poly == 0) {
+      <span class="negative-node">
+        1
+      </span>
+      } @else {
+      <span class="negative-node">
+        @if (!first) {
+        +
+        }
+        X
+        @if (poly !== 1) {
+        <sup>
+          {{ poly }}
+        </sup>
+        }
+      </span>
+      }
+      }
+    </div>
+    }
+    }
+
+
   </div>
 
-<div>
+  <div class="right-side">
+    <div class="divider" #receiverAnime>
+      @for (divider of dividerPoly(); track $index; let last = $last) {
+      @if (divider == 0) {
+      <span class="divider-node">
+        1
+      </span>
+      } @else {
+      <span class="divider-node">
+        X
+        @if (divider !== 1) {
+        <sup>
+          {{ divider }}
+        </sup>
+        }
+      </span>
+      }
+      @if (!last) {
+      +
+      }
+      }
+    </div>
+
+    <div class="quotient" #receiverAnime>
+      @for (quotient of receiverDivisionOp().quotient; track $index; let first = $first) {
+      @if (quotient == 0) {
+      <span class="quotient-node">
+        1
+      </span>
+      } @else {
+      <span class="quotient-node">
+        @if (!first) {
+        +
+        }
+        X
+        @if (quotient !== 1) {
+        <sup>
+          {{ quotient }}
+        </sup>
+        }
+      </span>
+      }
+      }
+    </div>
+  </div>
+</div>
+
+<div class="control-buttons">
   <button>
     Previous
   </button>

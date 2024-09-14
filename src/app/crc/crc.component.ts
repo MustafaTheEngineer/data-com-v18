@@ -18,6 +18,11 @@ type DivOps = {
   remainder: number[];
 };
 
+type AnimeSteps = {
+  anime: anime.AnimeParams[];
+  message: string;
+};
+
 @Component({
   selector: 'app-crc',
   standalone: true,
@@ -27,6 +32,7 @@ type DivOps = {
 })
 export class CrcComponent {
   animationStep = 0;
+  animationMessage = signal('');
   senderData = signal('');
   receiverData = signal('');
 
@@ -116,7 +122,7 @@ export class CrcComponent {
     animeDom: Signal<readonly ElementRef<any>[]>,
     signalDivOps: Signal<DivOps>
   ) {
-    const result: anime.AnimeParams[][] = [];
+    const result: AnimeSteps[] = [];
     const nodes = animeDom().map((node) => node.nativeElement);
     const divider =
       nodes[nodes.findIndex((node) => node.className === 'divider')];
@@ -129,76 +135,89 @@ export class CrcComponent {
         nodes[i].className === 'dividend-step-container' &&
         nodes[i + 1].className !== 'negative-step'
       ) {
-        result.push([
-          {
-            targets: nodes[i],
-            opacity: [0, 1],
-            easing: 'easeOutExpo',
-          },
-        ]);
+        result.push({
+          anime: [
+            {
+              targets: nodes[i],
+              opacity: [0, 1],
+              easing: 'easeOutExpo',
+            },
+          ],
+          message: 'Result',
+        });
         ++i;
         continue;
       }
 
       if (nodes[i].className === 'dividend-step-container') {
-        result.push([
-          {
-            targets: nodes[i],
-            opacity: [0, 1],
-            easing: 'easeOutExpo',
-          },
-          {
-            targets: nodes[i].children[0],
-            backgroundColor: '#0047AB',
-            easing: 'easeOutExpo',
-          },
-          {
-            targets: divider.children[0],
-            backgroundColor: '#0047AB',
-            easing: 'easeOutExpo',
-          },
-        ]);
+        result.push({
+          anime: [
+            {
+              targets: nodes[i],
+              opacity: [0, 1],
+              easing: 'easeOutExpo',
+            },
+            {
+              targets: nodes[i].children[0],
+              backgroundColor: '#0047AB',
+              easing: 'easeOutExpo',
+            },
+            {
+              targets: divider.children[0],
+              backgroundColor: '#0047AB',
+              easing: 'easeOutExpo',
+            },
+          ],
+          message:
+            'Subtract the biggest number of the divider from the biggest number of the dividend.',
+        });
 
-        result.push([
-          {
-            targets: nodes[i].children[0],
-            backgroundColor: '#000000',
-            easing: 'easeOutExpo',
-          },
-          {
-            targets: divider.children[0],
-            backgroundColor: '#000000',
-            easing: 'easeOutExpo',
-          },
-          {
-            targets: quotient.children[quotientIndex],
-            opacity: [0, 1],
-            backgroundColor: '#0047AB',
-            delay: 100,
-            easing: 'easeOutExpo',
-          },
-        ]);
+        result.push({
+          anime: [
+            {
+              targets: nodes[i].children[0],
+              backgroundColor: '#000000',
+              easing: 'easeOutExpo',
+            },
+            {
+              targets: divider.children[0],
+              backgroundColor: '#000000',
+              easing: 'easeOutExpo',
+            },
+            {
+              targets: quotient.children[quotientIndex],
+              opacity: [0, 1],
+              backgroundColor: '#0047AB',
+              delay: 100,
+              easing: 'easeOutExpo',
+            },
+          ],
+          message: 'Multilpy the result with divider numbers.',
+        });
       }
 
       if (nodes[i + 1] && nodes[i + 1].className === 'negative-step') {
-        result.push([
-          {
-            targets: divider.children,
-            backgroundColor: '#0047AB',
-            delay: anime.stagger(750),
-            easing: 'easeOutExpo',
-            complete: function (anim) {
-              anim.restart();
-              anim.pause();
+        result.push({
+          anime: [
+            {
+              targets: divider.children,
+              backgroundColor: '#0047AB',
+              delay: anime.stagger(750),
+              easing: 'easeOutExpo',
+              complete: function (anim) {
+                anim.restart();
+                anim.pause();
+              },
             },
-          },
-          {
-            targets: nodes[i + 1].children,
-            opacity: [0, 1],
-            delay: anime.stagger(750),
-            easing: 'easeOutExpo',
-          },
-        ]);
+            {
+              targets: nodes[i + 1].children,
+              opacity: [0, 1],
+              delay: anime.stagger(750),
+              easing: 'easeOutExpo',
+            },
+          ],
+          message: 'Multilpy the result with divider numbers.',
+        });
 
         const removeArray: anime.AnimeParams[] = [
           {
@@ -236,13 +255,13 @@ export class CrcComponent {
           }
         }
 
-        result.push(removeArray);
+        result.push({anime: removeArray, message: 'If there are common numbers in dividend part, remove them. Add otherwise.'});
 
         ++quotientIndex;
       }
     }
 
-    return result;
+    return result ;
   }
 
   animations = computed(() => {
@@ -301,9 +320,11 @@ export class CrcComponent {
       this.animationStep = 0;
     }
 
-    this.animations()[this.animationStep].forEach((value) => {
+    this.animations()[this.animationStep].anime.forEach((value) => {
       anime(value);
     });
+
+    this.animationMessage.set(this.animations()[this.animationStep].message);
 
     ++this.animationStep;
   }
