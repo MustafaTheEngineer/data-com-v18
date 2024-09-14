@@ -64,7 +64,7 @@
 
 <div>
   X<sup>
-    {{ dividend()[0] }}</sup>.G(X) = @for (item of dividend(); track $index; let last = $last) {
+    {{ senderDividend()[0] }}</sup>.G(X) = @for (item of senderDividend(); track $index; let last = $last) {
   @if (item == 0) {
   1
   } @else {
@@ -83,7 +83,7 @@
 
 <div class="division-op">
   <div class="left-side">
-    @for (item of division().dividendSteps; track $index; let last =
+    @for (item of senderDivisionOp().dividendSteps; track $index; let last =
     $last) {
     @if(item.length === 0){
     0
@@ -114,7 +114,7 @@
 
     @if (!last) {
     <div class="negative-step" #anime>
-      @for (poly of division().negativeSteps[$index]; track $index; let first = $first) {
+      @for (poly of senderDivisionOp().negativeSteps[$index]; track $index; let first = $first) {
       @if (poly == 0) {
       <span class="negative-node">
         1
@@ -164,7 +164,7 @@
     </div>
 
     <div class="quotient" #anime>
-      @for (quotient of division().quotient; track $index; let first = $first) {
+      @for (quotient of senderDivisionOp().quotient; track $index; let first = $first) {
       @if (quotient == 0) {
       <span class="quotient-node">
         1
@@ -189,7 +189,7 @@
 
 <div>
   X<sup>
-    {{ senderDividend()[0] }}</sup>.G(X) = @for (item of senderDividend(); track $index; let last = $last) {
+    {{ receiverDividend()[0] }}</sup>.G(X) = @for (item of receiverDividend(); track $index; let last = $last) {
   @if (item == 0) {
   1
   } @else {

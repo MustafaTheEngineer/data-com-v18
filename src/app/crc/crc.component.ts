@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   ElementRef,
+  Signal,
   signal,
   viewChildren,
   WritableSignal,
@@ -49,13 +50,18 @@ export class CrcComponent {
     return result;
   });
 
-  dividend = computed(() =>
+  senderDividend = computed(() =>
     this.dataPoly().map((value) => value + this.dividerPolyView()[0])
   );
 
-  division = computed(() => {
-    const dividend = [...this.dividend()];
-    const divider = [...this.dividerPoly()];
+  receiverDividend = computed(() => [ ...this.senderDividend(), ...this.senderDivisionOp().dividendSteps[this.senderDivisionOp().dividendSteps.length - 1] ])
+
+  divisionOp(
+    signalDividend: Signal<number[]>,
+    signalDivider: WritableSignal<number[]>
+  ) {
+    const dividend = [...signalDividend()];
+    const divider = [...signalDivider()];
     const dividendSteps: number[][] = [dividend];
     const negativeSteps: number[][] = [];
     const quotient = [];
@@ -92,13 +98,12 @@ export class CrcComponent {
       dividendSteps,
       negativeSteps,
       remainder,
-    } satisfies DivOps;
-  });
+    } as DivOps;
+  }
 
-  senderDividend = computed(() => [
-    ...this.dividend(),
-    ...this.division().dividendSteps[this.division().dividendSteps.length - 1],
-  ]);
+  senderDivisionOp = computed(() =>
+    this.divisionOp(this.senderDividend, this.dividerPoly)
+  );
 
   anime = viewChildren<ElementRef>('anime');
   animations = computed(() => {
@@ -123,7 +128,7 @@ export class CrcComponent {
           },
         ]);
         ++i;
-		continue;
+        continue;
       }
 
       if (nodes[i].className === 'dividend-step-container') {
@@ -200,9 +205,9 @@ export class CrcComponent {
           },
         ];
 
-        for (const negative of this.division().negativeSteps[quotientIndex]) {
+        for (const negative of this.senderDivisionOp().negativeSteps[quotientIndex]) {
           const subtractIndex =
-            this.division().dividendSteps[quotientIndex].indexOf(negative);
+            this.senderDivisionOp().dividendSteps[quotientIndex].indexOf(negative);
 
           if (subtractIndex !== -1) {
             removeArray.push({
@@ -214,7 +219,7 @@ export class CrcComponent {
             removeArray.push({
               targets:
                 nodes[i + 1].children[
-                  this.division().negativeSteps[quotientIndex].indexOf(negative)
+                  this.senderDivisionOp().negativeSteps[quotientIndex].indexOf(negative)
                 ],
               backgroundColor: '#ff0000',
               easing: 'easeOutExpo',
@@ -222,7 +227,7 @@ export class CrcComponent {
           }
         }
 
-		result.push(removeArray)
+        result.push(removeArray);
 
         ++quotientIndex;
       }
