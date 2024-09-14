@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { BinaryDataComponent } from '../binary-data/binary-data.component';
 import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
-import anime from 'animejs';
+import anime, { remove } from 'animejs';
 
 type DivOps = {
   dividendSteps: number[][];
@@ -122,7 +122,8 @@ export class CrcComponent {
             easing: 'easeOutExpo',
           },
         ]);
-        return result;
+        ++i;
+		continue;
       }
 
       if (nodes[i].className === 'dividend-step-container') {
@@ -220,6 +221,8 @@ export class CrcComponent {
             });
           }
         }
+
+		result.push(removeArray)
 
         ++quotientIndex;
       }
