@@ -18,11 +18,6 @@ type DivOps = {
   remainder: number[];
 };
 
-type DataTransaction = {
-  data: string;
-  crc: string;
-};
-
 @Component({
   selector: 'app-crc',
   standalone: true,
@@ -54,7 +49,12 @@ export class CrcComponent {
     this.dataPoly().map((value) => value + this.dividerPolyView()[0])
   );
 
-  receiverDividend = computed(() => [ ...this.senderDividend(), ...this.senderDivisionOp().dividendSteps[this.senderDivisionOp().dividendSteps.length - 1] ])
+  receiverDividend = computed(() => [
+    ...this.senderDividend(),
+    ...this.senderDivisionOp().dividendSteps[
+      this.senderDivisionOp().dividendSteps.length - 1
+    ],
+  ]);
 
   divisionOp(
     signalDividend: Signal<number[]>,
@@ -105,10 +105,19 @@ export class CrcComponent {
     this.divisionOp(this.senderDividend, this.dividerPoly)
   );
 
-  anime = viewChildren<ElementRef>('anime');
-  animations = computed(() => {
+  receiverDivisionOp = computed(() =>
+    this.divisionOp(this.receiverDividend, this.dividerPoly)
+  );
+
+  senderAnime = viewChildren<ElementRef>('senderAnime');
+  receiverAnime = viewChildren<ElementRef>('receiverAnime');
+
+  calcAnimation(
+    animeDom: Signal<readonly ElementRef<any>[]>,
+    signalDivOps: Signal<DivOps>
+  ) {
     const result: anime.AnimeParams[][] = [];
-    const nodes = this.anime().map((node) => node.nativeElement);
+    const nodes = animeDom().map((node) => node.nativeElement);
     const divider =
       nodes[nodes.findIndex((node) => node.className === 'divider')];
     const quotient =
@@ -205,9 +214,9 @@ export class CrcComponent {
           },
         ];
 
-        for (const negative of this.senderDivisionOp().negativeSteps[quotientIndex]) {
+        for (const negative of signalDivOps().negativeSteps[quotientIndex]) {
           const subtractIndex =
-            this.senderDivisionOp().dividendSteps[quotientIndex].indexOf(negative);
+            signalDivOps().dividendSteps[quotientIndex].indexOf(negative);
 
           if (subtractIndex !== -1) {
             removeArray.push({
@@ -219,7 +228,7 @@ export class CrcComponent {
             removeArray.push({
               targets:
                 nodes[i + 1].children[
-                  this.senderDivisionOp().negativeSteps[quotientIndex].indexOf(negative)
+                  signalDivOps().negativeSteps[quotientIndex].indexOf(negative)
                 ],
               backgroundColor: '#ff0000',
               easing: 'easeOutExpo',
@@ -234,6 +243,18 @@ export class CrcComponent {
     }
 
     return result;
+  }
+
+  animations = computed(() => {
+    const senderAnimations = this.calcAnimation(
+      this.senderAnime,
+      this.senderDivisionOp
+    );
+    const receiverAnimations = this.calcAnimation(
+      this.receiverAnime,
+      this.receiverDivisionOp
+    );
+    return [...senderAnimations, ...receiverAnimations];
   });
 
   setData(data: string) {
