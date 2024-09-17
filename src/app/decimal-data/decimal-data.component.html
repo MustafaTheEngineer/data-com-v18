@@ -1,2 +1,3 @@
-<input type="text" id="hex-input" [placeholder]="placeholder() ?? 'Decimal Data'" [value]="value()" inputData (dataFromUser)="isDecimal($event)">
-<label for="hex-input" class="warning" [style.opacity]="warning().length ? 1 : 0"> - {{ warning() }}  </label>
+<input type="text" id="hex-input" [placeholder]="placeholder() ?? 'Decimal Data'" inputData #decimalInput (dataFromUser)="isDecimal($event)">
+<label for="hex-input" class="warning" [style.opacity]="warning().length ? 1 : 0"> -
+  {{ warning() }} </label>

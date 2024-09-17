@@ -4,6 +4,7 @@ import {
   ElementRef,
   Signal,
   signal,
+  viewChild,
   viewChildren,
   WritableSignal,
 } from '@angular/core';
@@ -39,28 +40,37 @@ export class CrcComponent {
   dividerLength = signal(0);
   dividerPoly = signal<number[]>([]);
   dividerPolyView = computed(() => this.dividerPoly().sort((a, b) => b - a));
-  dataPoly = computed(() => {
+
+  dataPoly(data: string) {
     const result: number[] = [];
 
-    for (let i = 0; i < this.senderData().length; i++) {
-      if (this.senderData()[i] === '1') {
-        result.push(this.senderData().length - 1 - i);
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] === '1') {
+        result.push(data.length - 1 - i);
       }
     }
 
     return result;
-  });
+  }
+
+  senderDataPoly = computed(() => this.dataPoly(this.senderData()));
+  receiverDataPoly = computed(() => this.dataPoly(this.receiverData()));
 
   senderDividend = computed(() =>
-    this.dataPoly().map((value) => value + this.dividerPolyView()[0])
+    this.senderDataPoly().map((value) => value + this.dividerPolyView()[0])
   );
 
-  receiverDividend = computed(() => [
-    ...this.senderDividend(),
-    ...this.senderDivisionOp().dividendSteps[
-      this.senderDivisionOp().dividendSteps.length - 1
-    ],
-  ]);
+  receiverDividend = computed(() => {
+    const receiverDataPoly = this.receiverDataPoly().map(
+      (value) => value + this.dividerPolyView()[0]
+    );
+    return [
+      ...receiverDataPoly,
+      ...this.senderDivisionOp().dividendSteps[
+        this.senderDivisionOp().dividendSteps.length - 1
+      ],
+    ];
+  });
 
   divisionOp(
     signalDividend: Signal<number[]>,
@@ -255,13 +265,17 @@ export class CrcComponent {
           }
         }
 
-        result.push({anime: removeArray, message: 'If there are common numbers in dividend part, remove them. Add otherwise.'});
+        result.push({
+          anime: removeArray,
+          message:
+            'If there are common numbers in dividend part, remove them. Add otherwise.',
+        });
 
         ++quotientIndex;
       }
     }
 
-    return result ;
+    return result;
   }
 
   animations = computed(() => {
@@ -315,17 +329,67 @@ export class CrcComponent {
     );
   }
 
+  animeInstances: anime.AnimeInstance[][] = [];
+
   nextStep() {
-    if (this.animationStep > this.animations().length - 1) {
-      this.animationStep = 0;
-    }
+    const saveAnimates: anime.AnimeInstance[] = [];
 
     this.animations()[this.animationStep].anime.forEach((value) => {
-      anime(value);
+      const runAnime = anime(value);
+      saveAnimates.push(runAnime);
     });
+
+    this.animeInstances.push(saveAnimates);
 
     this.animationMessage.set(this.animations()[this.animationStep].message);
 
     ++this.animationStep;
+
+    if (this.animationStep > this.animations().length - 1) {
+      this.animationStep = 0;
+      this.animationMessage.set('');
+
+      for (const animations of this.animeInstances) {
+        animations.forEach((value) => {
+          value.restart();
+          value.pause();
+        });
+      }
+
+      this.animeInstances = [];
+    }
+  }
+
+  previousStep() {
+    --this.animationStep;
+
+    if (this.animationStep < 0) {
+      this.animationStep = this.animations().length - 1;
+      this.animeInstances = [];
+
+      for (const animation of this.animations()) {
+        const saveAnimates: anime.AnimeInstance[] = [];
+        animation.anime.forEach((value) => {
+          const runAnime = anime(value);
+          saveAnimates.push(runAnime);
+        });
+
+        this.animeInstances.push(saveAnimates);
+      }
+
+      return;
+    }
+
+    this.animeInstances.pop()?.forEach((value) => {
+      value.restart();
+      value.pause();
+    });
+
+    if (this.animationStep === 0) {
+		this.animationMessage.set('');
+      return;
+    } else {
+		this.animationMessage.set(this.animations()[this.animationStep - 1].message);
+	}
   }
 }

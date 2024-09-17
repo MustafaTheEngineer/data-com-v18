@@ -21,7 +21,7 @@
 <div>
   G(X) = @for (item of dividerPoly(); track $index) {
   X <sup>
-    <app-decimal-data placeholder="" [value]="item.toString()" class="poly-input" inputmode="numeric" (decimalData)="setDividerPoly($event, $index)"></app-decimal-data>
+    <app-decimal-data placeholder="" class="poly-input" inputmode="numeric" (decimalData)="setDividerPoly($event, $index)"></app-decimal-data>
   </sup>
   }
 </div>
@@ -45,7 +45,7 @@
 </div>
 
 <div>
-  P(X) = @for (item of dataPoly(); track $index; let last = $last) {
+  P(X) = @for (item of senderDataPoly(); track $index; let last = $last) {
   @if (item == 0) {
   1
   } @else {
@@ -318,7 +318,7 @@
 </div>
 
 <div class="control-buttons">
-  <button>
+  <button (click)="previousStep()">
     Previous
   </button>
 

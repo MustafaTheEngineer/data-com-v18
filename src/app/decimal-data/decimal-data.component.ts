@@ -1,4 +1,12 @@
-import { Component, input, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { InputDataDirective } from '../input-data.directive';
 
 @Component({
