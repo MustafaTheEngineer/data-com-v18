@@ -1,69 +1,110 @@
 ::ng-deep {
-	.block-input{
-		label {
-			display: block;
-		}
-	}
+  #user-inputs {
+    display: grid;
+    justify-content: center;
+  }
 
-	.poly-input {
-		input {
-			width: 30px;
-		}
-	}
+  .block-input {
+    label {
+      display: block;
+    }
+  }
+
+  .poly-input {
+    input {
+      width: 30px;
+    }
+  }
+
+  .dividend-step-container {
+    opacity: 0;
+  }
+
+  .quotient,
+  .negative-step {
+    span {
+      opacity: 0;
+    }
+  }
+}
+
+#receiver {
+  margin: var(--margin-xl) 0;
+}
+
+#sender-receiver-data {
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: var(--margin-xxs) 0;
+
+  .comm-data {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--margin-l);
+    margin-left: var(--margin-xxs);
+
+    span {
+      padding: 0 var(--margin-xxs);
+      border-left: 2px solid white;
+      border-right: 2px solid white;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #3cabc7;
+      }
+    }
+  }
 }
 
 .division-op {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	font-size: 0.8rem;
-	margin: var(--margin-xs);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 0.8rem;
+  margin: var(--margin-xs);
 
-	.left-side {
-		grid-column-start: 1;
-		grid-column-end: 1;
-		justify-self: right;
-		padding-right: var(--margin-xxs);
+  .left-side {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    justify-self: right;
+    padding-right: var(--margin-xxs);
 
-		.dividend-step-container{
-			opacity: 0;
-		}
-	}
+    .dividend-step-container {
+      opacity: 0;
+    }
+  }
 
-	.right-side {
-		grid-column-start: 2;
-		grid-column-end: 2;
-	}
+  .right-side {
+    grid-column-start: 2;
+    grid-column-end: 2;
+  }
 
-	.divider, .quotient {
-		border-left: 2px solid white;
-		padding: var(--margin-xxs) var(--margin-l);
-	}
+  .divider,
+  .quotient {
+    border-left: 2px solid white;
+    padding: var(--margin-xxs) var(--margin-l);
+  }
 
-	.quotient span{
-		opacity: 0;
-	}
+  .divider {
+    border-bottom: 2px solid white;
+  }
 
-	.divider {
-		border-bottom: 2px solid white;
-	}
-
-	.negative-step {
-		border-bottom: 2px solid white;
-		margin-bottom: var(--margin-xs);
-
-		span {
-			opacity: 0;
-		}
-	}
+  .negative-step {
+    border-bottom: 2px solid white;
+    margin-bottom: var(--margin-xs);
+  }
 }
 
 .control-buttons {
-	position:fixed;
-	bottom: 0;
-	display: flex;
-	width: 100%;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  width: 100%;
 
-	button {
-		width: 100%;
-	}
+  button {
+    width: 100%;
+  }
+}
+
+.inline-poly {
+  display: inline-block;
 }

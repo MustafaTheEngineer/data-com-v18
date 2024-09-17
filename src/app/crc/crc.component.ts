@@ -4,13 +4,13 @@ import {
   ElementRef,
   Signal,
   signal,
-  viewChild,
   viewChildren,
   WritableSignal,
 } from '@angular/core';
 import { BinaryDataComponent } from '../binary-data/binary-data.component';
 import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
-import anime, { remove } from 'animejs';
+import anime from 'animejs';
+import { PolynomialComponent } from './polynomial/polynomial.component';
 
 type DivOps = {
   dividendSteps: number[][];
@@ -27,7 +27,7 @@ type AnimeSteps = {
 @Component({
   selector: 'app-crc',
   standalone: true,
-  imports: [BinaryDataComponent, DecimalDataComponent],
+  imports: [BinaryDataComponent, DecimalDataComponent, PolynomialComponent],
   templateUrl: './crc.component.html',
   styleUrl: './crc.component.scss',
 })
@@ -125,8 +125,8 @@ export class CrcComponent {
     this.divisionOp(this.receiverDividend, this.dividerPoly)
   );
 
-  senderAnime = viewChildren<ElementRef>('senderAnime');
-  receiverAnime = viewChildren<ElementRef>('receiverAnime');
+  senderAnime = viewChildren('senderAnime', { read: ElementRef });
+  receiverAnime = viewChildren('receiverAnime', { read: ElementRef });
 
   calcAnimation(
     animeDom: Signal<readonly ElementRef<any>[]>,
@@ -155,7 +155,6 @@ export class CrcComponent {
           ],
           message: 'Result',
         });
-        ++i;
         continue;
       }
 
@@ -317,8 +316,12 @@ export class CrcComponent {
     this.receiverData.set(this.senderData());
   }
 
-  toggleReceiver(index: number) {
+  toggleReceiver(receiverDom: HTMLSpanElement, index: number) {
     this.receiverData.update((value) => this.toggleData(value, index));
+
+    if (this.senderData()[index] !== this.receiverData()[index])
+      receiverDom.style.backgroundColor = 'red';
+    else receiverDom.style.backgroundColor = 'inherit';
   }
 
   toggleData(value: string, index: number) {
@@ -332,19 +335,6 @@ export class CrcComponent {
   animeInstances: anime.AnimeInstance[][] = [];
 
   nextStep() {
-    const saveAnimates: anime.AnimeInstance[] = [];
-
-    this.animations()[this.animationStep].anime.forEach((value) => {
-      const runAnime = anime(value);
-      saveAnimates.push(runAnime);
-    });
-
-    this.animeInstances.push(saveAnimates);
-
-    this.animationMessage.set(this.animations()[this.animationStep].message);
-
-    ++this.animationStep;
-
     if (this.animationStep > this.animations().length - 1) {
       this.animationStep = 0;
       this.animationMessage.set('');
@@ -357,7 +347,22 @@ export class CrcComponent {
       }
 
       this.animeInstances = [];
+
+      return;
     }
+
+    const saveAnimates: anime.AnimeInstance[] = [];
+
+    this.animations()[this.animationStep].anime.forEach((value) => {
+      const runAnime = anime(value);
+      saveAnimates.push(runAnime);
+    });
+
+    this.animeInstances.push(saveAnimates);
+
+    this.animationMessage.set(this.animations()[this.animationStep].message);
+
+    ++this.animationStep;
   }
 
   previousStep() {
@@ -386,10 +391,12 @@ export class CrcComponent {
     });
 
     if (this.animationStep === 0) {
-		this.animationMessage.set('');
+      this.animationMessage.set('');
       return;
     } else {
-		this.animationMessage.set(this.animations()[this.animationStep - 1].message);
-	}
+      this.animationMessage.set(
+        this.animations()[this.animationStep - 1].message
+      );
+    }
   }
 }
