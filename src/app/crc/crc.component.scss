@@ -1,15 +1,4 @@
 ::ng-deep {
-  #user-inputs {
-    display: grid;
-    justify-content: center;
-  }
-
-  .block-input {
-    label {
-      display: block;
-    }
-  }
-
   .poly-input {
     input {
       width: 30px;
@@ -28,14 +17,43 @@
   }
 }
 
+h1 {
+  text-align: center;
+}
+
+p {
+  text-align: justify;
+  margin: var(--margin-s) var(--margin-xs);
+}
+
+#user-inputs {
+  display: grid;
+  justify-content: center;
+  margin: var(--margin-xl) 0;
+
+  app-binary-data, div {
+	margin: var(--margin-xs);
+  }
+}
+
+#sender-dividend {
+  margin: var(--margin-xl) var(--margin-xs);
+}
+
 #receiver {
   margin: var(--margin-xl) 0;
+}
+
+#data-to-send {
+	margin: 0 var(--margin-xs);
 }
 
 #sender-receiver-data {
   display: grid;
   grid-template-columns: 1fr 5fr;
-  gap: var(--margin-xxs) 0;
+  gap: var(--margin-l) 0;
+  margin: 0 var(--margin-xs);
+  overflow: scroll;
 
   .comm-data {
     display: flex;
@@ -45,8 +63,6 @@
 
     span {
       padding: 0 var(--margin-xxs);
-      border-left: 2px solid white;
-      border-right: 2px solid white;
 
       &:hover {
         cursor: pointer;
@@ -91,6 +107,10 @@
   .negative-step {
     border-bottom: 2px solid white;
     margin-bottom: var(--margin-xs);
+  }
+
+  .anime-message {
+	padding: var(--margin-xs);
   }
 }
 

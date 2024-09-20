@@ -1,53 +1,41 @@
+<h1>
+  Cyclic Redundancy Check (CRC)
+</h1>
+
+<p>
+  One of the most common, and one of the most powerful, error-detecting codes is the cyclic
+  redundancy check (CRC). In this method, we are going to use division operation. Follow the steps to understand how it works.
+</p>
+
 <div id="user-inputs">
-  <app-binary-data class="block-input" (binaryData)="setData($event)"></app-binary-data>
-  <app-decimal-data class="block-input" placeholder="Divider (GX) length" (decimalData)="setDivider($event)" inputmode="numeric"></app-decimal-data>
-</div>
-
-
-<div id="sender-receiver-data">
+  <p>
+    Step 1: Enter the data you want to send. The data should be in binary format:
+  </p>
+  <app-binary-data class="block-input" (binaryData)="setData($event)" placeholder="Data (Binary)"></app-binary-data>
   <div>
-    Sender:
+    P(X) = <div app-polynomial [polyData]="senderDataPoly()" class="inline-poly"></div>
   </div>
-  <div class="comm-data">
-    @for (item of senderData(); track $index) {
-    <span>
-      {{ item }}
-    </span>
-    }
-  </div>
+  <p>
+    Step 2: Enter the divider data. The divider data should be in binary format:
+  </p>
+  <app-binary-data class="block-input" placeholder="Divider Data (binary)" (binaryData)="setDivider($event)" inputmode="numeric"></app-binary-data>
   <div>
-    Receiver:
-  </div>
-  <div class="comm-data">
-    @for (item of receiverData(); track $index) {
-    <span #receiverDom (click)="toggleReceiver(receiverDom ,$index)">
-      {{ item }}
-    </span>
-    }
+    G(X) = <div app-polynomial [polyData]="dividerPoly()" class="inline-poly"></div>
   </div>
 </div>
 
-<div>
-  G(X) = @for (item of dividerPoly(); track $index) {
-  X <sup>
-    <app-decimal-data placeholder="" class="poly-input" inputmode="numeric" (decimalData)="setDividerPoly($event, $index)"></app-decimal-data>
-  </sup>
-  }
-</div>
-
-<div>
-  G(X) = <div app-polynomial [polyData]="dividerPolyView()" class="inline-poly"></div>
-</div>
-
-<div>
-  P(X) = <div app-polynomial [polyData]="senderDataPoly()" class="inline-poly"></div>
-</div>
-
-<div>
+<p>
+  To calculate the dividend, we multiply the biggest number in divider with the sender data:
+</p>
+<div id="sender-dividend">
   X<sup>
-    {{ senderDividend()[0] }}</sup>.G(X) =
+    {{ dividerPoly()[0] }}</sup>.P(X) =
   <div app-polynomial [polyData]="senderDividend()" class="inline-poly"></div>
 </div>
+
+<p>
+  To calculate the quotient, we divide the dividend by the divider. Use next and previous buttons to see the steps.
+</p>
 
 <div class="division-op">
   <div class="left-side">
@@ -68,17 +56,57 @@
   <div class="right-side">
     <div app-polynomial [polyData]="dividerPoly()" class="divider" #senderAnime></div>
     <div app-polynomial [polyData]="senderDivisionOp().quotient" class="quotient" #senderAnime></div>
-    <div>
+    <div class="anime-message">
       {{ animationMessage() }}
     </div>
 
   </div>
 </div>
 
-<div>
+<p>
+  By adding the remainder to the dividend, we get the data to send:
+</p>
+
+<div id="data-to-send">
   X<sup>
-    {{ receiverDividend()[0] }}</sup>.G(X) =
-  <div app-polynomial [polyData]="receiverDividend()" class="inline-poly"></div>
+    {{ dividerPoly()[0] }}</sup>.P(X) + R(X) =
+  <div app-polynomial [polyData]="dataToSend()" class="inline-poly"></div>
+</div>
+
+<p>
+  If you want to corrupt the data, click the bits of receiver data below.
+</p>
+<div id="sender-receiver-data">
+  <div>
+    Sender:
+  </div>
+  <div class="comm-data">
+    @for (item of senderData(); track $index) {
+    <span>
+      {{ item }}
+      <sub>
+        {{ senderData().length - $index - 1 }}
+      </sub>
+    </span>
+    }
+  </div>
+  <div>
+    Receiver:
+  </div>
+  <div class="comm-data">
+    @for (item of receiverData(); track $index) {
+    <span #receiverDom (click)="toggleReceiver(receiverDom ,$index)">
+      {{ item }}
+      <sub>
+        {{ receiverData().length - $index - 1 }}
+      </sub>
+    </span>
+    }
+  </div>
+</div>
+
+<div>
+  Received data: <div app-polynomial [polyData]="receiverDataPoly()" class="inline-poly"></div>
 </div>
 
 <div class="division-op" id="receiver">
@@ -101,8 +129,17 @@
   <div class="right-side">
     <div app-polynomial [polyData]="dividerPoly()" class="divider" #receiverAnime></div>
     <div app-polynomial [polyData]="receiverDivisionOp().quotient" class="quotient" #receiverAnime></div>
+    <div class="anime-message">
+      {{ animationMessage() }}
+    </div>
   </div>
 </div>
+
+@if (senderData() !== receiverData() && receiverDivisionOp().remainder.length === 0) {
+<p>
+  Corruption could not be detected.
+</p>
+}
 
 <div class="control-buttons">
   <button (click)="previousStep()">

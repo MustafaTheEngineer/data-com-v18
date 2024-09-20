@@ -34,12 +34,12 @@ type AnimeSteps = {
 export class CrcComponent {
   animationStep = 0;
   animationMessage = signal('');
+
   senderData = signal('');
   receiverData = signal('');
+  dividerData = signal('');
 
-  dividerLength = signal(0);
-  dividerPoly = signal<number[]>([]);
-  dividerPolyView = computed(() => this.dividerPoly().sort((a, b) => b - a));
+  dividerPoly = computed(() => this.dataPoly(this.dividerData()));
 
   dataPoly(data: string) {
     const result: number[] = [];
@@ -54,18 +54,20 @@ export class CrcComponent {
   }
 
   senderDataPoly = computed(() => this.dataPoly(this.senderData()));
-  receiverDataPoly = computed(() => this.dataPoly(this.receiverData()));
+  receiverDataPoly = computed(() => [
+    ...this.dataPoly(this.receiverData()).map((value) => value + this.dividerPoly()[0]),
+    ...this.senderDivisionOp().dividendSteps[
+      this.senderDivisionOp().dividendSteps.length - 1
+    ],
+  ]);
 
   senderDividend = computed(() =>
-    this.senderDataPoly().map((value) => value + this.dividerPolyView()[0])
+    this.senderDataPoly().map((value) => value + this.dividerPoly()[0])
   );
 
-  receiverDividend = computed(() => {
-    const receiverDataPoly = this.receiverDataPoly().map(
-      (value) => value + this.dividerPolyView()[0]
-    );
+  dataToSend = computed(() => {
     return [
-      ...receiverDataPoly,
+      ...this.senderDividend(),
       ...this.senderDivisionOp().dividendSteps[
         this.senderDivisionOp().dividendSteps.length - 1
       ],
@@ -74,7 +76,7 @@ export class CrcComponent {
 
   divisionOp(
     signalDividend: Signal<number[]>,
-    signalDivider: WritableSignal<number[]>
+    signalDivider: Signal<number[]>
   ) {
     const dividend = [...signalDividend()];
     const divider = [...signalDivider()];
@@ -122,7 +124,7 @@ export class CrcComponent {
   );
 
   receiverDivisionOp = computed(() =>
-    this.divisionOp(this.receiverDividend, this.dividerPoly)
+    this.divisionOp(this.receiverDataPoly, this.dividerPoly)
   );
 
   senderAnime = viewChildren('senderAnime', { read: ElementRef });
@@ -153,7 +155,8 @@ export class CrcComponent {
               easing: 'easeOutExpo',
             },
           ],
-          message: 'Result',
+          message:
+            'The biggest number in dividend is less than the biggest number in divider. Hence, we stop to divide here and find the remainder.',
         });
         continue;
       }
@@ -294,21 +297,8 @@ export class CrcComponent {
     this.receiverData.set(data);
   }
 
-  setDivider(length: number) {
-    this.dividerLength.set(length);
-
-    const dividerPoly = [];
-    for (let i = 0; i < length; i++) {
-      dividerPoly.push(i);
-    }
-
-    this.dividerPoly.set(dividerPoly.reverse());
-  }
-
-  setDividerPoly(newValue: number, index: number) {
-    const result = [...this.dividerPoly()];
-    result[index] = newValue;
-    this.dividerPoly.set(result);
+  setDivider(data: string) {
+    this.dividerData.set(data);
   }
 
   toggleSender(index: number) {
