@@ -105,7 +105,7 @@
   </div>
 </div>
 
-<div>
+<div class="received-data">
   Received data: <div app-polynomial [polyData]="receiverDataPoly()" class="inline-poly"></div>
 </div>
 
@@ -137,7 +137,7 @@
 
 @if (senderData() !== receiverData() && receiverDivisionOp().remainder.length === 0) {
 <p>
-  Corruption could not be detected.
+  Corruption could not be detected!
 </p>
 }
 

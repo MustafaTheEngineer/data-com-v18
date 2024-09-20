@@ -100,17 +100,86 @@ p {
     padding: var(--margin-xxs) var(--margin-l);
   }
 
-  .divider {
-    border-bottom: 2px solid white;
-  }
-
+  .divider,
   .negative-step {
     border-bottom: 2px solid white;
-    margin-bottom: var(--margin-xs);
   }
 
   .anime-message {
-	padding: var(--margin-xs);
+    padding: var(--margin-xs);
+  }
+}
+
+::ng-deep {
+  .poly-input {
+    input {
+      width: 30px;
+    }
+  }
+
+  .dividend-step-container {
+    opacity: 0;
+  }
+
+  .quotient,
+  .negative-step {
+    span {
+      opacity: 0;
+    }
+  }
+}
+
+h1 {
+  text-align: center;
+}
+
+p {
+  text-align: justify;
+  margin: var(--margin-s) var(--margin-xs);
+}
+
+#user-inputs {
+  display: grid;
+  justify-content: center;
+  margin: var(--margin-xl) 0;
+
+  app-binary-data,
+  div {
+    margin: var(--margin-xs);
+  }
+}
+
+#sender-dividend,
+#receiver,
+.received-data {
+  margin: var(--margin-xl) var(--margin-xs);
+}
+
+#data-to-send {
+  margin: 0 var(--margin-xs);
+}
+
+#sender-receiver-data {
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: var(--margin-l) 0;
+  margin: 0 var(--margin-xs);
+  overflow: scroll;
+
+  .comm-data {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--margin-l);
+    margin-left: var(--margin-xxs);
+
+    span {
+      padding: 0 var(--margin-xxs);
+
+      &:hover {
+        cursor: pointer;
+        background-color: #3cabc7;
+      }
+    }
   }
 }
 
@@ -127,4 +196,23 @@ p {
 
 .inline-poly {
   display: inline-block;
+}
+
+.control-buttons {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+
+  button {
+    width: 100%;
+  }
+}
+
+.inline-poly {
+  display: inline-block;
+}
+
+.received-data {
+	margin: var(--margin-xl) var(--margin-xs);
 }

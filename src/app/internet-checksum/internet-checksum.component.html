@@ -1,7 +1,7 @@
 <app-hex-data (hexData)="data.set($event)"></app-hex-data>
 
 <div id="hex-data-view">
-  <input type="text" placeholder="Partial" inputData (dataFromUser)="getPartial($event)">
+	<app-decimal-data type="text" placeholder="Partial" (decimalData)="this.partial.set($event)"></app-decimal-data>
 </div>
 
 <div id="partial-data">

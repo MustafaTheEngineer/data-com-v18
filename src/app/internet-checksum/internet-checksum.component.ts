@@ -10,6 +10,7 @@ import {
 import { HexDataComponent } from '../hex-data/hex-data.component';
 import { InputDataDirective } from '../input-data.directive';
 import anime from 'animejs';
+import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
 
 type ChecksumData = {
   text: string;
@@ -21,12 +22,12 @@ type ChecksumData = {
 @Component({
   selector: 'app-internet-checksum',
   standalone: true,
-  imports: [HexDataComponent, InputDataDirective],
+  imports: [HexDataComponent, InputDataDirective, DecimalDataComponent],
   templateUrl: './internet-checksum.component.html',
   styleUrl: './internet-checksum.component.scss',
 })
 export class InternetChecksumComponent {
-  partial = signal(4);
+  partial = signal(1);
   data = signal('');
   animationStep = 0;
 
@@ -45,6 +46,8 @@ export class InternetChecksumComponent {
   senderProcess = computed(() => {
     let partialDataArray = this.partialData().split(' ');
 
+	if (partialDataArray.length < 2 ) return [];
+
     let sumView: ChecksumData[] = [
       {
         text: 'Sum partial data',
@@ -52,7 +55,7 @@ export class InternetChecksumComponent {
         number2: partialDataArray[1],
         result: (
           Number('0x' + partialDataArray[0]) +
-          Number('0X' + partialDataArray[1])
+          Number('0x' + partialDataArray[1])
         ).toString(16),
       },
     ];
@@ -64,7 +67,7 @@ export class InternetChecksumComponent {
 
     for (var i = 0; i < partialDataArray.length; i++) {
       Number('0x' + partialDataArray[i]) +
-        Number('0X' + partialDataArray[i + 1]);
+        Number('0x' + partialDataArray[i + 1]);
       sumView.push({
         text: 'Sum partial data',
         number1: sumView[sumView.length - 1].result,
@@ -169,12 +172,6 @@ export class InternetChecksumComponent {
     return result;
   });
   animationsCompleted: anime.AnimeInstance[] = [];
-
-  getPartial(partial: string) {
-    if (Number.isInteger(Number(partial)) === false) return;
-
-    this.partial.set(Number(partial));
-  }
 
   onesComplement(hex: string) {
     // Parse the hex string to a number
