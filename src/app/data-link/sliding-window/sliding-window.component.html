@@ -1,0 +1,16 @@
+<div id="frames-container">
+	<ul id="frames">
+		<div id="sliding-window" [style.width]="slidingWindowLength() + 'px'" [style.left]="slidingWindowPosition() + 'px'"></div>
+		<div id="buffer-line" [style.left]="bufferLinePosition() + 'px'"></div>
+		@for (frame of frames; track $index) {
+			<li #frame>
+				{{ frame.data }}
+			</li>
+		}
+	</ul>
+</div>
+
+<button (click)="sendData()"> Send Data </button>
+
+<input type="text" #rr>
+<button (click)="acknowledge(rr.value)"> Add Frame </button>

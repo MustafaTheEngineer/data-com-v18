@@ -3,6 +3,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { HexDataComponent } from './hex-data/hex-data.component';
 import { InternetChecksumComponent } from './internet-checksum/internet-checksum.component';
 import { CrcComponent } from './crc/crc.component';
+import { SlidingWindowComponent } from './data-link/sliding-window/sliding-window.component';
+import { HdlcComponent } from './data-link/hdlc/hdlc.component';
 
 export const routes: Routes = [
 	{
@@ -17,5 +19,11 @@ export const routes: Routes = [
 	},
 	{
 		path: 'crc', component: CrcComponent
+	},
+	{
+		path: 'sliding-window', component: SlidingWindowComponent
+	},
+	{
+		path: 'hdlc', component: HdlcComponent
 	},
 ];
