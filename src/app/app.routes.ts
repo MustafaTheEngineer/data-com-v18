@@ -5,6 +5,7 @@ import { InternetChecksumComponent } from './internet-checksum/internet-checksum
 import { CrcComponent } from './crc/crc.component';
 import { SlidingWindowComponent } from './data-link/sliding-window/sliding-window.component';
 import { HdlcComponent } from './data-link/hdlc/hdlc.component';
+import { StopAndWaitComponent } from './data-link/stop-and-wait/stop-and-wait.component';
 
 export const routes: Routes = [
 	{
@@ -25,5 +26,8 @@ export const routes: Routes = [
 	},
 	{
 		path: 'hdlc', component: HdlcComponent
+	},
+	{
+		path: 'stop-and-wait', component: StopAndWaitComponent
 	},
 ];

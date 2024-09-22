@@ -1,0 +1,39 @@
+<svg viewBox="0 0 100 100" width="40%" #svg>
+  <!-- Sender side -->
+  <text x="10" y="10" fill="white" font-size="5" text-anchor="middle">Sender</text>
+  <line x1="10" y1="12" x2="10" y2="100%" style="stroke: white;stroke-width:0.5" #senderLine />
+
+  <!-- Receiver side -->
+  <text x="90" y="10" fill="white" font-size="5" text-anchor="middle">Receiver</text>
+  <line x1="90" y1="12" x2="90" y2="100%" style="stroke: white;stroke-width:0.5" #receiverLine />
+
+  @for (item of lineNumber(); track $index) {
+  <line x1="10" x2="90" style="stroke: gray;stroke-width:0.5;stroke-dasharray: 3, 3" #dashedLine />
+  }
+
+  @for (frame of frameList(); track $index) {
+  @if (frame.received) {
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" fill="white" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+
+  @if (frame.node === 'sender') {
+  <line x1="10" x2="89" [attr.y1]="dashedLines()[frame.startIndex].nativeElement.y1.baseVal.value" [attr.y2]="dashedLines()[frame.endIndex].nativeElement.y1.baseVal.value" style="stroke: white;stroke-width:0.5" marker-end="url(#arrow)" />
+  }
+
+  @if (frame.node === 'receiver') {
+  <line x1="10" x2="89" [attr.y1]="dashedLines()[frame.endIndex].nativeElement.y1.baseVal.value" [attr.y2]="dashedLines()[frame.startIndex].nativeElement.y1.baseVal.value" style="stroke: white;stroke-width:0.5" marker-start="url(#arrow)" />
+  }
+
+  }
+  }
+</svg>
+
+{{ setDashedLinePositions() }}
+
+{{ setHeight() }}
+
+<button (click)="addFrame({data: 'frame 0'})">Add</button>

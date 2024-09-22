@@ -20,19 +20,6 @@ export type HdlcFrame = {
   styleUrl: './hdlc.component.scss',
 })
 export class HdlcComponent {
-  propagationTime = 4;
-	frames: HdlcFrame[] = [
-		{ id: 1, data: 'A', acknowledged: false },
-		{ id: 2, data: 'B', acknowledged: false },
-		{ id: 3, data: 'C', acknowledged: false },
-		{ id: 4, data: 'D', acknowledged: false },
-		{ id: 5, data: 'E', acknowledged: false },
-		{ id: 6, data: 'F', acknowledged: false },
-		{ id: 7, data: 'G', acknowledged: false },
-		{ id: 8, data: 'H', acknowledged: false },
-		{ id: 9, data: 'I', acknowledged: false },
-	];
-
   senderLine = viewChild.required('senderLine', { read: ElementRef });
   deneme = viewChild.required('deneme', { read: ElementRef });
   svg = viewChild.required('svg', { read: ElementRef });
