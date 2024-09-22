@@ -1,39 +1,62 @@
 <svg viewBox="0 0 100 100" width="40%" #svg>
-  <!-- Sender side -->
-  <text x="10" y="10" fill="white" font-size="5" text-anchor="middle">Sender</text>
-  <line x1="10" y1="12" x2="10" y2="100%" style="stroke: white;stroke-width:0.5" #senderLine />
+	<!-- Sender side -->
+	<text x="10" y="10" fill="white" font-size="5" text-anchor="middle">Sender</text>
+	<line x1="10" y1="12" x2="10" y2="100%" style="stroke: white;stroke-width:0.5" #senderLine />
 
-  <!-- Receiver side -->
-  <text x="90" y="10" fill="white" font-size="5" text-anchor="middle">Receiver</text>
-  <line x1="90" y1="12" x2="90" y2="100%" style="stroke: white;stroke-width:0.5" #receiverLine />
+	<!-- Receiver side -->
+	<text x="90" y="10" fill="white" font-size="5" text-anchor="middle">Receiver</text>
+	<line x1="90" y1="12" x2="90" y2="100%" style="stroke: white;stroke-width:0.5" #receiverLine />
 
-  @for (item of lineNumber(); track $index) {
-  <line x1="10" x2="90" style="stroke: gray;stroke-width:0.5;stroke-dasharray: 3, 3" #dashedLine />
-  }
+	@for (item of lineNumber(); track $index) {
+	<line x1="10" x2="90" style="stroke: rgba(100, 78, 89, 0.5);stroke-width:0.5;stroke-dasharray: 3, 3" #dashedLine />
+	}
 
-  @for (frame of frameList(); track $index) {
-  @if (frame.received) {
+	@for (frame of frameList(); track $index) {
+	<defs>
+		<marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" fill="white"
+			orient="auto-start-reverse">
+			<path d="M 0 0 L 10 5 L 0 10 z" />
+		</marker>
+	</defs>
 
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" fill="white" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" />
-    </marker>
-  </defs>
+	@if (frame.node === 'sender') {
+	<text x="44.5" [attr.y]="dashedLineY()[frame.startIndex] + 5" fill="white" font-size="4" text-anchor="middle">{{ frame.frame.data }}</text>
+	<line x1="10" [attr.x2]="frame.received ? '89' : '44.5'" [attr.y1]="dashedLineY()[frame.startIndex]"
+		[attr.y2]="frame.received ? dashedLineY()[frame.endIndex] :  (dashedLineY()[frame.startIndex] + dashedLineY()[frame.endIndex]) / 2" style="stroke: white;stroke-width:0.5"
+		marker-end="url(#arrow)" />
+		@if (!frame.received) {
+			<text x="47" [attr.y]="(dashedLineY()[frame.startIndex] + dashedLineY()[frame.endIndex]) / 2" fill="red" font-size="4" text-anchor="middle">X</text>
+		}
 
-  @if (frame.node === 'sender') {
-  <line x1="10" x2="89" [attr.y1]="dashedLines()[frame.startIndex].nativeElement.y1.baseVal.value" [attr.y2]="dashedLines()[frame.endIndex].nativeElement.y1.baseVal.value" style="stroke: white;stroke-width:0.5" marker-end="url(#arrow)" />
-  }
+	<circle cx="10" [attr.cy]="dashedLines()[frame.startIndex].nativeElement.y1.baseVal.value" r="2" fill="blue"
+		(click)="openModal(frame)" />
+	}
 
-  @if (frame.node === 'receiver') {
-  <line x1="10" x2="89" [attr.y1]="dashedLines()[frame.endIndex].nativeElement.y1.baseVal.value" [attr.y2]="dashedLines()[frame.startIndex].nativeElement.y1.baseVal.value" style="stroke: white;stroke-width:0.5" marker-start="url(#arrow)" />
-  }
+	@else {
+		<text x="44.5" [attr.y]="dashedLineY()[frame.startIndex] + 5" fill="white" font-size="4" text-anchor="middle">{{ frame.frame.data }}</text>
+	<line [attr.x1]="frame.received ? 11 : 45" x2="90" [attr.y1]="frame.received ? dashedLineY()[frame.endIndex] : (dashedLineY()[frame.startIndex] + dashedLineY()[frame.endIndex]) / 2"
+		[attr.y2]="dashedLineY()[frame.startIndex]"
+		style="stroke: white;stroke-width:0.5" marker-start="url(#arrow)" />
+		@if (!frame.received) {
+			<text x="45" [attr.y]="(dashedLineY()[frame.startIndex] + dashedLineY()[frame.endIndex]) / 2" fill="red" font-size="4" text-anchor="middle">X</text>
+		}
 
-  }
-  }
+	<circle (click)="openModal(frame)" cx="90"
+		[attr.cy]="dashedLineY()[frame.startIndex]" r="2" fill="blue" />
+
+	}
+	
+	}
 </svg>
 
-{{ setDashedLinePositions() }}
-
-{{ setHeight() }}
-
 <button (click)="addFrame({data: 'frame 0'})">Add</button>
+
+@if (modalVisible) {
+<div>
+	<input id="received-radio-button" type="radio" [checked]="frameForModal?.received" (click)="toggleReceived()">
+	<label for="received-radio-button"> Received </label>
+</div>
+}
+
+{{ setDashedLinePositions() }}
+{{ setHeight() }}
