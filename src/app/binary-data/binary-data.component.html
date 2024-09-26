@@ -1,2 +1,2 @@
-<input type="text" id="binary-input" [placeholder]="placeholder() ?? 'Binary Data'" inputData (dataFromUser)="isBinary($event)">
-<label for="binary-input" class="warning" [style.opacity]="warning().length ? 1 : 0"> - {{ warning() }}  </label>
+<input type="text" id="binary-input" [placeholder]="placeholder() ?? 'Binary Data'" inputData (dataFromUser)="isBinary($event)" [value]="binaryData()">
+<label for="binary-input" class="warning" [style.opacity]="warning.length ? 1 : 0"> - {{ warning }}  </label>

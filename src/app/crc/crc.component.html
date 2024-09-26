@@ -11,14 +11,14 @@
   <p>
     Step 1: Enter the data you want to send. The data should be in binary format:
   </p>
-  <app-binary-data class="block-input" (binaryData)="setData($event)" placeholder="Data (Binary)"></app-binary-data>
+  <app-binary-data class="block-input" (binaryDataChange)="setData($event)" placeholder="Data (Binary)"></app-binary-data>
   <div>
     P(X) = <div app-polynomial [polyData]="senderDataPoly()" class="inline-poly"></div>
   </div>
   <p>
     Step 2: Enter the divider data. The divider data should be in binary format:
   </p>
-  <app-binary-data class="block-input" placeholder="Divider Data (binary)" (binaryData)="setDivider($event)" inputmode="numeric"></app-binary-data>
+  <app-binary-data class="block-input" placeholder="Divider Data (binary)" (binaryDataChange)="setDivider($event)" inputmode="numeric"></app-binary-data>
   <div>
     G(X) = <div app-polynomial [polyData]="dividerPoly()" class="inline-poly"></div>
   </div>

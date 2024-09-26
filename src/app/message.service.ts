@@ -13,27 +13,28 @@ export type Message = Omit<ManageMessage, 'id'>;
   providedIn: 'root',
 })
 export class MessageService {
-  private messages = signal<ManageMessage[]>([]);
-  getMessages = computed(() => this.messages());
+  private messages: ManageMessage[] = []
   private messageId = 0;
+
+  getMessages() {
+	return this.messages;
+  }
 
   setMessage(newMessage: Message) {
     const id = this.messageId;
-    this.messages.set([
-      ...this.messages(),
+    this.messages = [
+      ...this.messages,
       {
         id,
         message: newMessage.message,
         timeout: newMessage.timeout,
         type: newMessage.type,
       },
-    ]);
+    ]
 
     if (newMessage.timeout) {
       setTimeout(() => {
-		if (this.messages().length !== 1) {
-			this.messages.set(this.messages().filter((value) => value.id !== id));	
-		}
+		this.messages = this.messages.filter((value) => value.id !== id);
       }, newMessage.timeout);
     }
 
@@ -41,6 +42,6 @@ export class MessageService {
   }
 
   deleteMessage(id: number) {
-	this.messages.set(this.messages().filter((value) => value.id !== id));
+	this.messages = this.messages.filter((value) => value.id !== id)
   }
 }

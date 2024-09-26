@@ -1,0 +1,125 @@
+<div app-message></div>
+
+<div id="data-length-container">
+	<app-binary-data [(binaryData)]="senderData" (binaryDataChange)="setSenderData($event)"></app-binary-data>
+	<span> Data length: {{ senderData().length }} </span>
+</div>
+
+<div id="data-partial-container">
+	<app-decimal-data [(decimalData)]="partialData" (decimalDataChange)="getPartialData($event)"
+		[placeholder]="'Partial Data'"></app-decimal-data>
+</div>
+
+@if (partialData() < 2) {
+	<p>
+	Parity bit: <span class="parity-bit"> {{ parity() }} </span>
+	</p>
+	<div class="node">
+		<h2>Sender</h2>
+		<div class="bit-container">
+			@if (senderData().length) {
+			<span class="parity-bit"> {{ parity() }} </span>
+			}
+			@for (item of senderData(); track $index) {
+			<span (click)="toggleSender($index)">
+				{{item}}
+			</span>
+			}
+		</div>
+	</div>
+
+	<div class="node">
+		<h2>Receiver</h2>
+		<div class="bit-container">
+			@if (senderData().length) {
+			<span class="parity-bit"> {{ parity() }} </span>
+			}
+			@for (item of receiverData(); track $index) {
+			<span #receiverBit (click)="toggleData(receiverData, $index)"
+				[class.error-bit]="senderData()[$index] !== receiverData()[$index]">
+				{{item}}
+			</span>
+			}
+		</div>
+	</div>
+
+	@if (senderData() === receiverData()) {
+	<h2>Message received successfully</h2>
+	}
+	@else {
+	@if (parity() === getParity(receiverData)) {
+	<span>
+		The number of 1's in receiver side is {{ getParity(receiverData) ? 'even' : 'odd' }} and the parity bit is {{
+		parity() }}. So, error could not be detected.
+	</span>
+	} @else {
+
+	<span>
+		The number of 1's in receiver side is {{ getParity(receiverData) ? 'even' : 'odd' }} but the parity bit is {{
+		parity() }}. So, error detected.
+	</span>
+	}
+	}
+	} @else {
+	<div>
+		<h2>Sender</h2>
+		<div class="parity-check-table" [style.grid-template-columns]="
+        'repeat(' + (senderData().length / partialData() + 1) + ', 1fr)'
+      ">
+			@for (parityColumnBit of senderParityTable().parityColumn; track $index;let outerIndex =
+			$index) {
+			@for (dataBit of senderParityTable().dataBits[$index]; track $index;let innerIndex =
+			$index) {
+			<span (click)="toggleSender((senderData().length / partialData()) * outerIndex + innerIndex)">
+				{{dataBit}}
+			</span>
+			}
+			<span class="parity-column">
+				{{parityColumnBit}}
+			</span>
+			}
+			@for (item of senderParityTable().parityRow; track $index) {
+			<span class="parity-row">
+				{{item}}
+			</span>
+			}
+			<span class="parity-final parity-bit">
+				{{ senderParityTable().final }}
+			</span>
+		</div>
+	</div>
+
+	<div>
+		<h2>Receiver</h2>
+		<div class="parity-check-table" [style.grid-template-columns]="
+        'repeat(' + (receiverData().length / partialData() + 1) + ', 1fr)'
+      ">
+			@for (parityColumnBit of receiverParityTable().parityColumn; track $index;let outerIndex =
+			$index) {
+			@for (dataBit of receiverParityTable().dataBits[$index]; track $index;let innerIndex =
+			$index) {
+			<span (click)="toggleData(receiverData, (senderData().length / partialData()) * outerIndex + innerIndex)"
+			[class.error-bit]="senderData()[(receiverData().length / partialData()) * outerIndex + innerIndex] !== receiverData()[(receiverData().length / partialData()) * outerIndex + innerIndex]">
+				{{dataBit}}
+			</span>
+			}
+			<span class="parity-column" [class.error-bit]="parityColumnBit !== senderParityTable().parityColumn[$index]">
+				{{parityColumnBit}}
+			</span>
+			}
+			@for (item of receiverParityTable().parityRow; track $index) {
+			<span class="parity-row" [class.error-bit]="item !== senderParityTable().parityRow[$index]">
+				{{item}}
+			</span>
+			}
+			<span class="parity-final parity-bit">
+				{{ receiverParityTable().final }}
+			</span>
+		</div>
+	</div>
+
+		<h2>
+			{{errorState()}}
+		</h2>
+	
+	}

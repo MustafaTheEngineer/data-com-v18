@@ -1,0 +1,62 @@
+div,
+h2 {
+	text-align: center;
+}
+
+.uncorrectable {
+	margin: 40px 0;
+	color: blueviolet;
+}
+
+#data-length-container,
+#data-partial-container {
+	margin: 20px 0;
+}
+
+.parity-bit {
+	background-color: gray;
+}
+
+.bit-container {
+	display: flex;
+	justify-content: center;
+	gap: var(--margin-xs);
+
+	span {
+		padding: 0 var(--margin-xxs);
+		cursor: pointer;
+
+		&:not(.parity-bit):hover {
+			background-color: lightgray;
+		}
+	}
+}
+
+.error-bit {
+	background-color: red;
+}
+
+.parity-check-table {
+	display: inline-grid;
+
+	span {
+		padding: var(--margin-xs);
+		cursor: pointer;
+		&:hover {
+			background-color: lightgray;
+		}
+	}
+}
+
+.parity-column {
+	border-left: 2px solid #ffffff;
+}
+
+.parity-row {
+	border-top: 2px solid #ffffff;
+}
+
+.parity-final {
+	border-left: 2px solid #ffffff;
+	border-top: 2px solid #ffffff;
+}
