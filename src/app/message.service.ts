@@ -39,6 +39,8 @@ export class MessageService {
     }
 
     ++this.messageId;
+
+	console.log(this.messages);
   }
 
   deleteMessage(id: number) {

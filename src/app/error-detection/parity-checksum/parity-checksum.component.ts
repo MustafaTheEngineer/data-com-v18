@@ -3,7 +3,6 @@ import {
 	computed,
 	ElementRef,
 	inject,
-	Signal,
 	signal,
 	WritableSignal,
 } from '@angular/core';
@@ -13,9 +12,9 @@ import { MessageComponent } from '../../message/message.component';
 import { MessageService } from '../../message.service';
 
 type ParityCheckTable = {
-	dataBits: string[][];
-	parityColumn: string[];
-	parityRow: string[];
+	dataBits: string[];
+	parityColumn: string;
+	parityRow: string;
 	final: string;
 };
 
@@ -27,15 +26,27 @@ type ParityCheckTable = {
 	styleUrl: './parity-checksum.component.scss',
 })
 export class ParityChecksumComponent {
-	messageSerice = inject(MessageService);
+	messageService = inject(MessageService);
 
 	senderData = signal('');
 	receiverData = signal('');
-	partialData = signal(1);
+	columnNumber = signal(1);
 
 	parity = computed(() => {
-		return this.getParity(this.senderData);
+		return this.getParity(this.senderData());
 	});
+
+	countSender1 = computed(() => {
+		return this.count1(this.senderData());
+	})
+
+	countReceiver1 = computed(() => {
+		return this.count1(this.receiverData());
+	})
+
+	count1 (data: string) {
+		return data.split('1').length - 1;
+	}
 
 	setSenderData(data: string) {
 		this.senderData.set(data);
@@ -51,9 +62,9 @@ export class ParityChecksumComponent {
 		this.receiverData.set(this.senderData());
 	}
 
-	getParity(data: Signal<string>) {
+	getParity(data: string) {
 		let count = 0;
-		for (const iterator of data()) if (iterator === '1') ++count;
+		for (const iterator of data) if (iterator === '1') ++count;
 
 		return count % 2 === 0 ? 1 : 0;
 	}
@@ -67,73 +78,83 @@ export class ParityChecksumComponent {
 	});
 
 	errorState = computed(() => {
-		if (this.senderData() == this.receiverData())
+		if (this.senderData() === this.receiverData())
 			return 'No error';
 
-		if (this.senderParityTable().parityColumn.join('') !== this.receiverParityTable().parityColumn.join('') || this.senderParityTable().parityRow.join('') !== this.receiverParityTable().parityRow.join('')) {
-			this.messageSerice.setMessage({
-				message: 'Error detected',
+		const differenceCount = this.differentBits(this.senderData(), this.receiverData());
+
+		if (differenceCount === 1) {
+			this.messageService.setMessage({
+				message: 'Error detected and can be corrected',
 				type: 'success',
-				timeout: 3000,
+				timeout: 5000,
 			})
 
 			return 'Correctable single-bit error';
 		}
 
-		this.messageSerice.setMessage({
+		if (this.senderParityTable().parityColumn !== this.receiverParityTable().parityColumn || this.senderParityTable().parityRow !== this.receiverParityTable().parityRow) {
+			this.messageService.setMessage({
+				message: 'Error detected but cannot be corrected',
+				type: 'success',
+				timeout: 5000,
+			})
+
+			return 'Detectable error';
+		}
+
+		this.messageService.setMessage({
 			message: 'Uncorrectable error pattern detected',
 			type: 'warning',
 			timeout: 3000,
 		})
 
 		return 'Uncorrectable error';
-
-
-		this.messageSerice.setMessage({
-			message: 'No error detected',
-			type: 'info',
-			timeout: 3000,
-		})
-
 	});
+
+	differentBits(data1: string, data2: string) {
+		let count = 0;
+		for (let i = 0; i < data1.length; i++) if (data1[i] !== data2[i]) ++count;
+		return count;
+	}
+
+	sliceData(data: string, columnNumber: number) {
+		let result: string[] = [];
+		const partial = data.length / columnNumber;
+		for (let i = 0; i < data.length; i += partial) {
+			result.push(data.slice(i, i + partial));
+		}
+		return result;
+	}
 
 	parityTable(data: WritableSignal<string>) {
 		let result: ParityCheckTable = {
 			dataBits: [],
-			parityColumn: [],
-			parityRow: [],
+			parityColumn: '',
+			parityRow: '',
 			final: '',
 		};
 
-		if (data().length % this.partialData() !== 0) return result;
+		if (data().length % this.columnNumber() !== 0) return result;
 
 		let k = 0;
-		let parityColumnNumber: number;
 		let parityRowNumber = 0;
 
-		for (let i = 0; i < this.partialData(); i++) {
-			result.dataBits.push([]);
-			parityColumnNumber = 0;
+		result.dataBits = this.sliceData(data(), this.columnNumber());
 
-			for (let j = 0; j < data().length / this.partialData(); j++) {
-				result.dataBits[i][j] = data()[k++];
-				if (result.dataBits[i][j] == '1') ++parityColumnNumber;
-			}
-
-			parityColumnNumber % 2 == 1
-				? result.parityColumn.push('1')
-				: result.parityColumn.push('0');
-		}
+		result.dataBits.forEach(value => {
+			result.parityColumn += this.getParity(value).toString();
+		})
 
 		for (let i = 0; i < result.dataBits[0].length; i++) {
 			parityRowNumber = 0;
-			for (let j = 0; j < this.partialData(); j++) {
+			for (let j = 0; j < this.columnNumber(); j++) {
 				if (result.dataBits[j][i] == '1') ++parityRowNumber;
 			}
 
 			parityRowNumber % 2 == 1
-				? result.parityRow.push('1')
-				: result.parityRow.push('0');
+				? result.parityRow += '1'
+				: result.parityRow += '0';
 		}
 
 		for (let i = 0; i < result.parityColumn.length; i++) {
@@ -144,18 +165,20 @@ export class ParityChecksumComponent {
 
 		parityRowNumber % 2 == 1 ? (result.final = '1') : (result.final = '0');
 
+		console.log(result);
+
 		return result;
 	}
 
 	getPartialData(data: number | null) {
 		if (!data) return
 		if (data !== 0 && this.receiverData().length % data != 0) {
-			this.messageSerice.setMessage({
+			this.messageService.setMessage({
 				message: 'Data length is not divisible by partial data',
 				type: 'warning',
 				timeout: 6000,
 			});
 		}
-		this.partialData.set(data);
+		this.columnNumber.set(data);
 	}
 }

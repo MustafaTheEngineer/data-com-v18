@@ -1,5 +1,11 @@
 div,
-h2 {
+h2, h3 {
+	text-align: center;
+}
+
+p {
+	margin: var(--margin-xs) 0;
+	padding: 0 var(--margin-xxl);
 	text-align: center;
 }
 
@@ -13,23 +19,31 @@ h2 {
 	margin: 20px 0;
 }
 
-.parity-bit {
-	background-color: gray;
-}
+#single-parity {
+	overflow: scroll;
 
-.bit-container {
-	display: flex;
-	justify-content: center;
-	gap: var(--margin-xs);
-
-	span {
-		padding: 0 var(--margin-xxs);
-		cursor: pointer;
-
-		&:not(.parity-bit):hover {
-			background-color: lightgray;
+	.node {
+		.bit-container {
+			display: flex;
+			justify-content: flex-start;
+			gap: var(--margin-xs);
+		
+			span {
+				margin: var(--margin-xxs) 0;
+				padding: 0 var(--margin-xxs);
+				cursor: pointer;
+		
+				&:not(.parity-bit):hover {
+					background-color: lightgray;
+				}
+			}
 		}
 	}
+}
+
+.parity-bit {
+	background-color: gray;
+	padding: 0 var(--margin-xxs);
 }
 
 .error-bit {
@@ -59,4 +73,9 @@ h2 {
 .parity-final {
 	border-left: 2px solid #ffffff;
 	border-top: 2px solid #ffffff;
+}
+
+.explanation {
+	display: inline-block;
+	margin: var(--margin-xl) var(--margin-l);
 }
