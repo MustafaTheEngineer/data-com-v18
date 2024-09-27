@@ -7,8 +7,8 @@ import {
   viewChildren,
   WritableSignal,
 } from '@angular/core';
-import { BinaryDataComponent } from '../binary-data/binary-data.component';
-import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
+import { BinaryDataComponent } from '../../binary-data/binary-data.component';
+import { DecimalDataComponent } from '../../decimal-data/decimal-data.component';
 import anime from 'animejs';
 import { PolynomialComponent } from './polynomial/polynomial.component';
 

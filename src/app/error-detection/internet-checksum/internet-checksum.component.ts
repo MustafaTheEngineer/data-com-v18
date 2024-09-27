@@ -7,10 +7,10 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { HexDataComponent } from '../hex-data/hex-data.component';
-import { InputDataDirective } from '../input-data.directive';
+import { HexDataComponent } from '../../hex-data/hex-data.component';
+import { InputDataDirective } from '../../input-data.directive';
 import anime from 'animejs';
-import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
+import { DecimalDataComponent } from '../../decimal-data/decimal-data.component';
 
 type ChecksumData = {
   text: string;
@@ -42,6 +42,11 @@ export class InternetChecksumComponent {
 
     return result;
   });
+
+  setPartial(data: number | null) {
+	if (!data) return;
+	this.partial.set(data);
+  }
 
   senderProcess = computed(() => {
     let partialDataArray = this.partialData().split(' ');

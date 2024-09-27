@@ -10,8 +10,7 @@
 		[placeholder]="'Partial Data'"></app-decimal-data>
 </div>
 
-@if (partialData() < 2) {
-	<p>
+@if (partialData() < 2) { <p>
 	Parity bit: <span class="parity-bit"> {{ parity() }} </span>
 	</p>
 	<div class="node">
@@ -99,11 +98,12 @@
 			@for (dataBit of receiverParityTable().dataBits[$index]; track $index;let innerIndex =
 			$index) {
 			<span (click)="toggleData(receiverData, (senderData().length / partialData()) * outerIndex + innerIndex)"
-			[class.error-bit]="senderData()[(receiverData().length / partialData()) * outerIndex + innerIndex] !== receiverData()[(receiverData().length / partialData()) * outerIndex + innerIndex]">
+				[class.error-bit]="senderData()[(receiverData().length / partialData()) * outerIndex + innerIndex] !== receiverData()[(receiverData().length / partialData()) * outerIndex + innerIndex]">
 				{{dataBit}}
 			</span>
 			}
-			<span class="parity-column" [class.error-bit]="parityColumnBit !== senderParityTable().parityColumn[$index]">
+			<span class="parity-column"
+				[class.error-bit]="parityColumnBit !== senderParityTable().parityColumn[$index]">
 				{{parityColumnBit}}
 			</span>
 			}
@@ -117,9 +117,4 @@
 			</span>
 		</div>
 	</div>
-
-		<h2>
-			{{errorState()}}
-		</h2>
-	
-	}
+}

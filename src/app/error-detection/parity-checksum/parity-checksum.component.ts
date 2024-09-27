@@ -7,10 +7,10 @@ import {
 	signal,
 	WritableSignal,
 } from '@angular/core';
-import { BinaryDataComponent } from '../binary-data/binary-data.component';
-import { DecimalDataComponent } from '../decimal-data/decimal-data.component';
-import { MessageComponent } from '../message/message.component';
-import { MessageService } from '../message.service';
+import { BinaryDataComponent } from '../../binary-data/binary-data.component';
+import { DecimalDataComponent } from '../../decimal-data/decimal-data.component';
+import { MessageComponent } from '../../message/message.component';
+import { MessageService } from '../../message.service';
 
 type ParityCheckTable = {
 	dataBits: string[][];
@@ -69,9 +69,6 @@ export class ParityChecksumComponent {
 	errorState = computed(() => {
 		if (this.senderData() == this.receiverData())
 			return 'No error';
-
-		console.log(this.senderParityTable().parityColumn, this.senderParityTable().parityRow)
-		console.log(this.receiverParityTable().parityColumn, this.receiverParityTable().parityRow)
 
 		if (this.senderParityTable().parityColumn.join('') !== this.receiverParityTable().parityColumn.join('') || this.senderParityTable().parityRow.join('') !== this.receiverParityTable().parityRow.join('')) {
 			this.messageSerice.setMessage({
@@ -150,7 +147,8 @@ export class ParityChecksumComponent {
 		return result;
 	}
 
-	getPartialData(data: number) {
+	getPartialData(data: number | null) {
+		if (!data) return
 		if (data !== 0 && this.receiverData().length % data != 0) {
 			this.messageSerice.setMessage({
 				message: 'Data length is not divisible by partial data',

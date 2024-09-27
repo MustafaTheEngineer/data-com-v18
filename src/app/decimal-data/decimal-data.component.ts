@@ -14,11 +14,15 @@ import { InputDataDirective } from '../input-data.directive';
 })
 export class DecimalDataComponent {
 	warning = '';
-	decimalData = model<number>(0);
+	decimalData = model<number | null>(null);
 	placeholder = input<string | undefined>(undefined);
 	value = input<string>('');
 
 	isDecimal(data: string) {
+		if (!data.length) {
+			this.decimalData.set(null);
+			return
+		}
 		if (Number.isInteger(Number(data))) {
 			this.decimalData.set(Number(data));
 			this.warning = '';

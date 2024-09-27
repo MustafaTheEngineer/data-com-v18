@@ -1,6 +1,7 @@
+
 @for (item of messageService.getMessages(); track $index) {
-<p [className]="item.type" #message>
-  <span>
+<p #message>
+  <span [className]="item.type">
     {{ item.message }}
   </span>
   <span class="close-message" (click)="messageService.deleteMessage(item.id)">X</span>

@@ -1,16 +1,21 @@
 :host {
 	position: fixed;
-	bottom: 10px;
-	left: 50%;
-	transform: translate(-50%, 0);
-	width: 100%;
+	top: 10px;
+	right: 10px;
 	font-size: 1rem;
 	margin: var(--margin-s);
+
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 }
 
 p {
 	margin: var(--margin-s) 0;
-	position: relative;
+
+	span {
+		padding: var(--margin-xxs) var(--margin-xxs);
+	}
 }
 
 .warning {
@@ -22,12 +27,12 @@ p {
 }
 
 .success {
-	background-color:  	#7cb46b;
+	background-color: #7cb46b;
 }
 
 .close-message {
-	position: fixed;
-	right: 20px;
+	margin-left: 10px;
 	z-index: 5;
 	cursor: pointer;
+	background-color: #e01111;
 }
