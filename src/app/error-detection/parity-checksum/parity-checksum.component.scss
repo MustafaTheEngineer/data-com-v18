@@ -1,12 +1,22 @@
 div,
-h2, h3 {
+h2,
+h3 {
 	text-align: center;
+}
+
+h4 {
+	text-align: left;
 }
 
 p {
 	margin: var(--margin-xs) 0;
 	padding: 0 var(--margin-xxl);
 	text-align: center;
+}
+
+ul {
+	text-align: justify;
+	margin: var(--margin-l);
 }
 
 .uncorrectable {
@@ -20,25 +30,27 @@ p {
 }
 
 #single-parity {
-	overflow: scroll;
+	padding: 0 var(--margin-l);
+	overflow-x: scroll;
+	padding: 100px 100px 50px 100px;
 
-	.node {
-		.bit-container {
-			display: flex;
-			justify-content: flex-start;
-			gap: var(--margin-xs);
-		
-			span {
-				margin: var(--margin-xxs) 0;
-				padding: 0 var(--margin-xxs);
-				cursor: pointer;
-		
-				&:not(.parity-bit):hover {
-					background-color: lightgray;
-				}
+	.bit-container {
+		position: relative;
+		display: flex;
+		justify-content: flex-start;
+		gap: var(--margin-xs);
+
+		span {
+			margin: var(--margin-xxs) 0;
+			padding: 0 var(--margin-xxs);
+			cursor: pointer;
+
+			&:not(.parity-bit):hover {
+				background-color: lightgray;
 			}
 		}
 	}
+
 }
 
 .parity-bit {
@@ -52,10 +64,12 @@ p {
 
 .parity-check-table {
 	display: inline-grid;
+	position: relative;
 
 	span {
 		padding: var(--margin-xs);
 		cursor: pointer;
+
 		&:hover {
 			background-color: lightgray;
 		}

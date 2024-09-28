@@ -1,0 +1,7 @@
+<div [class.column-direction]="text() === 'top' || text() === 'bottom'">
+	<img src="icons/hand.svg" alt="guide" [class]="direction()" [class.text-right]="text() === 'left'" [class.text-left]="text() === 'right'" [class.text-top]="text() === 'bottom'" [class.text-bottom]="text() === 'top'">
+
+	<span [class]="'text-' + text()">
+		{{ explanation() }}
+	</span>
+</div>

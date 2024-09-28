@@ -2,14 +2,13 @@
 
 <h1>Parity Checksum</h1>
 
-<ul>
-	<li>
-		Parity checksum is a method of error detection that uses a single bit to detect errors in data.
-	</li>
-	<li>
-		2D parity checksum is a method of error detection that uses two-dimensional parity to detect errors in data.
-	</li>
-</ul>
+<p>
+	Parity checksum is a method of error detection that uses a single bit to detect errors in data.
+</p>
+
+<p>
+	2D parity checksum is a method of error detection that uses two-dimensional parity to detect errors in data.
+</p>
 
 <p>
 	First, enter the binary data to be sent.
@@ -26,7 +25,7 @@
 </p>
 
 <div id="data-partial-container">
-	<app-decimal-data (decimalDataChange)="getPartialData($event)" [placeholder]="'Number of Rows'"></app-decimal-data>
+	<app-decimal-data [(decimalData)]="columnNumber" (decimalDataChange)="getPartialData($event)" [placeholder]="'Number of Rows'"></app-decimal-data>
 </div>
 
 @if (senderData().length) {
@@ -34,33 +33,29 @@
 	The number of 1 bits are {{ countSender1() }}, so the parity bit: <span class="parity-bit"> {{ parity() }} </span>
 	</p>
 	<div id="single-parity">
-		<div class="node">
-			<h4>Sender</h4>
-			<div class="bit-container">
-				@if (senderData().length) {
-				<span class="parity-bit"> {{ parity() }} </span>
-				}
-				@for (item of senderData(); track $index) {
-				<span (click)="toggleSender($index)">
-					{{item}}
-				</span>
-				}
-			</div>
+		<h4>Sender</h4>
+		<div class="bit-container">
+			<span class="parity-bit"> {{ parity() }} </span>
+			@for (item of senderData(); track $index) {
+			<span (click)="toggleSender($index)">
+				{{item}}
+			</span>
+			}
 		</div>
 
-		<div class="node">
-			<h4>Receiver</h4>
-			<div class="bit-container">
-				@if (senderData().length) {
-				<span class="parity-bit"> {{ parity() }} </span>
-				}
-				@for (item of receiverData(); track $index) {
-				<span #receiverBit (click)="toggleData(receiverData, $index)"
-					[class.error-bit]="senderData()[$index] !== receiverData()[$index]">
-					{{item}}
-				</span>
-				}
-			</div>
+		<h4>Receiver</h4>
+		<div class="bit-container">
+			@if (!visited) {
+			<app-guide explanation="Click to toggle" direction="top" text="bottom"
+				style="top: 28px; left: 25px;"></app-guide>
+			}
+			<span class="parity-bit"> {{ parity() }} </span>
+			@for (item of receiverData(); track $index; let first = $first) {
+			<span (click)="toggleData(receiverData, $index)"
+				[class.error-bit]="senderData()[$index] !== receiverData()[$index]">
+				{{item}}
+			</span>
+			}
 		</div>
 	</div>
 
@@ -103,6 +98,9 @@
 		<div class="parity-check-table" [style.grid-template-columns]="
 			'repeat(' + (senderData().length / columnNumber() + 1) + ', 1fr)'
 		  ">
+			@if (!visited) {
+			<app-guide explanation="Click to toggle" direction="right" text="left" style="left: -140px;"></app-guide>
+			}
 			@for (dataBits of senderParityTable().dataBits; track $index;let outerIndex =
 			$index) {
 			@for (bit of dataBits; track $index;let innerIndex =
@@ -131,6 +129,9 @@
 		<div class="parity-check-table" [style.grid-template-columns]="
 			'repeat(' + (receiverData().length / columnNumber() + 1) + ', 1fr)'
 		  ">
+		  @if (!visited) {
+			<app-guide explanation="Click to toggle" direction="right" text="left" style="left: -140px;"></app-guide>
+			}
 			@for (dataBits of receiverParityTable().dataBits; track $index;let outerIndex =
 			$index) {
 			@for (bit of dataBits; track $index;let innerIndex =

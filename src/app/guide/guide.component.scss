@@ -1,0 +1,47 @@
+div {
+	display: flex;
+	gap: 5px;
+}
+
+img {
+	width: 32px;
+}
+
+.column-direction {
+	flex-direction: column;
+}
+
+span {
+	// freash blue color code
+	background-color: #009999;
+	padding: 2px;
+	font-size: 16px;
+}
+
+.right {
+	transform: rotate(90deg);
+}
+
+.left {
+	transform: rotate(-90deg);
+}
+
+.bottom {
+	transform: rotate(180deg);
+}
+
+.text-right {
+	order: 2;
+}
+
+.text-left {
+	order: 1;
+}
+
+.text-top {
+	order: 1;
+}
+
+.text-bottom {
+	order: 2;
+}

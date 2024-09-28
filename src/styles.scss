@@ -31,6 +31,10 @@ body {
 	font-family: 'Arial', sans-serif;
 }
 
+h1 {
+	text-align: center;
+}
+
 input{
 	font-size: $font-size;
 }
@@ -52,4 +56,8 @@ ul{
 
 a {
 	color: $color;
+}
+
+app-guide {
+	position: absolute;
 }

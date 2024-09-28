@@ -4,12 +4,15 @@ import {
 	ElementRef,
 	inject,
 	signal,
+	viewChild,
+	viewChildren,
 	WritableSignal,
 } from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
 import { DecimalDataComponent } from '../../decimal-data/decimal-data.component';
 import { MessageComponent } from '../../message/message.component';
 import { MessageService } from '../../message.service';
+import { GuideComponent } from '../../guide/guide.component';
 
 type ParityCheckTable = {
 	dataBits: string[];
@@ -21,11 +24,22 @@ type ParityCheckTable = {
 @Component({
 	selector: 'app-parity-checksum',
 	standalone: true,
-	imports: [BinaryDataComponent, DecimalDataComponent, MessageComponent],
+	imports: [BinaryDataComponent, DecimalDataComponent, MessageComponent, GuideComponent],
 	templateUrl: './parity-checksum.component.html',
 	styleUrl: './parity-checksum.component.scss',
 })
 export class ParityChecksumComponent {
+	visited = false
+	ngOnInit() {
+		if (document.cookie.includes('parity-checksum=true')) {
+			this.visited = true
+		} 
+	}
+
+	ngOnDestroy() {
+		document.cookie = 'parity-checksum=true; SameSite=None; Secure';
+	}
+
 	messageService = inject(MessageService);
 
 	senderData = signal('');
@@ -51,6 +65,7 @@ export class ParityChecksumComponent {
 	setSenderData(data: string) {
 		this.senderData.set(data);
 		this.receiverData.set(data);
+		this.columnNumber.set(1);
 	}
 
 	toggleData(signal: WritableSignal<string>, index: number) {
@@ -164,8 +179,6 @@ export class ParityChecksumComponent {
 		}
 
 		parityRowNumber % 2 == 1 ? (result.final = '1') : (result.final = '0');
-
-		console.log(result);
 
 		return result;
 	}
