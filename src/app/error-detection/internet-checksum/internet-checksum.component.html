@@ -1,132 +1,179 @@
-<app-hex-data (hexData)="data.set($event)"></app-hex-data>
+<h1> Internet Checksum </h1>
 
-<div id="hex-data-view">
+<div id="description">
+	<p>
+		The Internet Checksum is a simple checksum used for error detection in network layers. It is used to detect
+		errors in the header of the IP packet. The checksum is calculated by taking the 16-bit one's complement of the
+		one's complement sum of the header.
+	</p>
+	<p>
+		The checksum is calculated by dividing the header into 16-bit words and adding them together. The sum is then
+		complemented and stored in the checksum field of the header. The receiver calculates the checksum of the
+		received packet and compares it with the checksum field of the header. If the two checksums match, the packet is
+		considered error-free.
+	</p>
+</div>
+
+
+<div id="input-view">
+	<p>
+		Step 1: Enter the HEX data to calculate the checksum.
+	</p>
+	<app-hex-data (hexDataChange)="setData($event)"></app-hex-data>
+	<p>
+		Step 2: Enter the partial data to calculate the checksum.
+	</p>
 	<app-decimal-data type="text" placeholder="Partial" (decimalDataChange)="setPartial($event)"></app-decimal-data>
+	<p>
+		Step 3: You can corrupt the data by input field below.
+	</p>
+	<app-hex-data (hexDataChange)="receiverData.set($event)" [hexData]="receiverData()"></app-hex-data>
 </div>
 
 <div id="partial-data">
-  {{ partialData().toUpperCase() }}
+	<p>
+		Firstly, we divide the data with specified partial number.
+	</p>
+	{{ partialSender().toUpperCase() }}
 </div>
 
+<p>
+	Use next and previous buttons to see the process of checksum calculation.
+</p>
+
 <div id="checksum-container">
-  <div id="sender-title" #anime>Sender</div>
-  <div id="sender">
-    @for (item of senderProcess(); track $index) {
-    <div class="process" #anime>
-      <div class="process-text">
-        {{ item.text }}
-      </div>
-      <div class="process-sum-container">
-        <div class="process-sum">
-          <div>
-            @for (char of item.number1.toUpperCase(); track $index) {
-            <span>
-              {{ char }}
-            </span>
-            }
-          </div>
-          <div>
-            @for (char of item.number2.toUpperCase(); track $index) {
-            @if (item.number2.length === 1) {
-            <span #anime class="add-carry">
-              {{ char }}
-            </span>
-            } @else {
-            <span>
-              {{ char }}
-            </span>
-            }
+	<div id="sender-title" #anime>Sender</div>
+	<div id="sender">
+		@for (item of senderProcess(); track $index; let last = $last) {
+		<div class="process" #anime>
+			<div class="process-text">
+				{{ item.text }}
+			</div>
+			<div class="process-sum-container">
+				<div class="process-sum">
+					<div>
+						@for (char of item.number1.toUpperCase(); track $index) {
+						<span>
+							{{ char }}
+						</span>
+						}
+					</div>
+					<div>
+						@for (char of item.number2.toUpperCase(); track $index) {
+						@if (item.number2.length === 1) {
+						<span #anime class="add-carry">
+							{{ char }}
+						</span>
+						} @else {
+						<span>
+							{{ char }}
+						</span>
+						}
 
-            }
-          </div>
+						}
+					</div>
 
-          <span class="sum-line"> </span>
-
-          <div>
-            @for (char of item.result.toUpperCase(); track $index) {
-            @if (item.result.length > partial() && $index === 0) {
-            <span #anime class="carry" style="background-color: #FF8F42;">
-              {{ char }}
-            </span>
-            } @else {
-            <span>
-              {{ char }}
-            </span>
-            }
-            }
-          </div>
-        </div>
-      </div>
-
-    </div>
-    }
-  </div>
+					@if (!last) {
+					<span class="sum-line"> </span>
+					}
 
 
+					<div>
+						@for (char of item.result.toUpperCase(); track $index) {
+						@if (item.result.length > partial() && $index === 0) {
+						<span #anime class="carry" style="background-color: #FF8F42;">
+							{{ char }}
+						</span>
+						} @else {
+						<span>
+							{{ char }}
+						</span>
+						}
+						}
+					</div>
+				</div>
+			</div>
 
+		</div>
+		}
+	</div>
+	<div id="receiver-title" #anime>Receiver</div>
+	<div id="receiver">
+		@for (item of receiverProcess(); track $index; let last = $last) {
+		<div class="process" #anime>
+			<div class="process-text">
+				{{ item.text }}
+			</div>
+			<div class="process-sum-container">
+				<div class="process-sum">
+					<div>
+						@for (char of item.number1.toUpperCase(); track $index) {
+						<span>
+							{{ char }}
+						</span>
+						}
+					</div>
+					<div>
+						@for (char of item.number2.toUpperCase(); track $index) {
+						@if (item.number2.length === 1) {
+						<span #anime class="add-carry">
+							{{ char }}
+						</span>
+						} @else {
+						<span>
+							{{ char }}
+						</span>
+						}
 
-  <div id="receiver-title" #anime>Receiver</div>
-  <div id="receiver">
-    @for (item of receiverProcess(); track $index) {
-    <div class="process" #anime>
-      <div class="process-text">
-        {{ item.text }}
-      </div>
-      <div class="process-sum-container">
-        <div class="process-sum">
-          <div>
-            @for (char of item.number1.toUpperCase(); track $index) {
-            <span>
-              {{ char }}
-            </span>
-            }
-          </div>
-          <div>
-            @for (char of item.number2.toUpperCase(); track $index) {
-            @if (item.number2.length === 1) {
-            <span #anime class="add-carry">
-              {{ char }}
-            </span>
-            } @else {
-            <span>
-              {{ char }}
-            </span>
-            }
+						}
+					</div>
 
-            }
-          </div>
+					<span class="sum-line"> </span>
 
-          <span class="sum-line"> </span>
+					<div>
+						@for (char of item.result.toUpperCase(); track $index) {
+						@if (!last) {
+						@if (item.result.length > partial() && $index === 0) {
+						<span #anime class="carry" style="background-color: #FF8F42;">
+							{{ char }}
+						</span>
+						} @else {
+						<span>
+							{{ char }}
+						</span>
+						}
+						} @else {
+						<span>
+							{{ char }}
+						</span>
+						}
+						}
+					</div>
+				</div>
+			</div>
 
-          <div>
-            @for (char of item.result.toUpperCase(); track $index) {
-            @if (item.result.length > partial() && $index === 0) {
-            <span #anime class="carry" style="background-color: #FF8F42;">
-              {{ char }}
-            </span>
-            } @else {
-            <span>
-              {{ char }}
-            </span>
-            }
-            }
-          </div>
-        </div>
-      </div>
+		</div>
+		}
+	</div>
+</div>
 
-    </div>
-    }
-  </div>
-
-
-
+<div id="result">
+	@if (receiverProcess().length) {
+	<p>
+		@if (onlyContainsF(receiverProcess()[receiverProcess().length - 1].result.toUpperCase())) {
+		Receiver calculated checksum is correct because result contains only F letter.
+		} @else {
+		Receiver calculated checksum is incorrect because result contains other than F letter.
+		}
+	</p>
+	}
 </div>
 
 <div class="controls">
-  <button (click)="previousProcess()">
-    Previous
-  </button>
-  <button (click)="nextProcess()">
-    Next
-  </button>
+	<button (click)="previousProcess()">
+		Previous
+	</button>
+	<button (click)="nextProcess()">
+		Next
+	</button>
 </div>
