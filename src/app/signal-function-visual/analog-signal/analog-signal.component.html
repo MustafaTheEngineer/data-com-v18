@@ -1,29 +1,35 @@
-<div style="margin: 400px;">
-	<svg viewBox="0 0 100 50">
-		<text x="0" y="3" fill="white" font-size="3">1.0</text>
-		<text x="0" y="14" fill="white" font-size="3">0.5</text>
-		<text x="0" y="25" fill="white" font-size="3">0.0</text>
-		<text x="0" y="36" fill="white" font-size="3">-0.5</text>
-		<text x="0" y="47" fill="white" font-size="3">-1.0</text>
+<div class="coor-container">
+	<div class="vertical-container">
+		<div id="vertical-numbers">
+			<span> 1.0 </span>
+			<span> 0.5 </span>
+			<span> 0.0 </span>
+			<span> -0.5 </span>
+			<span> -1.0 </span>
+		</div>
+		<svg viewBox="0 0 200 100">
+			<!-- HORIZONTAL LINES -->
+			<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
+			<line x1="0" y1="25" x2="200" y2="25" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="50" x2="200" y2="50" stroke="white" stroke-width="1" />
+			<line x1="0" y1="75" x2="200" y2="75" stroke="lightgray" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="2" class="non-center-line" />
 
-		<!-- HORIZONTAL LINES -->
-		<line x1="6" y1="2" x2="100" y2="2" stroke="white" stroke-width="0.4%" class="non-center-line"/>
-		<line x1="6" y1="13" x2="100" y2="13" stroke="white" stroke-width="0.4%" class="non-center-line"/>
-		<line x1="6" y1="24" x2="100" y2="24" stroke="white" stroke-width="0.4%" />
-		<line x1="6" y1="35" x2="100" y2="35" stroke="lightgray" stroke-width="0.4%" class="non-center-line"/>
-		<line x1="6" y1="46" x2="100" y2="46" stroke="white" stroke-width="0.4%" class="non-center-line"/>
+			<!-- VERTICAL LINES -->
+			<line x1="0" y1="0" x2="0" y2="100" stroke="white" stroke-width="2" />
+			<line x1="50" y1="0" x2="50" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="100" y1="0" x2="100" y2="100" stroke="white" stroke-width="1" />
+			<line x1="150" y1="0" x2="150" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="2" />
 
-		<!-- VERTICAL LINES -->
-		<line x1="7" y1="0" x2="7" y2="47" stroke="white" stroke-width="0.4%" />
-		<line x1="37" y1="0" x2="37" y2="47" stroke="white" stroke-width="0.4%" />
-		<line x1="67" y1="0" x2="67" y2="47" stroke="white" stroke-width="0.4%" />
-		<line x1="97" y1="0" x2="98" y2="47" stroke="white" stroke-width="0.4%" />
-		
-		<text x="7" y="50" fill="white" font-size="3">0.0</text>
-		<text x="36" y="50" fill="white" font-size="3">0.5</text>
-		<text x="65" y="50" fill="white" font-size="3">1.0</text>
-		<text x="94" y="50" fill="white" font-size="3">1.5</text>
-	
-		<path id="wave" d="M 7 24 Q 22 -19.8, 37 24 T 67 24"></path>
-	</svg>
+			<path id="wave" [attr.d]="computeSinus()"></path>
+		</svg>
+	</div>
+	<div id="horizontal-numbers">
+		<span> 0.0 </span>
+		<span> 0.5 </span>
+		<span> 1.0 </span>
+		<span> 1.5 </span>
+		<span> 2.0 </span>
+	</div>
 </div>

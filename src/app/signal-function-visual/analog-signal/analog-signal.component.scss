@@ -1,9 +1,35 @@
+svg {
+	position: relative;
+}
+
+.coor-container {
+	padding: 200px;
+}
+
+.vertical-container {
+	display: flex;
+}
+
+#vertical-numbers {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	font-size: 2vw;
+}
+
+#horizontal-numbers {
+	display: flex;
+	justify-content: space-between;
+	font-size: 2vw;
+	padding-left: 2vw
+}
+
 .non-center-line {
 	opacity: 0.5;
 }
 
-#wave{
-	stroke-width: 0.5px;
-	stroke:green;
-	fill:none;
-  }
+#wave {
+	stroke-width: 1px;
+	stroke: green;
+	fill: none;
+}
