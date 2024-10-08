@@ -1,0 +1,50 @@
+.visual-container {
+	display: flex;
+	justify-content: space-around;
+
+	.signal-editor {
+		width: 50%;
+		padding: var(--margin-xxl);
+
+		.signal-visual {
+			margin-top: var(--margin-xxl);
+
+			input[id="phase"] {
+				width: 100%;
+			}
+
+			label[for="amplitude"] {
+				display: block;
+			}
+
+			label[for="phase"] {
+				margin-right: var(--margin-m);
+				display: block;
+			}
+		}
+	}
+
+	.signal-sum {
+		width: 50%;
+		padding: var(--margin-xxl);
+	}
+}
+
+::ng-deep {
+
+	#vertical-numbers,
+	#horizontal-numbers {
+		font-size: 0.5vw;
+	}
+
+	app-analog-signal {
+		font-size: 2vw;
+	}
+}
+
+datalist {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: var(--margin-xxl);
+}

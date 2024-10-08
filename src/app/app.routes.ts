@@ -8,7 +8,7 @@ import { HdlcComponent } from './data-link/hdlc/hdlc.component';
 import { StopAndWaitComponent } from './data-link/stop-and-wait/stop-and-wait.component';
 import { ParityChecksumComponent } from './error-detection/parity-checksum/parity-checksum.component';
 import { HomeComponent } from './home/home.component';
-import { AnalogSignalComponent } from './signal-function-visual/analog-signal/analog-signal.component';
+import { AnalogVisualComponent } from './signal-function-visual/analog-visual/analog-visual.component';
 
 export const routes: Routes = [
 	{
@@ -41,6 +41,6 @@ export const routes: Routes = [
 		path: 'parity-checksum', component: ParityChecksumComponent
 	},
 	{
-		path: 'analog-visual', component: AnalogSignalComponent
+		path: 'analog-visual', component: AnalogVisualComponent
 	},
 ];

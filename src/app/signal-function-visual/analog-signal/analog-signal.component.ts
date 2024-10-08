@@ -14,11 +14,7 @@ export type Sinus = {
 	styleUrl: './analog-signal.component.scss',
 })
 export class AnalogSignalComponent {
-	sinus = input<Sinus>({
-		amplitude: 1,
-		frequency: 1,
-		phaseDegree: 0,
-	});
+	sinus = input.required<Sinus>();
 
 	computeSinus = computed(() => {
 		const degreeToRad = this.sinus().phaseDegree / 360
