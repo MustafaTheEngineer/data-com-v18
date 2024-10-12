@@ -13,17 +13,17 @@ export class AnalogVisualComponent {
 		{
 			amplitude: 1,
 			frequency: 1,
-			phaseDegree: 0
+			phase: 0
 		},
 		{
 			amplitude: 0.33,
 			frequency: 3,
-			phaseDegree: 0
+			phase: 0
 		},
 	]
 
 	setPhase (phase: HTMLInputElement, index: number) {
-		this.analogSignals[index].phaseDegree = Number(phase.value);
+		this.analogSignals[index].phase = Number(phase.value);
 	}
 
 	setAmplitude (amplitude: HTMLInputElement, index: number) {
@@ -38,7 +38,7 @@ export class AnalogVisualComponent {
 		this.analogSignals.push({
 			amplitude: 1,
 			frequency: 1,
-			phaseDegree: 0
+			phase: 0
 		});
 	}
 

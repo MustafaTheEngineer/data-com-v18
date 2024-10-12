@@ -12,7 +12,7 @@
 			<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
 			<line x1="0" y1="25" x2="200" y2="25" stroke="white" stroke-width="1" class="non-center-line" />
 			<line x1="0" y1="50" x2="200" y2="50" stroke="white" stroke-width="1" />
-			<line x1="0" y1="75" x2="200" y2="75" stroke="lightgray" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="75" x2="200" y2="75" stroke="white" stroke-width="1" class="non-center-line" />
 			<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="2" class="non-center-line" />
 
 			<!-- VERTICAL LINES -->
@@ -22,7 +22,12 @@
 			<line x1="150" y1="0" x2="150" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
 			<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="2" />
 
-			<path id="wave" [attr.d]="computeSinus()"></path>
+			<!--<path id="wave" [attr.d]="computeSinus()"></path>-->
+
+			@for (item of drawSinus(); track $index) {
+				<line [attr.x1]="item.x1" [attr.y1]="item.y1" [attr.x2]="item.x2" [attr.y2]="item.y2" stroke="green"></line>
+			}
+
 		</svg>
 	</div>
 	<div id="horizontal-numbers">

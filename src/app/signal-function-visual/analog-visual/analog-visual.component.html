@@ -2,11 +2,11 @@
 	<div class="signal-editor">
 		@for (item of analogSignals; track $index) {
 			<p>
-				s(t) = {{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phaseDegree }}°)
+				s(t) = {{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phase }}°)
 			</p>
 		<div class="signal-visual">
 			<app-analog-signal
-				[sinus]="{ amplitude: item.amplitude, frequency: item.frequency, phaseDegree: item.phaseDegree}"></app-analog-signal>
+				[sinus]="{ amplitude: item.amplitude, frequency: item.frequency, phase: item.phase }"></app-analog-signal>
 
 			<label for="frequency">Frequency: </label>
 			<input type="number" id="frequency" name="frequency" value="1" #frequency
@@ -16,7 +16,7 @@
 			<input type="range" id="amplitude" name="amplitude" min="0" max="1" value="1" step="0.01" #amplitude
 				(input)="setAmplitude(amplitude, $index)" />
 
-			<label for="phase">Phase: {{ item.phaseDegree }} </label>
+			<label for="phase">Phase: {{ item.phase }} </label>
 			<input type="range" id="phase" name="phase" min="0" max="360" value="0" list="phases" #phase
 				(input)="setPhase(phase, $index)" />
 
@@ -39,6 +39,6 @@
 		</div>
 	</div>
 	<div class="signal-sum">
-		<app-analog-signal [sinus]="{ amplitude: 1, frequency: 1, phaseDegree: 0 }"></app-analog-signal>
+		<app-analog-signal path="M 0 80 Q 25 0 50 80"></app-analog-signal>
 	</div>
 </div>
