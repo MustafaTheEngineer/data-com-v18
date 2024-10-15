@@ -27,8 +27,8 @@ export class AnalogSignalComponent {
 	}
 
 	sinus = input<Sinus>({
-		amplitude: 1,
-		frequency: 6,
+		amplitude: 0.5,
+		frequency: 1,
 		phase: 0
 	});
 
@@ -50,15 +50,16 @@ export class AnalogSignalComponent {
 	});*/
 
 	drawSinus = computed(() => {
+		const amplitude = 50 * this.sinus().amplitude;
 		const waveTopX = 25 / this.sinus().frequency;
-		const intervalScaling = (waveTopX * waveTopX) / 50
+		const intervalScaling = (waveTopX * waveTopX) / (50 * this.sinus().amplitude);
 		const intervalBetweenLines = waveTopX / 100
 		let result: LineCoordinates[] = [
 			{
 				x1: this.origin.x,
 				y1: this.origin.y,
 				x2: 0,
-				y2: (waveTopX * waveTopX) / intervalScaling
+				y2: (waveTopX * waveTopX) / intervalScaling + (1 - this.sinus().amplitude) * 50
 			},
 		]
 
@@ -67,7 +68,7 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: i,
-				y2: ((waveTopX - i) * (waveTopX - i)) / intervalScaling
+				y2: ((waveTopX - i) * (waveTopX - i)) / intervalScaling + (1 - this.sinus().amplitude) * 50
 			})
 		}
 
@@ -76,27 +77,43 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: result[result.length - 1].x2 + intervalBetweenLines,
-				y2: ((waveTopX - intervalBetweenLines) * (waveTopX - intervalBetweenLines)) / intervalScaling
+				y2: ((waveTopX - intervalBetweenLines) * (waveTopX - intervalBetweenLines)) / intervalScaling + (1 - this.sinus().amplitude) * 50
 			})
 		}
 
-		for (let i = waveTopX * 2; i <= waveTopX * 4; i += intervalBetweenLines) {
+		for (let i = waveTopX * 2; i <= waveTopX * 4 + intervalBetweenLines; i += intervalBetweenLines) {
 			result.push({
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: i,
-				y2: (50 - (((waveTopX * 3) - i) * ((waveTopX * 3) - i)) / intervalScaling) + 50
+				y2: (50 - (((waveTopX * 3) - i) * ((waveTopX * 3) - i)) / intervalScaling) + 50 - (1 - this.sinus().amplitude) * 50
 			})
 		}
 
-		result.push({
-			x1: result[result.length - 1].x2,
-			y1: result[result.length - 1].y2,
-			x2: result[result.length - 1].x2 + intervalBetweenLines,
-			y2: (50 - (((waveTopX * 3) - intervalBetweenLines) * ((waveTopX * 3) - intervalBetweenLines)) / intervalScaling) + 50
-		})
+		if (result.length === 403) {
+			result.push({
+				x1: result[result.length - 1].x2,
+				y1: result[result.length - 1].y2,
+				x2: waveTopX * 4 + intervalBetweenLines * 2,
+				y2: (50 - (((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2) * ((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2)) / intervalScaling) + 50 - (1 - this.sinus().amplitude) * 50
+			})
+		}
 
-		console.log(result)
+		let repeatIndex = 4
+		for (let i = 0; i < 5; i++) {
+			const repeat = result.map((line) => {
+				return {
+					x1: line.x1 + waveTopX * repeatIndex,
+					y1: line.y1,
+					x2: line.x2 + waveTopX * repeatIndex,
+					y2: line.y2
+				}
+			})
+	
+			result = result.concat(repeat)
+
+			repeatIndex += 4
+		}
 
 		return result;
 	});

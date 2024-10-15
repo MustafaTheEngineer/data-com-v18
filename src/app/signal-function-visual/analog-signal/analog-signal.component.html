@@ -25,7 +25,7 @@
 			<!--<path id="wave" [attr.d]="computeSinus()"></path>-->
 
 			@for (item of drawSinus(); track $index) {
-				<line [attr.x1]="item.x1" [attr.y1]="item.y1" [attr.x2]="item.x2" [attr.y2]="item.y2" stroke="green"></line>
+				<line [attr.x1]="item.x1 - (sinus().phase / 360) * 200" [attr.y1]="item.y1" [attr.x2]="item.x2  - (sinus().phase / 360) * 200" [attr.y2]="item.y2" stroke="green"></line>
 			}
 
 		</svg>
