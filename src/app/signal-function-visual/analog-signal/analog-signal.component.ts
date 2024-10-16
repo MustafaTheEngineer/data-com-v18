@@ -7,10 +7,8 @@ export type Sinus = {
 };
 
 export type LineCoordinates = {
-	x1: number;
-	y1: number;
-	x2: number;
-	y2: number;
+	x: number;
+	y: number;
 }
 
 @Component({
@@ -32,7 +30,9 @@ export class AnalogSignalComponent {
 		phase: 0
 	});
 
-	/*computeSinus = computed(() => {
+	signalSum = input<LineCoordinates[]>();
+
+	computeSinus = computed(() => {
 		const degreeToRad = this.sinus().phase / 360
 
 		const amplitudeHeight = (this.sinus().amplitude === 1 ? -49 : -50) + ((1 - this.sinus().amplitude) * 100);
@@ -47,19 +47,18 @@ export class AnalogSignalComponent {
 		}
 
 		return result;
-	});*/
+	});
 
-	drawSinus = computed(() => {
-		const amplitude = 50 * this.sinus().amplitude;
-		const waveTopX = 25 / this.sinus().frequency;
-		const intervalScaling = (waveTopX * waveTopX) / (50 * this.sinus().amplitude);
+	/*drawSinus = computed(() => {
+		const waveTopX = 25 / (this.sinus().frequency === 0 ? 1 : this.sinus().frequency);
+		const intervalScaling = (waveTopX * waveTopX) / (80 * this.sinus().amplitude);
 		const intervalBetweenLines = waveTopX / 100
 		let result: LineCoordinates[] = [
 			{
 				x1: this.origin.x,
-				y1: this.origin.y,
+				y1: this.origin.y + 30,
 				x2: 0,
-				y2: (waveTopX * waveTopX) / intervalScaling + (1 - this.sinus().amplitude) * 50
+				y2: (waveTopX * waveTopX) / intervalScaling + (1 - this.sinus().amplitude) * 80
 			},
 		]
 
@@ -68,7 +67,7 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: i,
-				y2: ((waveTopX - i) * (waveTopX - i)) / intervalScaling + (1 - this.sinus().amplitude) * 50
+				y2: ((waveTopX - i) * (waveTopX - i)) / intervalScaling + (1 - this.sinus().amplitude) * 80
 			})
 		}
 
@@ -77,7 +76,7 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: result[result.length - 1].x2 + intervalBetweenLines,
-				y2: ((waveTopX - intervalBetweenLines) * (waveTopX - intervalBetweenLines)) / intervalScaling + (1 - this.sinus().amplitude) * 50
+				y2: ((waveTopX - intervalBetweenLines) * (waveTopX - intervalBetweenLines)) / intervalScaling + (1 - this.sinus().amplitude) * 80
 			})
 		}
 
@@ -86,7 +85,7 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: i,
-				y2: (50 - (((waveTopX * 3) - i) * ((waveTopX * 3) - i)) / intervalScaling) + 50 - (1 - this.sinus().amplitude) * 50
+				y2: (80 - (((waveTopX * 3) - i) * ((waveTopX * 3) - i)) / intervalScaling) + 80 - (1 - this.sinus().amplitude) * 80
 			})
 		}
 
@@ -95,7 +94,7 @@ export class AnalogSignalComponent {
 				x1: result[result.length - 1].x2,
 				y1: result[result.length - 1].y2,
 				x2: waveTopX * 4 + intervalBetweenLines * 2,
-				y2: (50 - (((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2) * ((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2)) / intervalScaling) + 50 - (1 - this.sinus().amplitude) * 50
+				y2: (80 - (((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2) * ((waveTopX * 3) - waveTopX * 4 + intervalBetweenLines * 2)) / intervalScaling) + 80 - (1 - this.sinus().amplitude) * 80
 			})
 		}
 
@@ -116,5 +115,5 @@ export class AnalogSignalComponent {
 		}
 
 		return result;
-	});
+	});*/
 }

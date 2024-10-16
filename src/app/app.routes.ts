@@ -42,6 +42,6 @@ export const routes: Routes = [
 		path: 'parity-checksum', component: ParityChecksumComponent
 	},
 	{
-		path: 'analog-visual', component: AnalogSignalComponent
+		path: 'analog-visual', component: AnalogVisualComponent
 	},
 ];
