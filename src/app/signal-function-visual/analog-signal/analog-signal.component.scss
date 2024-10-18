@@ -13,10 +13,18 @@ label {
 }
 
 #vertical-numbers {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	font-size: 2vw;
+
+	#amplitude-indicator {
+		position: absolute;
+		top: -5%;
+		left: 90%;
+		transform: translateY(-50%);
+	}
 }
 
 #horizontal-numbers {
@@ -34,4 +42,10 @@ label {
 	stroke-width: 1px;
 	stroke: green;
 	fill: none;
+}
+
+#time-indicator {
+	display: flex;
+	align-items: flex-end;
+	margin-left: 5px;
 }

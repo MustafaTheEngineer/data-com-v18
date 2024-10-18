@@ -2,6 +2,7 @@
 	@if (signalSum() === undefined) {
 	<div class="vertical-container">
 		<div id="vertical-numbers">
+			<span id="amplitude-indicator">A</span>
 			<span> 1.0 </span>
 			<span> 0.5 </span>
 			<span> 0.0 </span>
@@ -25,6 +26,11 @@
 
 			<path [attr.d]="computeSinus()" stroke="green" fill="transparent" />
 		</svg>
+		<div id="time-indicator">
+			<span>
+				t
+			</span>
+		</div>
 	</div>
 	<div id="horizontal-numbers">
 		<span> 0.0 </span>

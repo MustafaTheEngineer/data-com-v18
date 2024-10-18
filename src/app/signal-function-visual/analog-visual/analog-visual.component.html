@@ -56,6 +56,9 @@
 </div>
 
 <div class="add-remove-buttons">
+	@if (!visited) {
+		<app-guide direction="right" text="left" explanation="Click to add or remove signal" style="left: -250px; bottom: 5px;"></app-guide>
+	}
 	<button (click)="addSignal()"> Add </button>
 	<button (click)="removeSignal()"> Remove </button>
 </div>

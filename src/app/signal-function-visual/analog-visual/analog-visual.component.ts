@@ -1,16 +1,27 @@
 import { Component, signal } from '@angular/core';
 import { AnalogSignalComponent, Point, Sinus } from '../analog-signal/analog-signal.component';
+import { GuideComponent } from '../../guide/guide.component';
 
 @Component({
 	selector: 'app-analog-visual',
 	standalone: true,
-	imports: [AnalogSignalComponent],
+	imports: [AnalogSignalComponent, GuideComponent],
 	templateUrl: './analog-visual.component.html',
 	styleUrl: './analog-visual.component.scss'
 })
 export class AnalogVisualComponent {
+	visited = false;
+
 	ngOnInit() {
 		this.calcSignalSum()
+
+		if (document.cookie.includes('analog-visual=true')) {
+			this.visited = true
+		}
+	}
+
+	ngOnDestroy() {
+		document.cookie = 'analog-visual=true; SameSite=None; Secure';
 	}
 
 	ngAfterViewInit() {
@@ -71,7 +82,7 @@ export class AnalogVisualComponent {
 	calcSignal(amplitude: number, frequency: number, phase: number) {
 		let result: Point[] = []
 
-		for (let i = 0; i < 200; i+= 0.1) {
+		for (let i = 0; i < 200; i+= 0.04) {
 			result.push({
 				x: i,
 				y: 80 - 40 * amplitude * Math.sin(2 * Math.PI * frequency * (i / 100) + (phase === 360 ? 0 : phase / 57.5))

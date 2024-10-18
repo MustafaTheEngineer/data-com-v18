@@ -3,7 +3,7 @@
 	.signal-visual {
 		margin-top: var(--margin-xxl);
 		border: 1px solid white;
-		padding: var(--margin-m);
+		padding: var(--margin-l);
 	
 		input[id="phase"] {
 			width: 100%;
@@ -64,6 +64,10 @@ datalist {
 	right: 5%;
 }
 
+/*app-guide {
+	position: absolute;
+}*/
+
 $breakpoints: (
 	xs: 0,
 	sm: 576px,
@@ -81,10 +85,9 @@ $breakpoints: (
 
 		.signal-editor {
 			width: 45%;
-			//padding: var(--margin-xxl);
 
 			.signal-visual {
-				margin-top: var(--margin-xxl);
+				margin-top: calc(var(--margin-xxl) + var(--margin-m));
 
 				input[id="phase"] {
 					width: 100%;
