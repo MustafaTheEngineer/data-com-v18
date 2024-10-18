@@ -2,6 +2,12 @@ svg {
 	position: relative;
 }
 
+label {
+	input {
+		display: block;
+	}
+}
+
 .vertical-container {
 	display: flex;
 }

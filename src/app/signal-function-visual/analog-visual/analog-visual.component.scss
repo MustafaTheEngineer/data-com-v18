@@ -1,37 +1,45 @@
-.visual-container {
-	display: flex;
-	justify-content: space-around;
+.visual-container{
+	padding: 0 var(--margin-l);
+	.signal-visual {
+		margin-top: var(--margin-xxl);
+		border: 1px solid white;
+		padding: var(--margin-m);
+	
+		input[id="phase"] {
+			width: 100%;
+		}
 
-	.signal-editor {
-		width: 50%;
-		padding: var(--margin-xxl);
+		input[type="number"] {
+			width: 64px
+		}
 
-		.signal-visual {
-			margin-top: var(--margin-xxl);
+		label[for="frequency"] {
+			margin: var(--margin-m) var(--margin-m) var(--margin-m) 0;
+			display: inline-block;
+		}
+	
+		label[for="amplitude"] {
+			display: block;
+		}
+	
+		label[for="phase"] {
+			margin-right: var(--margin-m);
+			display: block;
+		}
 
-			input[id="phase"] {
-				width: 100%;
-			}
-
-			label[for="amplitude"] {
-				display: block;
-			}
-
-			label[for="phase"] {
-				margin-right: var(--margin-m);
-				display: block;
-			}
+		p {
+			margin: var(--margin-m) 0;
 		}
 	}
 
 	.signal-sum {
-		width: 50%;
-		padding: var(--margin-xxl);
+		h3 {
+			margin: var(--margin-m) 0;
+		}
 	}
 }
 
 ::ng-deep {
-
 	#vertical-numbers,
 	#horizontal-numbers {
 		font-size: 0.5vw;
@@ -45,6 +53,65 @@
 datalist {
 	display: flex;
 	justify-content: space-between;
+	padding-left: 5px;
 	width: 100%;
 	margin-bottom: var(--margin-xxl);
+}
+
+.add-remove-buttons {
+	position: fixed;
+	top: 5%;
+	right: 5%;
+}
+
+$breakpoints: (
+	xs: 0,
+	sm: 576px,
+	md: 768px,
+	lg: 992px,
+	xl: 1200px,
+	xxl: 1400px,
+);
+
+@media (min-width: map-get($breakpoints, md)) {
+	.visual-container {
+		display: flex;
+		justify-content: space-around;
+		margin: 0;
+
+		.signal-editor {
+			width: 45%;
+			//padding: var(--margin-xxl);
+
+			.signal-visual {
+				margin-top: var(--margin-xxl);
+
+				input[id="phase"] {
+					width: 100%;
+				}
+
+				label[for="amplitude"] {
+					display: block;
+				}
+
+				label[for="phase"] {
+					margin-right: var(--margin-m);
+					display: block;
+				}
+			}
+		}
+
+		.signal-sum {
+			flex-grow: 1;
+			padding: var(--margin-xxl);
+			position: relative;
+
+			.sum-fixed {
+				width: 45%;
+				position: fixed;
+				top: 5%;
+				right: 0;
+			}
+		}
+	}
 }

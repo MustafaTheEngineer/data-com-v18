@@ -1,84 +1,82 @@
-@if (signalSum() === undefined) {
-	<div class="coor-container">
-		<div class="vertical-container">
-			<div id="vertical-numbers">
-				<span> 1.0 </span>
-				<span> 0.5 </span>
-				<span> 0.0 </span>
-				<span> -0.5 </span>
-				<span> -1.0 </span>
-			</div>
-			<svg viewBox="0 0 200 100">
-				<!-- HORIZONTAL LINES -->
-				<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
-				<line x1="0" y1="25" x2="200" y2="25" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="50" x2="200" y2="50" stroke="white" stroke-width="1" />
-				<line x1="0" y1="75" x2="200" y2="75" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="2" class="non-center-line" />
-	
-				<!-- VERTICAL LINES -->
-				<line x1="0" y1="0" x2="0" y2="100" stroke="white" stroke-width="2" />
-				<line x1="50" y1="0" x2="50" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="100" y1="0" x2="100" y2="100" stroke="white" stroke-width="1" />
-				<line x1="150" y1="0" x2="150" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="2" />
+<div class="coor-container">
+	@if (signalSum() === undefined) {
+	<div class="vertical-container">
+		<div id="vertical-numbers">
+			<span> 1.0 </span>
+			<span> 0.5 </span>
+			<span> 0.0 </span>
+			<span> -0.5 </span>
+			<span> -1.0 </span>
+		</div>
+		<svg viewBox="0 0 200 100">
+			<!-- HORIZONTAL LINES -->
+			<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
+			<line x1="0" y1="25" x2="200" y2="25" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="50" x2="200" y2="50" stroke="white" stroke-width="1" />
+			<line x1="0" y1="75" x2="200" y2="75" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="2" class="non-center-line" />
 
-				<path [attr.d]="computeSinus()" stroke="green" fill="transparent" />
-			</svg>
-		</div>
-		<div id="horizontal-numbers">
-			<span> 0.0 </span>
-			<span> 0.5 </span>
-			<span> 1.0 </span>
-			<span> 1.5 </span>
-			<span> 2.0 </span>
-		</div>
+			<!-- VERTICAL LINES -->
+			<line x1="0" y1="0" x2="0" y2="100" stroke="white" stroke-width="2" />
+			<line x1="50" y1="0" x2="50" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="100" y1="0" x2="100" y2="100" stroke="white" stroke-width="1" />
+			<line x1="150" y1="0" x2="150" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="2" />
+
+			<path [attr.d]="computeSinus()" stroke="green" fill="transparent" />
+		</svg>
 	</div>
-} @else {
-	<div class="coor-container">
-		<div class="vertical-container">
-			<div id="vertical-numbers">
-				<span> 2.0 </span>
-				<span> 1.5 </span>
-				<span> 1.0 </span>
-				<span> 0.5 </span>
-				<span> 0.0 </span>
-				<span> -0.5 </span>
-				<span> -1.0 </span>
-				<span> -1.5 </span>
-				<span> -2.0 </span>
-			</div>
-			<svg viewBox="0 0 200 160">
-				<!-- HORIZONTAL LINES -->
-				<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
-				<line x1="0" y1="20" x2="200" y2="20" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="40" x2="200" y2="40" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="60" x2="200" y2="60" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="80" x2="200" y2="80" stroke="white" stroke-width="1" />
-				<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="120" x2="200" y2="120" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="140" x2="200" y2="140" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="0" y1="160" x2="200" y2="160" stroke="white" stroke-width="2" class="non-center-line" />
-	
-				<!-- VERTICAL LINES -->
-				<line x1="0" y1="0" x2="0" y2="160" stroke="white" stroke-width="2" />
-				<line x1="50" y1="0" x2="50" y2="160" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="100" y1="0" x2="100" y2="160" stroke="white" stroke-width="1" />
-				<line x1="150" y1="0" x2="150" y2="160" stroke="white" stroke-width="1" class="non-center-line" />
-				<line x1="200" y1="0" x2="200" y2="160" stroke="white" stroke-width="2" />
-	
-				@for (item of signalSum(); track $index) {
-					<circle [attr.cx]="item.x" [attr.cy]="item.y" r="1" fill="green" />
-				}
-	
-			</svg>
-		</div>
-		<div id="horizontal-numbers">
-			<span> 0.0 </span>
-			<span> 0.5 </span>
-			<span> 1.0 </span>
-			<span> 1.5 </span>
-			<span> 2.0 </span>
-		</div>
+	<div id="horizontal-numbers">
+		<span> 0.0 </span>
+		<span> 0.5 </span>
+		<span> 1.0 </span>
+		<span> 1.5 </span>
+		<span> 2.0 </span>
 	</div>
-}
+	} @else {
+	<div class="vertical-container">
+		<div id="vertical-numbers">
+			<span> 2.0 </span>
+			<span> 1.5 </span>
+			<span> 1.0 </span>
+			<span> 0.5 </span>
+			<span> 0.0 </span>
+			<span> -0.5 </span>
+			<span> -1.0 </span>
+			<span> -1.5 </span>
+			<span> -2.0 </span>
+		</div>
+		<svg viewBox="0 0 200 160">
+			<!-- HORIZONTAL LINES -->
+			<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="2" class="non-center-line" />
+			<line x1="0" y1="20" x2="200" y2="20" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="40" x2="200" y2="40" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="60" x2="200" y2="60" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="80" x2="200" y2="80" stroke="white" stroke-width="1" />
+			<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="120" x2="200" y2="120" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="140" x2="200" y2="140" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="0" y1="160" x2="200" y2="160" stroke="white" stroke-width="2" class="non-center-line" />
+
+			<!-- VERTICAL LINES -->
+			<line x1="0" y1="0" x2="0" y2="160" stroke="white" stroke-width="2" />
+			<line x1="50" y1="0" x2="50" y2="160" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="100" y1="0" x2="100" y2="160" stroke="white" stroke-width="1" />
+			<line x1="150" y1="0" x2="150" y2="160" stroke="white" stroke-width="1" class="non-center-line" />
+			<line x1="200" y1="0" x2="200" y2="160" stroke="white" stroke-width="2" />
+
+			@for (item of signalSum(); track $index) {
+			<circle [attr.cx]="item.x" [attr.cy]="item.y" r="1" fill="green" />
+			}
+
+		</svg>
+	</div>
+	<div id="horizontal-numbers">
+		<span> 0.0 </span>
+		<span> 0.5 </span>
+		<span> 1.0 </span>
+		<span> 1.5 </span>
+		<span> 2.0 </span>
+	</div>
+	}
+</div>

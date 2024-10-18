@@ -1,12 +1,12 @@
 <div class="visual-container">
 	<div class="signal-editor">
 		@for (item of analogSignals; track $index) {
-			<p>
-				s(t) = {{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phase }}°)
-			</p>
 		<div class="signal-visual">
 			<app-analog-signal
 				[sinus]="{ amplitude: item.amplitude, frequency: item.frequency, phase: item.phase }"></app-analog-signal>
+			<p>
+				s(t) = {{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phase }}°)
+			</p>
 
 			<label for="frequency">Frequency: </label>
 			<input type="number" id="frequency" name="frequency" value="1" #frequency
@@ -33,12 +33,29 @@
 			</datalist>
 		</div>
 		}
-		<div class="add-remove-buttons">
-			<button (click)="addSignal()"> Add </button>
-			<button (click)="removeSignal()"> Remove </button>
-		</div>
 	</div>
 	<div class="signal-sum">
-		<app-analog-signal path="M 0 80 Q 25 0 50 80" [signalSum]="signalSum()"></app-analog-signal>
+		<div class="sum-fixed">
+			<h3>Addition of Frequency Components</h3>
+			<app-analog-signal path="M 0 80 Q 25 0 50 80" [signalSum]="signalSum()"></app-analog-signal>
+			<p>
+				@if (onlyOneSignal === false) {
+					4/π [
+				}
+				 
+				@for (item of analogSignals; track $index) {
+				{{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phase }}°)
+				{{ $index < analogSignals.length - 1 ? '+' : '' }}
+				}
+				@if (onlyOneSignal === false) {
+					]
+				}
+			</p>
+		</div>
 	</div>
+</div>
+
+<div class="add-remove-buttons">
+	<button (click)="addSignal()"> Add </button>
+	<button (click)="removeSignal()"> Remove </button>
 </div>

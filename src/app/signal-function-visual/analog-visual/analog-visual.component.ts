@@ -1,5 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
-import { AnalogSignalComponent, LineCoordinates, Sinus } from '../analog-signal/analog-signal.component';
+import { Component, signal } from '@angular/core';
+import { AnalogSignalComponent, Point, Sinus } from '../analog-signal/analog-signal.component';
 
 @Component({
 	selector: 'app-analog-visual',
@@ -11,6 +11,12 @@ import { AnalogSignalComponent, LineCoordinates, Sinus } from '../analog-signal/
 export class AnalogVisualComponent {
 	ngOnInit() {
 		this.calcSignalSum()
+	}
+
+	ngAfterViewInit() {
+		const secondSignal = document.getElementsByClassName('signal-visual')[1];
+		(secondSignal.children[3] as HTMLInputElement).value = '3';
+		(secondSignal.children[5] as HTMLInputElement).value = '0.33';
 	}
 
 	analogSignals: Sinus[] = [
@@ -26,7 +32,9 @@ export class AnalogVisualComponent {
 		},
 	]
 
-	signalSum = signal<LineCoordinates[]>([]);
+	onlyOneSignal = false;
+
+	signalSum = signal<Point[]>([]);
 
 	setPhase(phase: HTMLInputElement, index: number) {
 		this.analogSignals[index].phase = Number(phase.value);
@@ -61,12 +69,12 @@ export class AnalogVisualComponent {
 	}
 
 	calcSignal(amplitude: number, frequency: number, phase: number) {
-		let result: LineCoordinates[] = []
+		let result: Point[] = []
 
 		for (let i = 0; i < 200; i+= 0.1) {
 			result.push({
 				x: i,
-				y: 80 - 40 * amplitude * Math.sin(2 * Math.PI * frequency * (i / 100) + phase / 60)
+				y: 80 - 40 * amplitude * Math.sin(2 * Math.PI * frequency * (i / 100) + (phase === 360 ? 0 : phase / 57.5))
 			})
 		}
 
@@ -75,15 +83,22 @@ export class AnalogVisualComponent {
 
 	calcSignalSum() {
 		this.signalSum.set([]);
-		const signalPaths: LineCoordinates[][] = [];
-		const signalSum: LineCoordinates[] = [];
+		const signalPaths: Point[][] = [];
+		const signalSum: Point[] = [];
+
+		if (this.analogSignals.filter(signal => signal.amplitude !== 0).length === 1) {
+			const onlySignal = this.analogSignals[this.analogSignals.findIndex(signal => signal.amplitude !== 0)];
+			this.signalSum.set(this.calcSignal(onlySignal.amplitude, onlySignal.frequency, onlySignal.phase));
+			this.onlyOneSignal = true;
+			return
+		}
 
 		for (const signal of this.analogSignals) {
 			signalPaths.push(this.calcSignal(signal.amplitude, signal.frequency, signal.phase))
 		}
 
 		for (let i = 0; i < signalPaths[0].length; i++) {
-			const newSignal: LineCoordinates = {
+			const newSignal: Point = {
 				x: signalPaths[0][i].x,
 				y: 0
 			}
@@ -95,8 +110,6 @@ export class AnalogVisualComponent {
 			signalSum.push(newSignal);
 		}
 		this.signalSum.set(signalSum);
-		console.log(this.signalSum())
-
-		return
+		this.onlyOneSignal = false;
 	}
 }
