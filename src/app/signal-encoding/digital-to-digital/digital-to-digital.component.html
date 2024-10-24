@@ -1,0 +1,21 @@
+<app-binary-data (binaryDataChange)="data.set($event)"></app-binary-data>
+
+{{ data() }}
+
+
+<div class="cell-container">
+	@for (item of receivedDataSignal(); track $index) {
+	<div class="data-cell">
+		<div class="top-left-dashed"></div>
+		<div class="bottom-left-dashed"></div>
+
+		<div class="left-signal" [style.border-left-style]="item.left ? 'solid' : 'dashed'" [style.opacity]="item.left ? '1' : '0.5'" [style.border-color]="item.left ? 'blue' : 'inherit'"></div>
+
+		<div class="top-signal" [style.opacity]="item.top ? '1' : '0.5'" [style.border-color]="item.top ? 'blue' : 'inherit'"></div>
+
+		<div class="bottom-signal" [style.opacity]="item.bottom ? '1' : '0.5'"  [style.border-color]="item.bottom ? 'blue' : 'inherit'"></div>
+
+		<div class="center-vertical"></div>
+	</div>
+	}
+</div>

@@ -1,3 +1,11 @@
+<h1>Analog Signal Visualization</h1>
+<p>
+	Analog signals are continuous-time signals that can take any value within a range. They are represented by a mathematical function of time. The most common analog signal is the sinusoidal signal. The sinusoidal signal is defined by its amplitude, frequency, and phase. The amplitude is the maximum value of the signal, the frequency is the number of cycles per second, and the phase is the shift of the signal in degrees. The sinusoidal signal is represented by the following equation:
+</p>
+<p id="sinus-equation">
+	s(t) = A . sin(2π . f . t + φ)
+</p>
+
 <div class="visual-container">
 	<div class="signal-editor">
 		@for (item of analogSignals; track $index) {
@@ -36,15 +44,25 @@
 	</div>
 	<div class="signal-sum">
 		<div class="sum-fixed">
+			<div class="add-remove-buttons">
+				@if (!visited) {
+					<app-guide direction="left" text="right" explanation="Click to add or remove signal" style="left: 120px; top: 0;"></app-guide>
+				}
+				<button (click)="addSignal()"> Add </button>
+				<button (click)="removeSignal()"> Remove </button>
+			</div>
 			<h3>Addition of Frequency Components</h3>
 			<app-analog-signal path="M 0 80 Q 25 0 50 80" [signalSum]="signalSum()"></app-analog-signal>
+			<p>
+				Sum of the signals:
+			</p>
 			<p>
 				@if (onlyOneSignal === false) {
 					4/π [
 				}
 				 
 				@for (item of analogSignals; track $index) {
-				{{ item.amplitude }} . sin(2π . {{ item.frequency }} . t . {{ item.phase }}°)
+				{{ item.amplitude }} . sin(2π . {{ item.frequency }} . t + {{ item.phase }}°)
 				{{ $index < analogSignals.length - 1 ? '+' : '' }}
 				}
 				@if (onlyOneSignal === false) {
@@ -53,12 +71,4 @@
 			</p>
 		</div>
 	</div>
-</div>
-
-<div class="add-remove-buttons">
-	@if (!visited) {
-		<app-guide direction="right" text="left" explanation="Click to add or remove signal" style="left: -250px; bottom: 5px;"></app-guide>
-	}
-	<button (click)="addSignal()"> Add </button>
-	<button (click)="removeSignal()"> Remove </button>
 </div>

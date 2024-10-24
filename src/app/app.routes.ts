@@ -9,7 +9,7 @@ import { StopAndWaitComponent } from './data-link/stop-and-wait/stop-and-wait.co
 import { ParityChecksumComponent } from './error-detection/parity-checksum/parity-checksum.component';
 import { HomeComponent } from './home/home.component';
 import { AnalogVisualComponent } from './signal-function-visual/analog-visual/analog-visual.component';
-import { AnalogSignalComponent } from './signal-function-visual/analog-signal/analog-signal.component';
+import { DigitalToDigitalComponent } from './signal-encoding/digital-to-digital/digital-to-digital.component';
 
 export const routes: Routes = [
 	{
@@ -43,5 +43,8 @@ export const routes: Routes = [
 	},
 	{
 		path: 'analog-visual', component: AnalogVisualComponent
+	},
+	{
+		path: 'digital-to-digital', component: DigitalToDigitalComponent
 	},
 ];
