@@ -1,21 +1,20 @@
 <app-binary-data (binaryDataChange)="data.set($event)"></app-binary-data>
 
-{{ data() }}
+<p>
+	Choose an encoding scheme to interpret the signal.
+</p>
 
+@for (item of schemes; track $index) {
+	<button (click)="scheme = item">
+		{{ item }}
+	</button>
+}
 
-<div class="cell-container">
-	@for (item of receivedDataSignal(); track $index) {
-	<div class="data-cell">
-		<div class="top-left-dashed"></div>
-		<div class="bottom-left-dashed"></div>
-
-		<div class="left-signal" [style.border-left-style]="item.left ? 'solid' : 'dashed'" [style.opacity]="item.left ? '1' : '0.5'" [style.border-color]="item.left ? 'blue' : 'inherit'"></div>
-
-		<div class="top-signal" [style.opacity]="item.top ? '1' : '0.5'" [style.border-color]="item.top ? 'blue' : 'inherit'"></div>
-
-		<div class="bottom-signal" [style.opacity]="item.bottom ? '1' : '0.5'"  [style.border-color]="item.bottom ? 'blue' : 'inherit'"></div>
-
-		<div class="center-vertical"></div>
-	</div>
+@switch (scheme) {
+	@case ('NRZ-L') {
+		<app-nrz [data]="data()" nrzType="NRZ-L"></app-nrz>
 	}
-</div>
+	@case ('NRZI') {
+		<app-nrz [data]="data()" nrzType="NRZI"></app-nrz>
+	}
+}

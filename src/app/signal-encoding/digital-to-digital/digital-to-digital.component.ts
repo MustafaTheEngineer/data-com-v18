@@ -1,43 +1,27 @@
 import { Component, computed, signal } from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
+import { NrzComponent } from './nrz/nrz.component';
 
-type NRZ = {
-	left: boolean;
-	top: boolean;
-	bottom: boolean;
+enum Schemes {
+	NRZ = 'NRZ-L',
+	NRZI = 'NRZI',
+	AMI = 'AMI',
+	Manchester = 'Manchester',
+	DifferentialManchester = 'Differential Manchester',
+	BipolarAMI = 'Bipolar AMI',
+	Pseudoternary = 'Pseudoternary',
 }
 
 @Component({
 	selector: 'app-digital-to-digital',
 	standalone: true,
-	imports: [BinaryDataComponent],
+	imports: [BinaryDataComponent, NrzComponent],
 	templateUrl: './digital-to-digital.component.html',
 	styleUrl: './digital-to-digital.component.scss'
 })
 export class DigitalToDigitalComponent {
 	data = signal('');
-	receivedDataSignal = computed(() => {
-		this.receivedSignal = []
-		if (this.data().length == 0) {
-			return this.receivedSignal
-		}
+	scheme: Schemes = Schemes.NRZ;
 
-		this.receivedSignal.push({
-			left: false,
-			top: this.data()[0] === '0',
-			bottom: this.data()[0] === '1',
-		})
-
-		for (let index = 1; index < this.data().length; index++) {
-			this.receivedSignal.push({
-				left: this.data()[index - 1] !== this.data()[index],
-				top: this.data()[index] === '0',
-				bottom: this.data()[index] === '1',
-			})
-		}
-
-		return this.receivedSignal
-	})
-
-	receivedSignal: NRZ[] = []
+	schemes = Object.values(Schemes);
 }

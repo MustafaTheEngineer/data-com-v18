@@ -1,0 +1,28 @@
+<div class="cell-container">
+	@for (item of receivedDataSignal(); track $index; let first = $first) {
+	<div class="data-cell">
+		<div class="bit">
+			{{ data()[$index] }}
+		</div>
+
+		<div class="signal-container">
+			<div class="top-left-dashed"></div>
+			<div class="bottom-left-dashed"></div>
+
+			@if (!first) {
+			<div class="left-signal"
+				[style.border-left-style]="receivedDataSignal()[$index].signal !== receivedDataSignal()[$index - 1].signal ? 'solid' : 'dashed'"
+				[style.opacity]="receivedDataSignal()[$index].signal !== receivedDataSignal()[$index - 1].signal ? '1' : '0.3'"
+				[style.border-color]="receivedDataSignal()[$index].signal !== receivedDataSignal()[$index - 1].signal ? 'blue' : 'inherit'">
+			</div>
+			}
+
+			<div #topSignal class="top-signal" [style.opacity]="item.signal ? '1' : '0.3'"
+				[style.border-color]="item.signal ? data()[$index] === signalExistWhen() ? 'blue' : 'red' : 'inherit'" (click)="toggleSignal(item)" (mouseenter)="highlightTop(item, topSignal)" (mouseleave)="dehighlightTop(item, topSignal)"></div>
+
+			<div #bottomSignal class="bottom-signal" [style.opacity]="!item.signal ? '1' : '0.3'"
+				[style.border-color]="!item.signal ? data()[$index] !== signalExistWhen() ? 'blue' : 'red' : 'inherit'" (click)="toggleSignal(item)" (mouseenter)="highlightBottom(item, bottomSignal)" (mouseleave)="dehighlightBottom(item, bottomSignal)"></div>
+		</div>
+	</div>
+	}
+</div>

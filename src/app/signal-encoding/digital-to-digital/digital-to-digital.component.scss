@@ -1,48 +1,36 @@
-.cell-container {
-	display: flex;
+::ng-deep .cell-container{
 
-	.data-cell {
-		width: 140px;
-		height: 140px;
-		position: relative;
+		display: flex;
+		overflow-x: scroll;
 
-		div {
-			position: absolute;
+		.data-cell {
+			.bit {
+				text-align: center;
+			}
+
+			.signal-container {
+				width: 140px;
+				height: 140px;
+				position: relative;
+
+				div {
+					position: absolute;
+				}
+
+				.top-left-dashed {
+					border-left: 2px dashed white;
+					left: 0;
+					top: 0;
+					height: 20px;
+				}
+
+				.bottom-left-dashed {
+					border-left: 2px dashed white;
+					left: 0;
+					bottom: 0;
+					height: 20px;
+				}
+			}
 		}
-
-		.top-left-dashed {
-			border-left: 2px dashed white;
-			left: 0;
-			top: 0;
-			height: 20px;
-		}
-
-		.bottom-left-dashed {
-			border-left: 2px dashed white;
-			left: 0;
-			bottom: 0;
-			height: 20px;
-		}
-
-		.top-signal {
-			left: 0;
-			top: 20px;
-			width: 100%;
-			border-top: 2px solid white;
-		}
-
-		.left-signal {
-			left: 0;
-			top: 20px;
-			height: 100px;
-			border-left: 2px solid white;
-		}
-
-		.bottom-signal {
-			left: 0;
-			bottom: 20px;
-			width: 100%;
-			border-bottom: 2px solid white;
-		}
-	}
+	
 }
