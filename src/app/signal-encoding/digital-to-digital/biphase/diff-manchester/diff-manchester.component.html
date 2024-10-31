@@ -1,0 +1,36 @@
+<div class="cell-container">
+	@for (item of receivedDataSignal(); track $index) {
+	<div class="data-cell">
+		<div class="bit">
+			{{ data()[$index] }}
+		</div>
+
+		<div class="signal-container">
+			<div class="top-left-dashed"></div>
+			<div class="bottom-left-dashed"></div>
+
+			<div #leftVertical class="left-vertical" [style]="leftVerticalStyle($index)"></div>
+			<div class="center-vertical" [style]="centerVerticalStyle($index)"></div>
+
+			<div #topLeft class="top-left" [style]="topLeftStyle($index)"
+				(mouseenter)="highlightSignal(item.topLeft, topLeft)"
+				(mouseleave)="dehighlightSignal(item.topLeft, topLeft)" (click)="activateLeftTop(item, $index)"></div>
+
+			<div #topRight class="top-right" [style]="topRightStyle($index)"
+				(mouseenter)="highlightSignal(item.topRight, topRight)"
+				(mouseleave)="dehighlightSignal(item.topRight, topRight)" (click)="activateRightTop(item, $index)">
+			</div>
+
+			<div #bottomLeft class="bottom-left" [style]="bottomLeftStyle($index)"
+				(mouseenter)="highlightSignal(item.bottomLeft, bottomLeft)"
+				(mouseleave)="dehighlightSignal(item.bottomLeft, bottomLeft)"
+				(click)="activateLeftBottom(item, $index)"></div>
+
+			<div #bottomRight class="bottom-right" [style]="bottomRightStyle($index)"
+				(mouseenter)="highlightSignal(item.bottomRight, bottomRight)"
+				(mouseleave)="dehighlightSignal(item.bottomRight, bottomRight)"
+				(click)="activateRightBottom(item, $index)"></div>
+		</div>
+	</div>
+	}
+</div>

@@ -1,7 +1,8 @@
 import { Component, computed, signal } from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
 import { NrzComponent } from './nrz/nrz.component';
-import { ManchesterComponent } from './manchester/manchester.component';
+import { ManchesterComponent } from './biphase/manchester/manchester.component';
+import { DiffManchesterComponent } from './biphase/diff-manchester/diff-manchester.component';
 
 enum Schemes {
 	NRZ = 'NRZ-L',
@@ -16,7 +17,7 @@ enum Schemes {
 @Component({
 	selector: 'app-digital-to-digital',
 	standalone: true,
-	imports: [BinaryDataComponent, NrzComponent, ManchesterComponent],
+	imports: [BinaryDataComponent, NrzComponent, ManchesterComponent, DiffManchesterComponent],
 	templateUrl: './digital-to-digital.component.html',
 	styleUrl: './digital-to-digital.component.scss'
 })

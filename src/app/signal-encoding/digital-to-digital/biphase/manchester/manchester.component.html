@@ -1,0 +1,67 @@
+<div class="cell-container">
+	@for (item of senderData(); track $index) {
+	<div class="data-cell">
+		<div class="bit">
+			{{ data()[$index] }}
+		</div>
+
+		<div class="signal-container">
+			<div class="top-left-dashed"></div>
+			<div class="bottom-left-dashed"></div>
+
+			<div class="left-vertical" [style]="biphaseService.leftVerticalStyle(item.leftVertical)"></div>
+			<div class="center-vertical" [style]="biphaseService.centerVerticalStyle($index, data(), senderSignal)">
+			</div>
+
+			<div class="top-left" [style]="biphaseService.topLeftStyle($index, data(), senderSignal)"></div>
+			<div class="top-right" [style]="biphaseService.topRightStyle($index, data(), senderSignal)"></div>
+			<div class="bottom-left" [style]="biphaseService.bottomLeftStyle($index, data(), senderSignal)"></div>
+			<div class="bottom-right" [style]="biphaseService.bottomRightStyle($index, data(), senderSignal)"></div>
+		</div>
+	</div>
+	}
+</div>
+
+<div class="cell-container">
+	@for (item of receiverSignal; track $index) {
+	<div class="data-cell">
+
+		<div class="signal-container">
+			<div class="top-left-dashed"></div>
+			<div class="bottom-left-dashed"></div>
+
+			<div class="left-vertical" [style]="biphaseService.leftVerticalStyle(item.leftVertical)">
+			</div>
+			<div class="center-vertical"
+				[style]="biphaseService.centerVerticalStyle($index, data(), receiverSignal)"></div>
+
+			<div #topLeft class="top-left" [style]="biphaseService.topLeftStyle($index, data(), receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.topLeft, topLeft)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.topLeft, topLeft)"
+				(click)="activateLeftTop($index, receiverSignal)"></div>
+
+			<div #topRight class="top-right" [style]="biphaseService.topRightStyle($index, data(), receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.topRight, topRight)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.topRight, topRight)"
+				(click)="activateRightTop($index, receiverSignal)">
+			</div>
+
+			<div #bottomLeft class="bottom-left"
+				[style]="biphaseService.bottomLeftStyle($index, data(), receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.bottomLeft, bottomLeft)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.bottomLeft, bottomLeft)"
+				(click)="activateLeftBottom($index, receiverSignal)"></div>
+
+			<div #bottomRight class="bottom-right"
+				[style]="biphaseService.bottomRightStyle($index, data(), receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.bottomRight, bottomRight)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.bottomRight, bottomRight)"
+				(click)="activateRightBottom($index, receiverSignal)"></div>
+		</div>
+
+		<div class="bit">
+			{{ receiverData[$index] }}
+		</div>
+	</div>
+	}
+</div>
