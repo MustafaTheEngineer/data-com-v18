@@ -1,5 +1,5 @@
-import { Component, computed, input } from '@angular/core';
-import { BiphaseSignal } from '../biphase.service';
+import { Component, computed, inject, input } from '@angular/core';
+import { BiphaseService, BiphaseSignal } from '../biphase.service';
 
 @Component({
 	selector: 'app-diff-manchester',
@@ -9,15 +9,21 @@ import { BiphaseSignal } from '../biphase.service';
 	styleUrl: './diff-manchester.component.scss'
 })
 export class DiffManchesterComponent {
+	biphaseService = inject(BiphaseService);
+
 	data = input('');
-	receivedSignal: BiphaseSignal[] = []
+	senderSignal: BiphaseSignal[] = []
+
+	receiverData = ''
+	receiverSignal: BiphaseSignal[] = []
 
 	receivedDataSignal = computed(() => {
 		let shift: 'top' | 'bottom' = 'top'
-		this.receivedSignal = []
+		this.senderSignal = []
+		this.receiverSignal = []
 
 		for (let index = 0; index < this.data().length; index++) {
-			this.receivedSignal.push({
+			const newSignal = {
 				leftVertical: this.data()[index] === '0',
 				centerVertical: true,
 
@@ -25,46 +31,34 @@ export class DiffManchesterComponent {
 				topRight: shift === 'top' && this.data()[index] === '0' || shift === 'bottom' && this.data()[index] === '1',
 				bottomLeft: shift === 'top' && this.data()[index] === '0' || shift === 'bottom' && this.data()[index] === '1',
 				bottomRight: shift === 'bottom' && this.data()[index] === '0' || shift === 'top' && this.data()[index] === '1',
-			})
+			}
+			this.senderSignal.push(newSignal)
+			this.receiverSignal.push({ ...newSignal })
 			if (this.data()[index] === '1') shift = shift === 'top' ? 'bottom' : 'top'
 		}
 
-		return this.receivedSignal
+		this.receiverData = this.data()
+
+		return this.senderSignal
 	})
 
-	highlightSignal(signal: boolean, element: HTMLDivElement) {
-		if (!signal) {
-			element.style.opacity = '0.5'
-			return
-		}
-		element.style.borderLeftColor = 'green'
-	}
-
-	dehighlightSignal(signal: boolean, element: HTMLDivElement) {
-		if (!signal) {
-			element.style.opacity = '0.3'
-			return
-		}
-		element.style.borderLeftColor = 'blue'
-	}
-
-	centerVerticalStyle(index: number) {
+	centerVerticalStyle(index: number, array: BiphaseSignal[]) {
 		return {
-			'border-color': this.receivedDataSignal()[index].centerVertical ? 'blue' : 'white',
-			'opacity': this.receivedDataSignal()[index].centerVertical ? 1 : 0
+			'border-color': array[index].centerVertical ? 'blue' : 'white',
+			'opacity': array[index].centerVertical ? 1 : 0
 		}
 	}
 
-	leftVerticalStyle(index: number) {
+	leftVerticalStyle(index: number, data: string, array: BiphaseSignal[]) {
 		const result = {
-			'border-color': this.receivedSignal[index].leftVertical ? 'blue' : 'white',
-			'border-left-style': this.receivedSignal[index].leftVertical ? 'solid' : 'dashed',
-			'opacity': this.receivedSignal[index].leftVertical ? 1 : 0.3
+			'border-color': array[index].leftVertical ? 'blue' : 'white',
+			'border-left-style': array[index].leftVertical ? 'solid' : 'dashed',
+			'opacity': array[index].leftVertical ? 1 : 0.3
 		}
 
-		if (this.data()[index] === '1' && this.receivedSignal[index].leftVertical) {
+		if (data[index] === '1' && array[index].leftVertical) {
 			result['border-color'] = 'red'
-		} else if (this.data()[index] === '0' && !this.receivedSignal[index].leftVertical) {
+		} else if (data[index] === '0' && !array[index].leftVertical) {
 			result['border-color'] = 'red'
 			result['opacity'] = 1
 		}
@@ -72,117 +66,115 @@ export class DiffManchesterComponent {
 		return result
 	}
 
-	topLeftStyle(index: number) {
+	topLeftStyle(index: number, array: BiphaseSignal[]) {
 		const result = {
-			'opacity': this.receivedDataSignal()[index].topLeft ? 1 : 0.3,
-			'border-color': this.receivedDataSignal()[index].topLeft ? 'blue' : 'white'
+			'opacity': array[index].topLeft ? 1 : 0.3,
+			'border-color': array[index].topLeft ? 'blue' : 'white'
 		}
 
-		if (this.receivedDataSignal()[index].topRight && this.receivedDataSignal()[index].topLeft) {
+		if (array[index].topRight && array[index].topLeft) {
 			result['border-color'] = 'red'
 		}
 
 		return result;
 	}
 
-	topRightStyle(index: number) {
+	topRightStyle(index: number, array: BiphaseSignal[]) {
 		const result = {
-			'opacity': this.receivedDataSignal()[index].topRight ? 1 : 0.3,
-			'border-color': this.receivedDataSignal()[index].topRight ? 'blue' : 'white'
+			'opacity': array[index].topRight ? 1 : 0.3,
+			'border-color': array[index].topRight ? 'blue' : 'white'
 		}
 
-		if (this.receivedDataSignal()[index].topRight && this.receivedDataSignal()[index].topLeft) {
+		if (array[index].topRight && array[index].topLeft) {
 			result['border-color'] = 'red'
 		}
 
 		return result;
 	}
 
-	bottomLeftStyle(index: number) {
+	bottomLeftStyle(index: number, array: BiphaseSignal[]) {
 		const result = {
-			'opacity': this.receivedDataSignal()[index].bottomLeft ? 1 : 0.3,
-			'border-color': this.receivedDataSignal()[index].bottomLeft ? 'blue' : 'white'
+			'opacity': array[index].bottomLeft ? 1 : 0.3,
+			'border-color': array[index].bottomLeft ? 'blue' : 'white'
 		}
 
-		if (this.receivedDataSignal()[index].bottomLeft && this.receivedDataSignal()[index].bottomRight) {
+		if (array[index].bottomLeft && array[index].bottomRight) {
 			result['border-color'] = 'red'
 		}
 
 		return result
 	}
 
-	bottomRightStyle(index: number) {
+	bottomRightStyle(index: number, array: BiphaseSignal[]) {
 		const result = {
-			'opacity': this.receivedDataSignal()[index].bottomRight ? 1 : 0.3,
-			'border-color': this.receivedDataSignal()[index].bottomRight ? 'blue' : 'white'
+			'opacity': array[index].bottomRight ? 1 : 0.3,
+			'border-color': array[index].bottomRight ? 'blue' : 'white'
 		}
 
-		if (this.receivedDataSignal()[index].bottomLeft && this.receivedDataSignal()[index].bottomRight) {
+		if (array[index].bottomLeft && array[index].bottomRight) {
 			result['border-color'] = 'red'
 		}
 
 		return result
 	}
 
-	activateLeftTop(item: BiphaseSignal, index: number) {
-		item.topLeft = true
-		item.bottomLeft = false
+	activateLeftTop(index: number, array: BiphaseSignal[]) {
+		this.biphaseService.activateLeftTop(index, array)
 
-		if (item.topRight) item.centerVertical = false
-		else item.centerVertical = true
+		const dataUpdate = this.receiverData.split('')
 
-		if (index > 0) {
-			if (this.receivedDataSignal()[index - 1].bottomRight) {
-				this.receivedSignal[index].leftVertical = true
-			} else {
-				this.receivedSignal[index].leftVertical = false
-			}
-		}
+		if (array[index].topRight)
+			dataUpdate[index] = '?'
+		else
+			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
+
+		this.receiverData = dataUpdate.join('')
 	}
 
-	activateRightTop(item: BiphaseSignal, index: number) {
-		item.topRight = true
-		item.bottomRight = false
+	activateRightTop(index: number, array: BiphaseSignal[]) {
+		this.biphaseService.activateRightTop(index, array)
 
-		if (item.topLeft) item.centerVertical = false
-		else item.centerVertical = true
+		const dataUpdate = this.receiverData.split('')
 
-		if (index < this.receivedSignal.length - 1) {
-			if (this.receivedSignal[index + 1].bottomLeft)
-				this.receivedSignal[index + 1].leftVertical = true
-			else
-				this.receivedSignal[index + 1].leftVertical = false
+		if (array[index].topLeft)
+			dataUpdate[index] = '?'
+		else
+			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
+
+		if (index < array.length - 1) {
+			dataUpdate[index + 1] = array[index + 1].leftVertical ? '0' : '1'
 		}
+
+		this.receiverData = dataUpdate.join('')
 	}
 
-	activateLeftBottom(item: BiphaseSignal, index: number) {
-		item.topLeft = false
-		item.bottomLeft = true
+	activateLeftBottom(index: number, array: BiphaseSignal[]) {
+		this.biphaseService.activateLeftBottom(index, array)
 
-		if (item.bottomRight) item.centerVertical = false
-		else item.centerVertical = true
+		const dataUpdate = this.receiverData.split('')
 
-		if (index > 0) {
-			if (this.receivedDataSignal()[index - 1].bottomRight) {
-				this.receivedSignal[index].leftVertical = false
-			} else {
-				this.receivedSignal[index].leftVertical = true
-			}
-		}
+		if (array[index].bottomRight)
+			dataUpdate[index] = '?'
+		else
+			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
+
+		this.receiverData = dataUpdate.join('')
 	}
 
-	activateRightBottom(item: BiphaseSignal, index: number) {
-		item.topRight = false
-		item.bottomRight = true
+	activateRightBottom(index: number, array: BiphaseSignal[]) {
+		this.biphaseService.activateRightBottom(index, array)
 
-		if (item.bottomLeft) item.centerVertical = false
-		else item.centerVertical = true
+		const dataUpdate = this.receiverData.split('')
 
-		if (index < this.receivedSignal.length - 1) {
-			if (this.receivedSignal[index + 1].bottomLeft)
-				this.receivedSignal[index + 1].leftVertical = false
-			else
-				this.receivedSignal[index + 1].leftVertical = true
+		if (array[index].bottomLeft)
+			dataUpdate[index] = '?'
+		else
+			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
+
+		if (index < array.length - 1) {
+			dataUpdate[index + 1] = array[index + 1].leftVertical ? '0' : '1'
 		}
+
+		this.receiverData = dataUpdate.join('')
 	}
 }

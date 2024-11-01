@@ -9,27 +9,53 @@
 			<div class="top-left-dashed"></div>
 			<div class="bottom-left-dashed"></div>
 
-			<div #leftVertical class="left-vertical" [style]="leftVerticalStyle($index)"></div>
-			<div class="center-vertical" [style]="centerVerticalStyle($index)"></div>
+			<div class="left-vertical" [style]="leftVerticalStyle($index, data(), senderSignal)"></div>
+			<div class="center-vertical" [style]="centerVerticalStyle($index, senderSignal)"></div>
 
-			<div #topLeft class="top-left" [style]="topLeftStyle($index)"
-				(mouseenter)="highlightSignal(item.topLeft, topLeft)"
-				(mouseleave)="dehighlightSignal(item.topLeft, topLeft)" (click)="activateLeftTop(item, $index)"></div>
+			<div class="top-left" [style]="topLeftStyle($index, senderSignal)"></div>
+			<div class="top-right" [style]="topRightStyle($index, senderSignal)"></div>
+			<div class="bottom-left" [style]="bottomLeftStyle($index, senderSignal)"></div>
+			<div class="bottom-right" [style]="bottomRightStyle($index, senderSignal)"></div>
+		</div>
+	</div>
+	}
+</div>
 
-			<div #topRight class="top-right" [style]="topRightStyle($index)"
-				(mouseenter)="highlightSignal(item.topRight, topRight)"
-				(mouseleave)="dehighlightSignal(item.topRight, topRight)" (click)="activateRightTop(item, $index)">
+<div class="cell-container">
+	@for (item of receiverSignal; track $index) {
+	<div class="data-cell">
+		<div class="signal-container">
+			<div class="top-left-dashed"></div>
+			<div class="bottom-left-dashed"></div>
+
+			<div #leftVertical class="left-vertical" [style]="leftVerticalStyle($index, data(), receiverSignal)">
+			</div>
+			<div class="center-vertical" [style]="centerVerticalStyle($index, receiverSignal)"></div>
+
+			<div #topLeft class="top-left" [style]="topLeftStyle($index, receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.topLeft, topLeft)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.topLeft, topLeft)"
+				(click)="activateLeftTop($index, receiverSignal)"></div>
+
+			<div #topRight class="top-right" [style]="topRightStyle($index, receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.topRight, topRight)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.topRight, topRight)"
+				(click)="activateRightTop($index, receiverSignal)">
 			</div>
 
-			<div #bottomLeft class="bottom-left" [style]="bottomLeftStyle($index)"
-				(mouseenter)="highlightSignal(item.bottomLeft, bottomLeft)"
-				(mouseleave)="dehighlightSignal(item.bottomLeft, bottomLeft)"
-				(click)="activateLeftBottom(item, $index)"></div>
+			<div #bottomLeft class="bottom-left" [style]="bottomLeftStyle($index, receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.bottomLeft, bottomLeft)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.bottomLeft, bottomLeft)"
+				(click)="activateLeftBottom($index, receiverSignal)"></div>
 
-			<div #bottomRight class="bottom-right" [style]="bottomRightStyle($index)"
-				(mouseenter)="highlightSignal(item.bottomRight, bottomRight)"
-				(mouseleave)="dehighlightSignal(item.bottomRight, bottomRight)"
-				(click)="activateRightBottom(item, $index)"></div>
+			<div #bottomRight class="bottom-right" [style]="bottomRightStyle($index, receiverSignal)"
+				(mouseenter)="biphaseService.highlightSignal(item.bottomRight, bottomRight)"
+				(mouseleave)="biphaseService.dehighlightSignal(item.bottomRight, bottomRight)"
+				(click)="activateRightBottom($index, receiverSignal)"></div>
+		</div>
+
+		<div class="bit">
+			{{ receiverData[$index] }}
 		</div>
 	</div>
 	}

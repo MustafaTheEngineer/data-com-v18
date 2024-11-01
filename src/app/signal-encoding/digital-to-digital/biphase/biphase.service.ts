@@ -69,6 +69,8 @@ export class BiphaseService {
 		signals[index].topLeft = true
 		signals[index].bottomLeft = false
 
+		signals[index].centerVertical = !signals[index].topRight
+
 		if (signals[index].topRight) signals[index].centerVertical = false
 		if (index > 0) signals[index].leftVertical = signals[index - 1].bottomRight
 	}
@@ -77,6 +79,8 @@ export class BiphaseService {
 		signals[index].topRight = true
 		signals[index].bottomRight = false
 
+		signals[index].centerVertical = !signals[index].topLeft
+
 		if (index < signals.length - 1) signals[index + 1].leftVertical = signals[index + 1].bottomLeft
 	}
 
@@ -84,12 +88,16 @@ export class BiphaseService {
 		signals[index].topLeft = false
 		signals[index].bottomLeft = true
 
+		signals[index].centerVertical = !signals[index].bottomRight
+
 		if (index > 0) signals[index].leftVertical = !signals[index - 1].bottomRight
 	}
 
 	activateRightBottom(index: number, signals: BiphaseSignal[]) {
 		signals[index].topRight = false
 		signals[index].bottomRight = true
+
+		signals[index].centerVertical = !signals[index].bottomLeft
 
 		if (index < signals.length - 1) signals[index + 1].leftVertical = !signals[index + 1].bottomLeft
 	}
