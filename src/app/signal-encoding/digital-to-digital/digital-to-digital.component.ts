@@ -3,6 +3,7 @@ import { BinaryDataComponent } from '../../binary-data/binary-data.component';
 import { NrzComponent } from './nrz/nrz.component';
 import { ManchesterComponent } from './biphase/manchester/manchester.component';
 import { DiffManchesterComponent } from './biphase/diff-manchester/diff-manchester.component';
+import { BipolarComponent } from './multilevel/bipolar/bipolar.component';
 
 enum Schemes {
 	NRZ = 'NRZ-L',
@@ -17,7 +18,7 @@ enum Schemes {
 @Component({
 	selector: 'app-digital-to-digital',
 	standalone: true,
-	imports: [BinaryDataComponent, NrzComponent, ManchesterComponent, DiffManchesterComponent],
+	imports: [BinaryDataComponent, NrzComponent, ManchesterComponent, DiffManchesterComponent, BipolarComponent],
 	templateUrl: './digital-to-digital.component.html',
 	styleUrl: './digital-to-digital.component.scss'
 })
