@@ -63,24 +63,48 @@ export class BipolarComponent {
 	}
 
 	topSignalStyle(index: number, signal: MultiLevelSignal[]) {
-		return {
-			'border-color': signal[index].topSignal ? 'blue' : 'white',
+		const result = {
+			'border-color': signal[index].topSignal ? (this.data()[index] === '1' ? 'blue' : 'red') : 'white',
 			'opacity': signal[index].topSignal ? 1 : 0.3,
 		}
+
+		if (signal === this.receiverSignal && signal[index].topSignal) {
+			const lastTopSignal = signal.slice(0, index + 1).filter((value) => !value.centerSignal)
+
+			if (lastTopSignal.length > 1) {
+				if (lastTopSignal[lastTopSignal.length - 2].topSignal) {
+					result['border-color'] = 'red'
+				}
+			}
+		}
+
+		return result
 	}
 
 	centerSignalStyle(index: number, signal: MultiLevelSignal[]) {
 		return {
-			'border-color': signal[index].centerSignal ? 'blue' : 'white',
+			'border-color': signal[index].centerSignal ? (this.data()[index] === '0' ? 'blue' : 'red') : 'white',
 			'opacity': signal[index].centerSignal ? 1 : 0.3,
 		}
 	}
 
 	bottomSignalStyle(index: number, signal: MultiLevelSignal[]) {
-		return {
-			'border-color': signal[index].bottomSignal ? 'blue' : 'white',
+		const result = {
+			'border-color': signal[index].bottomSignal ? (this.data()[index] === '1' ? 'blue' : 'red') : 'white',
 			'opacity': signal[index].bottomSignal ? 1 : 0.3,
 		}
+
+		if (signal === this.receiverSignal && signal[index].bottomSignal) {
+			const lastBottomSignal = signal.slice(0, index + 1).filter((value) => !value.centerSignal)
+
+			if (lastBottomSignal.length > 1) {
+				if (lastBottomSignal[lastBottomSignal.length - 2].bottomSignal) {
+					result['border-color'] = 'red'
+				}
+			}
+		}
+
+		return result
 	}
 
 	highlightSignal(element: HTMLDivElement) {
