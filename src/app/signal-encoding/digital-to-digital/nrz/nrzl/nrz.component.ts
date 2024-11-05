@@ -9,14 +9,12 @@ import { Component, computed, inject, input } from '@angular/core';
 })
 export class NrzComponent {
 	data = input('');
-	nrzType = input<'NRZ-L' | 'NRZI'>('NRZ-L');
-	signalExistWhen = computed(() => this.nrzType() === 'NRZ-L' ? '0' : '1');
 
 	senderData = computed(() => {
 		this.senderSignal = []
 
 		for (let index = 0; index < this.data().length; index++) {
-			this.senderSignal.push(this.signalExistWhen() === this.data()[index])
+			this.senderSignal.push(this.data()[index] === '0')
 		}
 
 		this.receiverSignal = [...this.senderSignal]
@@ -68,14 +66,14 @@ export class NrzComponent {
 
 	topSignalStyle(index: number, array: boolean[]) {
 		return {
-			'border-color': array[index] ? this.data()[index] === this.signalExistWhen() ? 'blue' : 'red' : 'white',
+			'border-color': array[index] ? this.data()[index] === '0' ? 'blue' : 'red' : 'white',
 			'opacity': array[index] ? '1' : '0.3',
 		}
 	}
 
 	bottomSignalStyle(index: number, array: boolean[]) {
 		return {
-			'border-color': !array[index] ? this.data()[index] !== this.signalExistWhen() ? 'blue' : 'red' : 'white',
+			'border-color': !array[index] ? this.data()[index] !== '0' ? 'blue' : 'red' : 'white',
 			'opacity': !array[index] ? '1' : '0.3',
 		}
 	}

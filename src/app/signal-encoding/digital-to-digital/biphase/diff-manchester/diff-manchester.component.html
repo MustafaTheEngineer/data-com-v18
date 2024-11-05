@@ -60,3 +60,12 @@
 	</div>
 	}
 </div>
+
+<p id="explanation">
+	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>.
+	@if (receiverData.includes('?')) {
+	Error detected since there is no signal that pass through center.
+	} @else if (data() !== receiverData) {
+	Error could not be detected.
+	}
+</p>

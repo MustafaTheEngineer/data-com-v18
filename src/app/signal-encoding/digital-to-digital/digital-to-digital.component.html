@@ -4,26 +4,34 @@
 	Choose an encoding scheme to interpret the signal.
 </p>
 
-@for (item of schemes; track $index) {
-	<button (click)="scheme = item">
-		{{ item }}
-	</button>
-}
+<div id="encodings">
+	@for (item of schemes; track $index) {
+		<button (click)="scheme = item">
+			{{ item }}
+		</button>
+	}
+</div>
 
-@switch (scheme) {
-	@case ('NRZ-L') {
-		<app-nrz [data]="data()" nrzType="NRZ-L"></app-nrz>
+<h3 id="current-encoding">
+	{{ scheme }}
+</h3>
+
+<div id="current-scheme">
+	@switch (scheme) {
+		@case ('NRZ-L') {
+			<app-nrz [data]="data()"></app-nrz>
+		}
+		@case ('NRZI') {
+			<app-nrzi [data]="data()"></app-nrzi>
+		}
+		@case ('Manchester') {
+			<app-manchester [data]="data()"></app-manchester>
+		}
+		@case ('Differential Manchester') {
+			<app-diff-manchester [data]="data()"></app-diff-manchester>
+		}
+		@case ('Bipolar AMI') {
+			<app-bipolar [data]="data()"></app-bipolar>
+		}
 	}
-	@case ('NRZI') {
-		<app-nrz [data]="data()" nrzType="NRZI"></app-nrz>
-	}
-	@case ('Manchester') {
-		<app-manchester [data]="data()"></app-manchester>
-	}
-	@case ('Differential Manchester') {
-		<app-diff-manchester [data]="data()"></app-diff-manchester>
-	}
-	@case ('Bipolar AMI') {
-		<app-bipolar [data]="data()"></app-bipolar>
-	}
-}
+</div>

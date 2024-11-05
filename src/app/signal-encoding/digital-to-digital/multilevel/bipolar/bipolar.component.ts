@@ -128,6 +128,11 @@ export class BipolarComponent {
 			this.receiverSignal[index + 1].topLeft = !this.receiverSignal[index + 1].topSignal
 			this.receiverSignal[index + 1].bottomLeft = this.receiverSignal[index + 1].bottomSignal
 		}
+
+		const signalArray = this.receiverData.split('')
+		signalArray[index] = '1'
+
+		this.receiverData = signalArray.join('')
 	}
 
 	activateCenterSignal(index: number) {
@@ -143,6 +148,11 @@ export class BipolarComponent {
 			this.receiverSignal[index + 1].topLeft = this.receiverSignal[index + 1].topSignal
 			this.receiverSignal[index + 1].bottomLeft = this.receiverSignal[index + 1].bottomSignal
 		}
+
+		const signalArray = this.receiverData.split('')
+		signalArray[index] = '0'
+
+		this.receiverData = signalArray.join('')
 	}
 
 	activateBottomSignal(index: number) {
@@ -158,5 +168,10 @@ export class BipolarComponent {
 			this.receiverSignal[index + 1].topLeft = this.receiverSignal[index + 1].topSignal
 			this.receiverSignal[index + 1].bottomLeft = !this.receiverSignal[index + 1].bottomSignal
 		}
+
+		const signalArray = this.receiverData.split('')
+		signalArray[index] = '1'
+
+		this.receiverData = signalArray.join('')
 	}
 }

@@ -26,11 +26,14 @@
 			<div class="bottom-left-dashed"></div>
 
 			<div class="left-signal" [style]="leftVerticalStyle($index, receiverSignal)"></div>
-			
-			<div #topSignal class="top-signal" [style]="topSignalStyle($index, receiverSignal)"
-			(click)="toggleSignal($index)" (mouseenter)="highlightTop(item, topSignal)" (mouseleave)="dehighlightTop(item, topSignal)"></div>
 
-			<div #bottomSignal class="bottom-signal" [style]="bottomSignalStyle($index, receiverSignal)" (click)="toggleSignal($index)" (mouseenter)="highlightBottom(item, bottomSignal)" (mouseleave)="dehighlightBottom(item, bottomSignal)"></div>
+			<div #topSignal class="top-signal" [style]="topSignalStyle($index, receiverSignal)"
+				(click)="toggleSignal($index, topSignal)" (mouseenter)="highlightTop(item, topSignal)"
+				(mouseleave)="dehighlightTop(item, topSignal)"></div>
+
+			<div #bottomSignal class="bottom-signal" [style]="bottomSignalStyle($index, receiverSignal)"
+				(click)="toggleSignal($index, bottomSignal)" (mouseenter)="highlightBottom(item, bottomSignal)"
+				(mouseleave)="dehighlightBottom(item, bottomSignal)"></div>
 		</div>
 
 		<div class="bit">
@@ -39,3 +42,10 @@
 	</div>
 	}
 </div>
+
+<p id="explanation">
+	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>.
+	@if (data() !== receiverData) {
+	Error could not be detected.
+	}
+</p>

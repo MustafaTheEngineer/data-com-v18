@@ -1,36 +1,56 @@
-::ng-deep .cell-container{
+p {
+	margin: var(--margin-xl);
+}
 
-		display: flex;
-		overflow-x: scroll;
+#current-scheme {
+	overflow: scroll;
+}
 
-		.data-cell {
-			.bit {
-				text-align: center;
+::ng-deep .cell-container {
+	display: flex;
+
+	.data-cell {
+		.bit {
+			text-align: center;
+		}
+
+		.signal-container {
+			width: 140px;
+			height: 140px;
+			position: relative;
+
+			div {
+				position: absolute;
 			}
 
-			.signal-container {
-				width: 140px;
-				height: 140px;
-				position: relative;
+			.top-left-dashed {
+				border-left: 2px dashed white;
+				left: 0;
+				top: 0;
+				height: 20px;
+			}
 
-				div {
-					position: absolute;
-				}
-
-				.top-left-dashed {
-					border-left: 2px dashed white;
-					left: 0;
-					top: 0;
-					height: 20px;
-				}
-
-				.bottom-left-dashed {
-					border-left: 2px dashed white;
-					left: 0;
-					bottom: 0;
-					height: 20px;
-				}
+			.bottom-left-dashed {
+				border-left: 2px dashed white;
+				left: 0;
+				bottom: 0;
+				height: 20px;
 			}
 		}
-	
+	}
+}
+
+::ng-deep #explanation {
+	margin: var(--margin-xl);
+}
+
+#encodings {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 30px;
+	margin: 0 var(--margin-xl);
+}
+
+#current-encoding {
+	margin: var(--margin-xl);
 }
