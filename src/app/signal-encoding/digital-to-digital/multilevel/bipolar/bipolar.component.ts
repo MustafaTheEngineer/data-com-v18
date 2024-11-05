@@ -174,4 +174,14 @@ export class BipolarComponent {
 
 		this.receiverData = signalArray.join('')
 	}
+
+	isErrorDetected() {
+		const signals = this.receiverSignal.filter((signal) => !signal.centerSignal)
+
+		for (let i = 0; i < signals.length - 1; i++) {
+			if (signals[i].topSignal === signals[i + 1].topSignal) return true
+		}
+
+		return false;
+	}
 }
