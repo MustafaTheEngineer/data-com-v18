@@ -40,3 +40,13 @@
 	height: 25px;
 	border-bottom: 2px solid white;
 }
+
+.signal-container {
+	position: relative;
+
+	.scrambling-letter {
+		position: absolute;
+		left: 50%;
+		top: 20%;
+	}
+}

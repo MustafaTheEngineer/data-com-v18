@@ -1,22 +1,38 @@
+<button (click)="applyB8ZS()" [style.background-color]="scrambling === 'b8zs' ? 'green' : 'inherit'">
+	Apply B8ZS
+</button>
+
+<button (click)="scrambling === 'hdb3' ? scrambling = 'none' : scrambling = 'hdb3'">
+	Apply HDB3
+</button>
+
 <div class="cell-container">
-	@for (item of senderData(); track $index) {
-	<div class="data-cell">
-		<div class="bit">
-			{{ data()[$index] }}
-		</div>
+		@for (item of senderData(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
+	
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+	
+				<div class="left-top" [style]="topLeftStyle($index, senderSignal)"></div>
+				<div class="left-bottom" [style]="bottomLeftStyle($index, senderSignal)"></div>
+				<div class="top-signal" [style]="topSignalStyle($index, senderSignal)"></div>
+				<div class="center-signal" [style]="centerSignalStyle($index, senderSignal)"></div>
+				<div class="bottom-signal" [style]="bottomSignalStyle($index, senderSignal)"></div>
 
-		<div class="signal-container">
-			<div class="top-left-dashed"></div>
-			<div class="bottom-left-dashed"></div>
-
-			<div class="left-top" [style]="topLeftStyle($index, senderSignal)"></div>
-			<div class="left-bottom" [style]="bottomLeftStyle($index, senderSignal)"></div>
-			<div class="top-signal" [style]="topSignalStyle($index, senderSignal)"></div>
-			<div class="center-signal" [style]="centerSignalStyle($index, senderSignal)"></div>
-			<div class="bottom-signal" [style]="bottomSignalStyle($index, senderSignal)"></div>
+				@if (scrambling === 'b8zs') {
+					@if (scramblingLettersSender[$index] !== '0') {
+						<div class="scrambling-letter">
+							{{ scramblingLettersSender[$index] }}
+						</div>
+					}
+				}
+			</div>
 		</div>
-	</div>
-	}
+		}
 </div>
 
 <div class="cell-container">
@@ -31,14 +47,22 @@
 
 			<div #topSignal class="top-signal" [style]="topSignalStyle($index, receiverSignal)"
 				(mouseenter)="highlightSignal(topSignal)" (mouseleave)="dehighlightSignal(topSignal)"
-				(click)="activateTopSignal($index)"></div>
+				(click)="activateSignal($index, topSignal)"></div>
 
 			<div #centerSignal class="center-signal" [style]="centerSignalStyle($index, receiverSignal)"
-				(mouseenter)="highlightSignal(centerSignal)" (mouseleave)="dehighlightSignal(centerSignal)" (click)="activateCenterSignal($index)"></div>
+				(mouseenter)="highlightSignal(centerSignal)" (mouseleave)="dehighlightSignal(centerSignal)" (click)="activateSignal($index, centerSignal)"></div>
 
 			<div #bottomSignal class="bottom-signal" [style]="bottomSignalStyle($index, receiverSignal)"
 				(mouseenter)="highlightSignal(bottomSignal)" (mouseleave)="dehighlightSignal(bottomSignal)"
-				(click)="activateBottomSignal($index)"></div>
+				(click)="activateSignal($index, bottomSignal)"></div>
+
+				@if (scrambling === 'b8zs') {
+					@if (scramblingLettersReceiver[$index] !== '0') {
+						<div class="scrambling-letter">
+							{{ scramblingLettersReceiver[$index] }}
+						</div>
+					}
+				}
 		</div>
 
 		<div class="bit">
@@ -49,10 +73,5 @@
 </div>
 
 <p id="explanation">
-	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>.
-	@if (isErrorDetected()) {
-	Error detected since signal was not shifted.
-	} @else if ( data() !== receiverData) {
-		Error could not be detected.
-	}
+	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>. {{ errorDetected() }}
 </p>
