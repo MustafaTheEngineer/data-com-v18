@@ -2,7 +2,7 @@
 	Apply B8ZS
 </button>
 
-<button (click)="scrambling === 'hdb3' ? scrambling = 'none' : scrambling = 'hdb3'">
+<button (click)="applyHDB3()">
 	Apply HDB3
 </button>
 
@@ -17,14 +17,14 @@
 				<div class="top-left-dashed"></div>
 				<div class="bottom-left-dashed"></div>
 	
-				<div class="left-top" [style]="topLeftStyle($index, senderSignal)"></div>
-				<div class="left-bottom" [style]="bottomLeftStyle($index, senderSignal)"></div>
+				<div class="left-top" [style]="verticalStyle($index, senderSignal, true)"></div>
+				<div class="left-bottom" [style]="verticalStyle($index, senderSignal, false)"></div>
 				<div class="top-signal" [style]="topSignalStyle($index, senderSignal)"></div>
 				<div class="center-signal" [style]="centerSignalStyle($index, senderSignal)"></div>
 				<div class="bottom-signal" [style]="bottomSignalStyle($index, senderSignal)"></div>
 
 				@if (scrambling === 'b8zs') {
-					@if (scramblingLettersSender[$index] !== '0') {
+					@if (scramblingLettersSender[$index] !== 'N') {
 						<div class="scrambling-letter">
 							{{ scramblingLettersSender[$index] }}
 						</div>
@@ -42,8 +42,8 @@
 			<div class="top-left-dashed"></div>
 			<div class="bottom-left-dashed"></div>
 
-			<div class="left-top" [style]="topLeftStyle($index, receiverSignal)"></div>
-			<div class="left-bottom" [style]="bottomLeftStyle($index, receiverSignal)"></div>
+			<div class="left-top" [style]="verticalStyle($index, receiverSignal, true)"></div>
+			<div class="left-bottom" [style]="verticalStyle($index, receiverSignal, false)"></div>
 
 			<div #topSignal class="top-signal" [style]="topSignalStyle($index, receiverSignal)"
 				(mouseenter)="highlightSignal(topSignal)" (mouseleave)="dehighlightSignal(topSignal)"
@@ -57,7 +57,7 @@
 				(click)="activateSignal($index, bottomSignal)"></div>
 
 				@if (scrambling === 'b8zs') {
-					@if (scramblingLettersReceiver[$index] !== '0') {
+					@if (scramblingLettersReceiver[$index] !== 'N') {
 						<div class="scrambling-letter">
 							{{ scramblingLettersReceiver[$index] }}
 						</div>

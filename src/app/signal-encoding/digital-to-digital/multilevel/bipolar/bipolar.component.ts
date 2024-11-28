@@ -7,9 +7,6 @@ enum SignalLevel {
 }
 
 type MultiLevelSignal = {
-	topLeft: boolean;
-	bottomLeft: boolean;
-
 	signalLevel: SignalLevel
 }
 
@@ -33,88 +30,6 @@ export class BipolarComponent {
 	senderSignal: MultiLevelSignal[] = []
 	receiverSignal: MultiLevelSignal[] = []
 
-	applyB8ZS() {
-		if (this.scrambling === 'b8zs')
-			this.scrambling = 'none';
-		else
-			this.scrambling = 'b8zs';
-
-		this.computeSignal();
-	}
-
-	b8zs() {
-		const points = [];
-		let currentPoint = this.data().indexOf('00000000', 0);
-
-		this.scrambling = 'b8zs';
-
-		while (currentPoint !== -1) {
-			points.push(currentPoint);
-			currentPoint = this.data().indexOf('00000000', currentPoint + 8);
-		}
-
-		for (let i = 0; i < points.length; i++) {
-			let shiftStart = points[i] === 0 ? true : this.senderSignal[points[i] - 1].signalLevel === SignalLevel.TOP ? true : false;
-
-			this.senderSignal[points[i] + 3].signalLevel = shiftStart ? SignalLevel.TOP : SignalLevel.BOTTOM;
-
-			this.senderSignal[points[i] + 3].bottomLeft = !shiftStart;
-			this.senderSignal[points[i] + 3].topLeft = shiftStart;
-
-			this.senderSignal[points[i] + 4].signalLevel = shiftStart ? SignalLevel.BOTTOM : SignalLevel.TOP;
-
-			this.senderSignal[points[i] + 4].topLeft = true;
-			this.senderSignal[points[i] + 4].bottomLeft = true;
-
-			this.senderSignal[points[i] + 5].bottomLeft = shiftStart;
-			this.senderSignal[points[i] + 5].topLeft = !shiftStart;
-
-			this.senderSignal[points[i] + 6].signalLevel = shiftStart ? SignalLevel.BOTTOM : SignalLevel.TOP;
-
-			this.senderSignal[points[i] + 6].topLeft = !shiftStart;
-			this.senderSignal[points[i] + 6].bottomLeft = shiftStart;
-
-			this.senderSignal[points[i] + 7].signalLevel = shiftStart ? SignalLevel.TOP : SignalLevel.BOTTOM;
-
-			this.senderSignal[points[i] + 7].topLeft = true;
-			this.senderSignal[points[i] + 7].bottomLeft = true;
-
-
-			if (this.senderSignal[points[i] + 8]) {
-				this.senderSignal[points[i] + 8].topLeft = shiftStart;
-				this.senderSignal[points[i] + 8].bottomLeft = !shiftStart;
-			}
-
-			if (points[i + 1]) {
-				for (var j = points[i] + 8; j < points[i + 1]; j++) {
-					this.senderSignal[j].signalLevel = !shiftStart ? SignalLevel.TOP : SignalLevel.BOTTOM;
-					this.senderSignal[j].signalLevel = !shiftStart ? SignalLevel.TOP : SignalLevel.BOTTOM;
-					this.senderSignal[j].topLeft = true;
-					this.senderSignal[j].bottomLeft = true;
-
-					shiftStart = !shiftStart;
-				}
-
-				this.senderSignal[j].topLeft = this.senderSignal[j - 1].signalLevel === SignalLevel.TOP ? true : false;
-				this.senderSignal[j].bottomLeft = this.senderSignal[j - 1].signalLevel === SignalLevel.BOTTOM ? true : false;
-
-			}
-		}
-
-		this.receiverSignal = []
-
-		this.senderSignal.forEach((signal) => {
-			this.receiverSignal.push({ ...signal });
-		})
-		this.receiverData = this.data()
-		this.scramblingLettersSender = []
-
-		this.scramblingLettersSender = this.putScramblingLetters(this.senderSignal)
-		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
-
-		return points;
-	}
-
 	computeSignal() {
 		this.senderSignal = []
 		this.receiverSignal = []
@@ -123,9 +38,6 @@ export class BipolarComponent {
 
 		for (let index = 0; index < this.data().length; index++) {
 			const newSignal = {
-				topLeft: index === 0 ? false : this.data()[index] === '1' && signalLevel === SignalLevel.TOP || this.data()[index - 1] === '1' && signalLevel !== SignalLevel.TOP,
-				bottomLeft: index === 0 ? false : this.data()[index] === '1' && signalLevel !== SignalLevel.TOP || this.data()[index - 1] === '1' && signalLevel === SignalLevel.TOP,
-
 				signalLevel: this.data()[index] === '0' ? SignalLevel.CENTER : signalLevel,
 			}
 			this.senderSignal.push(newSignal);
@@ -139,22 +51,146 @@ export class BipolarComponent {
 
 		if (this.scrambling === 'b8zs')
 			this.b8zs()
+		else if (this.scrambling === 'hdb3')
+			this.hdb3()
 
 		return this.data()
 	}
 
-	topLeftStyle(index: number, signal: MultiLevelSignal[]) {
-		return {
-			'border-left-color': signal[index].topLeft ? 'blue' : 'white',
-			'opacity': signal[index].topLeft ? 1 : 0.3,
+	b8zs() {
+		let currentPoint: number = this.data().indexOf('00000000', 0);
+		let shift = SignalLevel.TOP;
+
+		while (currentPoint !== -1) {
+			for (let j = currentPoint - 1; j >= 0; j--) {
+				if (this.senderSignal[j].signalLevel !== SignalLevel.CENTER) {
+					shift = this.senderSignal[j].signalLevel;
+					break;
+				}
+			}
+
+			this.senderSignal[currentPoint + 3].signalLevel = shift;
+			this.senderSignal[currentPoint + 7].signalLevel = shift;
+
+			this.senderSignal[currentPoint + 4].signalLevel = shift === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+			this.senderSignal[currentPoint + 6].signalLevel = shift === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+
+			const endPoint = currentPoint + 8;
+			currentPoint = this.data().indexOf('00000000', currentPoint + 8);
+
+			if (currentPoint !== -1) {
+				for (let index = endPoint; index < currentPoint; index++) {
+					if (this.senderSignal[index].signalLevel !== SignalLevel.CENTER) {
+						this.senderSignal[index].signalLevel = shift === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+						shift = shift === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+					}
+				}
+			}
 		}
+
+		this.receiverSignal = []
+
+		this.senderSignal.forEach((signal) => {
+			this.receiverSignal.push({ ...signal });
+		})
+		this.receiverData = this.data()
+		this.scramblingLettersSender = []
+
+		this.scramblingLettersSender = this.b8zsScrambling(this.senderSignal)
+		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
 	}
 
-	bottomLeftStyle(index: number, signal: MultiLevelSignal[]) {
-		return {
-			'border-left-color': signal[index].bottomLeft ? 'blue' : 'white',
-			'opacity': signal[index].bottomLeft ? 1 : 0.3,
+	hdb3() {
+		const points = [];
+		let nonZeroPulse = 0
+		let currentPoint = this.data().indexOf('0000', 0);
+
+		this.scrambling = 'hdb3';
+
+		while (currentPoint !== -1) {
+			points.push(currentPoint);
+			currentPoint = this.data().indexOf('0000', currentPoint + 4);
 		}
+
+		if (points[0] === 0) {
+			this.senderSignal[3].signalLevel = SignalLevel.TOP;
+		}
+
+		for (let i = 1; i < points.length; i++) {
+			let last1Index = 0;
+
+			for (var j = points[i - 1]; j < points[i]; j++) {
+				if (this.senderSignal[j].signalLevel !== SignalLevel.CENTER) {
+					nonZeroPulse++;
+					last1Index = j;
+				}
+			}
+
+			const lastPulseSignal = this.senderSignal[last1Index].signalLevel;
+			console.log(points[i - 1], points[i], nonZeroPulse)
+
+			if (nonZeroPulse % 2 === 0) {
+				console.log('denme')
+				this.senderSignal[j + 3].signalLevel = lastPulseSignal
+			} else {
+				this.senderSignal[j].signalLevel = lastPulseSignal === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+				this.senderSignal[j + 3].signalLevel = this.senderSignal[j].signalLevel
+			}
+
+			nonZeroPulse = 0;
+			//break;
+		}
+
+		this.receiverSignal = []
+
+		this.senderSignal.forEach((signal) => {
+			this.receiverSignal.push({ ...signal });
+		})
+		this.receiverData = this.data()
+		this.scramblingLettersSender = []
+
+		this.scramblingLettersSender = this.b8zsScrambling(this.senderSignal)
+		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
+
+		return points;
+	}
+
+	applyB8ZS() {
+		if (this.scrambling === 'b8zs')
+			this.scrambling = 'none';
+		else
+			this.scrambling = 'b8zs';
+
+		this.computeSignal();
+	}
+
+	applyHDB3() {
+		if (this.scrambling === 'hdb3')
+			this.scrambling = 'none';
+		else
+			this.scrambling = 'hdb3';
+
+		this.computeSignal();
+	}
+
+	verticalStyle(index: number, signal: MultiLevelSignal[], isTop: boolean) {
+		const result = {
+			'border-left-color': 'white',
+			'opacity': 0.3,
+		}
+
+		if (index === 0 || signal[index].signalLevel === signal[index - 1].signalLevel) return result
+
+		const currentSignal = isTop ? SignalLevel.BOTTOM : SignalLevel.TOP
+
+		if (signal[index - 1].signalLevel === SignalLevel.CENTER && signal[index].signalLevel === currentSignal || signal[index - 1].signalLevel === currentSignal && signal[index].signalLevel === SignalLevel.CENTER) {
+			return result
+		}
+
+		result['border-left-color'] = 'blue'
+		result['opacity'] = 1
+
+		return result
 	}
 
 	topSignalStyle(index: number, signal: MultiLevelSignal[]) {
@@ -242,11 +278,13 @@ export class BipolarComponent {
 		return true;
 	}
 
-	putScramblingLetters(signal: MultiLevelSignal[]) {
+	b8zsScrambling(signal: MultiLevelSignal[]) {
 		const result: string[] = [];
-		this.senderSignal.forEach(signal => {
-			result.push('0')
-		})
+
+		for (let index = 0; index < signal.length; index++) {
+			result.push('N')
+		}
+
 		for (let i = 0; i < signal.length - 7; i++) {
 			if (signal[i + 3].signalLevel !== SignalLevel.CENTER && signal[i + 3].signalLevel !== signal[i + 4].signalLevel && signal[i + 5].signalLevel === SignalLevel.CENTER && signal[i + 6].signalLevel === signal[i + 4].signalLevel && signal[i + 7].signalLevel === signal[i + 3].signalLevel) {
 
@@ -279,59 +317,6 @@ export class BipolarComponent {
 				break;
 		}
 
-		if (index > 0) {
-			this.receiverSignal[index].topLeft = false
-			this.receiverSignal[index].bottomLeft = false
-
-			if (this.receiverSignal[index].signalLevel !== this.receiverSignal[index - 1].signalLevel) {
-				if (this.receiverSignal[index].signalLevel === SignalLevel.TOP) {
-					this.receiverSignal[index].topLeft = true
-					if (this.receiverSignal[index - 1].signalLevel === SignalLevel.BOTTOM) {
-						this.receiverSignal[index].bottomLeft = true
-					}
-				} else if (this.receiverSignal[index].signalLevel === SignalLevel.BOTTOM) {
-					this.receiverSignal[index].bottomLeft = true
-					if (this.receiverSignal[index - 1].signalLevel === SignalLevel.TOP) {
-						this.receiverSignal[index].topLeft = true
-					}
-				} else if (this.receiverSignal[index].signalLevel === SignalLevel.CENTER) {
-					if (this.receiverSignal[index - 1].signalLevel === SignalLevel.TOP) {
-						this.receiverSignal[index].topLeft = true
-
-					}
-					else if (this.receiverSignal[index - 1].signalLevel === SignalLevel.BOTTOM) {
-						this.receiverSignal[index].bottomLeft = true
-					}
-				}
-			}
-		}
-		if (index < this.receiverSignal.length - 1) {
-			this.receiverSignal[index + 1].topLeft = false
-			this.receiverSignal[index + 1].bottomLeft = false
-
-			if (this.receiverSignal[index].signalLevel !== this.receiverSignal[index + 1].signalLevel) {
-				if (this.receiverSignal[index].signalLevel === SignalLevel.TOP) {
-					this.receiverSignal[index + 1].topLeft = true
-					if (this.receiverSignal[index + 1].signalLevel === SignalLevel.BOTTOM) {
-						this.receiverSignal[index + 1].bottomLeft = true
-					}
-				} else if (this.receiverSignal[index].signalLevel === SignalLevel.BOTTOM) {
-					this.receiverSignal[index + 1].bottomLeft = true
-					if (this.receiverSignal[index + 1].signalLevel === SignalLevel.TOP) {
-						this.receiverSignal[index + 1].topLeft = true
-					}
-				} else if (this.receiverSignal[index].signalLevel === SignalLevel.CENTER) {
-					if (this.receiverSignal[index + 1].signalLevel === SignalLevel.TOP) {
-						this.receiverSignal[index + 1].topLeft = true
-
-					}
-					else if (this.receiverSignal[index + 1].signalLevel === SignalLevel.BOTTOM) {
-						this.receiverSignal[index + 1].bottomLeft = true
-					}
-				}
-			}
-		}
-
 		if (this.scrambling === 'none') {
 			const signalArray = this.receiverData.split('')
 			signalArray[index] = this.receiverSignal[index].signalLevel === SignalLevel.CENTER ? '0' : '1'
@@ -340,7 +325,7 @@ export class BipolarComponent {
 		} else if (this.scrambling === 'b8zs') {
 			this.scramblingLettersReceiver = []
 
-			this.scramblingLettersReceiver = this.putScramblingLetters(this.receiverSignal)
+			this.scramblingLettersReceiver = this.b8zsScrambling(this.receiverSignal)
 		}
 	}
 
@@ -360,7 +345,7 @@ export class BipolarComponent {
 			}
 
 			for (let i = 0; i < this.receiverSignal.length - 7; i++) {
-				if (this.receiverSignal[i + 3].signalLevel !== SignalLevel.CENTER && this.receiverSignal[i + 3].signalLevel !== this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 5].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 6].signalLevel === this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 7].signalLevel === this.receiverSignal[i + 3].signalLevel){
+				if (this.receiverSignal[i + 3].signalLevel !== SignalLevel.CENTER && this.receiverSignal[i + 3].signalLevel !== this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 5].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 6].signalLevel === this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 7].signalLevel === this.receiverSignal[i + 3].signalLevel) {
 					i += 8
 				}
 				else {
@@ -378,8 +363,6 @@ export class BipolarComponent {
 						}
 					}
 				}
-
-				console.log(i)
 			}
 		}
 
