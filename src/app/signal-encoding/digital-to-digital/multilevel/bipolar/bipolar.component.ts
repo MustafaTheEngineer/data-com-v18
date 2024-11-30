@@ -1,4 +1,5 @@
 import { Component, computed, input, Signal } from '@angular/core';
+import { last } from 'rxjs';
 
 enum SignalLevel {
 	TOP,
@@ -29,6 +30,21 @@ export class BipolarComponent {
 
 	senderSignal: MultiLevelSignal[] = []
 	receiverSignal: MultiLevelSignal[] = []
+
+	hdb3LastShift: SignalLevel = SignalLevel.TOP;
+	previousShiftNumber: boolean = true;
+
+	setLastShift(value: boolean) {
+		this.hdb3LastShift = value ? SignalLevel.TOP : SignalLevel.BOTTOM;
+
+		this.computeSignal()
+	}
+
+	setPreviousShiftNumber(value: boolean) {
+		this.previousShiftNumber = value;
+
+		this.computeSignal()
+	}
 
 	computeSignal() {
 		this.senderSignal = []
@@ -104,8 +120,7 @@ export class BipolarComponent {
 		const points = [];
 		let nonZeroPulse = 0
 		let currentPoint = this.data().indexOf('0000', 0);
-
-		this.scrambling = 'hdb3';
+		let lastPulse = SignalLevel.TOP;
 
 		while (currentPoint !== -1) {
 			points.push(currentPoint);
@@ -113,32 +128,34 @@ export class BipolarComponent {
 		}
 
 		if (points[0] === 0) {
-			this.senderSignal[3].signalLevel = SignalLevel.TOP;
+			this.senderSignal[3].signalLevel = this.hdb3LastShift
 		}
 
 		for (let i = 1; i < points.length; i++) {
-			let last1Index = 0;
-
-			for (var j = points[i - 1]; j < points[i]; j++) {
+			lastPulse = this.senderSignal[points[i - 1] + 3].signalLevel;
+			for (var j = points[i - 1] + 4; j < points[i]; j++) {
 				if (this.senderSignal[j].signalLevel !== SignalLevel.CENTER) {
+					this.senderSignal[j].signalLevel = lastPulse === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
 					nonZeroPulse++;
-					last1Index = j;
+					lastPulse = this.senderSignal[j].signalLevel;
 				}
 			}
 
-			const lastPulseSignal = this.senderSignal[last1Index].signalLevel;
-			console.log(points[i - 1], points[i], nonZeroPulse)
+			if (i === 1) {
+				if (this.previousShiftNumber) {
+					nonZeroPulse += 2
+				} else
+					nonZeroPulse++
+			}
 
 			if (nonZeroPulse % 2 === 0) {
-				console.log('denme')
-				this.senderSignal[j + 3].signalLevel = lastPulseSignal
+				this.senderSignal[j + 3].signalLevel = lastPulse
 			} else {
-				this.senderSignal[j].signalLevel = lastPulseSignal === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+				this.senderSignal[j].signalLevel = lastPulse === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
 				this.senderSignal[j + 3].signalLevel = this.senderSignal[j].signalLevel
 			}
 
 			nonZeroPulse = 0;
-			//break;
 		}
 
 		this.receiverSignal = []
@@ -149,28 +166,20 @@ export class BipolarComponent {
 		this.receiverData = this.data()
 		this.scramblingLettersSender = []
 
-		this.scramblingLettersSender = this.b8zsScrambling(this.senderSignal)
+		this.scramblingLettersSender = this.hdb3Scrambling(this.senderSignal)
 		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
 
 		return points;
 	}
 
-	applyB8ZS() {
-		if (this.scrambling === 'b8zs')
+	applyScrambling(scrambling: 'none' | 'b8zs' | 'hdb3') {
+		if (scrambling === this.scrambling) {
 			this.scrambling = 'none';
-		else
-			this.scrambling = 'b8zs';
+			return this.computeSignal();
+		}
+		this.scrambling = scrambling;
 
-		this.computeSignal();
-	}
-
-	applyHDB3() {
-		if (this.scrambling === 'hdb3')
-			this.scrambling = 'none';
-		else
-			this.scrambling = 'hdb3';
-
-		this.computeSignal();
+		return this.computeSignal()
 	}
 
 	verticalStyle(index: number, signal: MultiLevelSignal[], isTop: boolean) {
@@ -286,22 +295,61 @@ export class BipolarComponent {
 		}
 
 		for (let i = 0; i < signal.length - 7; i++) {
-			if (signal[i + 3].signalLevel !== SignalLevel.CENTER && signal[i + 3].signalLevel !== signal[i + 4].signalLevel && signal[i + 5].signalLevel === SignalLevel.CENTER && signal[i + 6].signalLevel === signal[i + 4].signalLevel && signal[i + 7].signalLevel === signal[i + 3].signalLevel) {
+			if (this.receiverSignal[i].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 1].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 2].signalLevel === SignalLevel.CENTER) {
+				if (signal[i + 3].signalLevel !== SignalLevel.CENTER && signal[i + 3].signalLevel !== signal[i + 4].signalLevel && signal[i + 5].signalLevel === SignalLevel.CENTER && signal[i + 6].signalLevel === signal[i + 4].signalLevel && signal[i + 7].signalLevel === signal[i + 3].signalLevel) {
 
-				result[i] = '0'
-				result[i + 1] = '0'
-				result[i + 2] = '0'
-				result[i + 3] = 'V'
-				result[i + 4] = 'B'
-				result[i + 5] = '0'
-				result[i + 6] = 'V'
-				result[i + 7] = 'B'
+					result[i] = '0'
+					result[i + 1] = '0'
+					result[i + 2] = '0'
+					result[i + 3] = 'V'
+					result[i + 4] = 'B'
+					result[i + 5] = '0'
+					result[i + 6] = 'V'
+					result[i + 7] = 'B'
 
-				i += 7;
+					i += 7;
+				}
 			}
 		}
 
 		return result;
+	}
+
+	hdb3Scrambling(signal: MultiLevelSignal[]) {
+		const result: string[] = [];
+
+		for (let index = 0; index < signal.length; index++) {
+			result.push('N')
+		}
+
+		let lastShift = this.hdb3LastShift
+
+		for (let index = 0; index < signal.length; index++) {
+			if (signal[index].signalLevel !== SignalLevel.CENTER) {
+				if (lastShift === signal[index].signalLevel) {
+					if (signal[index - 3]) {
+						if (signal[index - 1].signalLevel === SignalLevel.CENTER && signal[index - 2].signalLevel === SignalLevel.CENTER) {
+							if (signal[index - 3].signalLevel === SignalLevel.CENTER) {
+								result[index] = 'V'
+								result[index - 1] = '0'
+								result[index - 2] = '0'
+								result[index - 3] = '0'
+							} else if (signal[index - 3].signalLevel === signal[index].signalLevel) {
+								result[index] = 'V'
+								result[index - 1] = '0'
+								result[index - 2] = '0'
+								result[index - 3] = 'B'
+							}
+						}
+					}
+				}
+				lastShift = signal[index].signalLevel
+			}
+		}
+
+		console.log(result)
+
+		return result
 	}
 
 	activateSignal(index: number, element: HTMLDivElement) {
@@ -327,6 +375,11 @@ export class BipolarComponent {
 
 			this.scramblingLettersReceiver = this.b8zsScrambling(this.receiverSignal)
 		}
+		else if (this.scrambling === 'hdb3') {
+			this.scramblingLettersReceiver = []
+
+			this.scramblingLettersReceiver = this.hdb3Scrambling(this.receiverSignal)
+		}
 	}
 
 	errorDetected() {
@@ -340,28 +393,58 @@ export class BipolarComponent {
 			if (this.data() !== this.receiverData) return "Error could not be detected."
 		} else if (this.scrambling === 'b8zs') {
 			for (let i = 0; i < this.receiverSignal.length - 7; i++) {
-				if (this.is8Zero(i))
+				if (this.is8Zero(i)) {
 					return "Error detected since there are 8 signals that passes from the center."
+				}
 			}
 
+			const points: number[] = [];
+
 			for (let i = 0; i < this.receiverSignal.length - 7; i++) {
-				if (this.receiverSignal[i + 3].signalLevel !== SignalLevel.CENTER && this.receiverSignal[i + 3].signalLevel !== this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 5].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 6].signalLevel === this.receiverSignal[i + 4].signalLevel && this.receiverSignal[i + 7].signalLevel === this.receiverSignal[i + 3].signalLevel) {
-					i += 8
+				if (this.receiverSignal[i].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 1].signalLevel === SignalLevel.CENTER && this.receiverSignal[i + 2].signalLevel === SignalLevel.CENTER) {
+					points.push(i)
+					i += 3
 				}
-				else {
+			}
+
+			for (let i = 0; i < points.length - 1; i++) {
+				if (this.receiverSignal[points[i] + 3].signalLevel !== SignalLevel.CENTER && this.receiverSignal[points[i] + 3].signalLevel !== this.receiverSignal[points[i] + 4].signalLevel && this.receiverSignal[points[i] + 5].signalLevel === SignalLevel.CENTER && this.receiverSignal[points[i] + 6].signalLevel === this.receiverSignal[points[i] + 4].signalLevel && this.receiverSignal[points[i] + 7].signalLevel === this.receiverSignal[points[i] + 3].signalLevel) {
 					let signalLevel: SignalLevel | undefined = undefined
-					for (let j = i; j < i + 8; j++) {
-						if (this.receiverSignal[j].signalLevel !== SignalLevel.CENTER) {
+					for (let index = points[i] + 8; index < points[i + 1]; index++) {
+						if (this.receiverSignal[index].signalLevel !== SignalLevel.CENTER) {
 							if (signalLevel === undefined) {
-								signalLevel = this.receiverSignal[j].signalLevel
+								signalLevel = this.receiverSignal[index].signalLevel
 								continue
 							}
-							if (this.receiverSignal[j].signalLevel === signalLevel) {
+							if (this.receiverSignal[index].signalLevel === signalLevel) {
 								return "Error detected since signal was not shifted."
 							}
-							signalLevel = this.receiverSignal[j].signalLevel
+							signalLevel = this.receiverSignal[index].signalLevel
 						}
 					}
+				} else {
+					let signalLevel: SignalLevel | undefined = undefined
+					for (let index = points[i] + 3; index < points[i] + 8; index++) {
+						if (this.receiverSignal[index].signalLevel !== SignalLevel.CENTER) {
+							if (signalLevel === undefined) {
+								signalLevel = this.receiverSignal[index].signalLevel
+								continue
+							}
+							if (this.receiverSignal[index].signalLevel === signalLevel) {
+								return "Error detected since signal was not shifted."
+							}
+							signalLevel = this.receiverSignal[index].signalLevel
+						}
+					}
+				}
+			}
+		} else if (this.scrambling === 'hdb3') {
+			for (let index = 0; index < this.receiverSignal.length; index++) {
+				if (this.receiverSignal[index - 3]) {
+					if (this.receiverSignal[index].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 1].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 2].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 3].signalLevel === SignalLevel.CENTER) {
+						return "There can not be 4 consecutive zeros."
+					}
+
 				}
 			}
 		}

@@ -1,10 +1,24 @@
-<button (click)="applyB8ZS()" [style.background-color]="scrambling === 'b8zs' ? 'green' : 'inherit'">
+<button (click)="applyScrambling('b8zs')" [style.background-color]="scrambling === 'b8zs' ? 'green' : 'inherit'">
 	Apply B8ZS
 </button>
 
-<button (click)="applyHDB3()">
+<button (click)="applyScrambling('hdb3')" [style.background-color]="scrambling === 'hdb3' ? 'green' : 'inherit'">
 	Apply HDB3
 </button>
+
+@if (scrambling === 'hdb3') {
+	<p>
+		To be able to apply HDB3, we need to know if the number of the 1 bits before the data you entered were even or odd and if the last 1 bit was positive or negative. Please enter the information below.
+	</p>
+
+	<span> Number of 1 bits were: </span> 
+	<button (click)="setPreviousShiftNumber(true)" [style.background-color]="previousShiftNumber ? 'green' : 'inherit'"> Even </button>
+	<button (click)="setPreviousShiftNumber(false)" [style.background-color]="!previousShiftNumber ? 'green' : 'inherit'"> Odd </button>
+
+	<span> Last 1 bit was: </span> 
+	<button (click)="setLastShift(true)" [style.background-color]="hdb3LastShift === 0 ? 'green' : 'inherit'"> Positive </button>
+	<button (click)="setLastShift(false)" [style.background-color]="hdb3LastShift === 2 ? 'green' : 'inherit'"> Negative </button>
+}
 
 <div class="cell-container">
 		@for (item of senderData(); track $index) {
@@ -23,8 +37,13 @@
 				<div class="center-signal" [style]="centerSignalStyle($index, senderSignal)"></div>
 				<div class="bottom-signal" [style]="bottomSignalStyle($index, senderSignal)"></div>
 
-				@if (scrambling === 'b8zs') {
-					@if (scramblingLettersSender[$index] !== 'N') {
+				@if (scramblingLettersSender[$index] !== 'N') {
+					@if (scrambling === 'b8zs') {
+						<div class="scrambling-letter">
+							{{ scramblingLettersSender[$index] }}
+						</div>
+					}
+					@else if (scrambling === 'hdb3') {
 						<div class="scrambling-letter">
 							{{ scramblingLettersSender[$index] }}
 						</div>
@@ -56,8 +75,13 @@
 				(mouseenter)="highlightSignal(bottomSignal)" (mouseleave)="dehighlightSignal(bottomSignal)"
 				(click)="activateSignal($index, bottomSignal)"></div>
 
-				@if (scrambling === 'b8zs') {
-					@if (scramblingLettersReceiver[$index] !== 'N') {
+				@if (scramblingLettersReceiver[$index] !== 'N') {
+					@if (scrambling === 'b8zs') {
+						<div class="scrambling-letter">
+							{{ scramblingLettersReceiver[$index] }}
+						</div>
+					}
+					@else if (scrambling === 'hdb3') {
 						<div class="scrambling-letter">
 							{{ scramblingLettersReceiver[$index] }}
 						</div>
