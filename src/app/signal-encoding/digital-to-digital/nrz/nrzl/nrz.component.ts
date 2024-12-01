@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 
 @Component({
 	selector: 'app-nrz',
@@ -27,6 +27,8 @@ export class NrzComponent {
 
 	receiverData: string = ''
 	receiverSignal: boolean[] = []
+
+	receiverDataOutput = output<string>()
 
 	highlightTop(item: boolean, element: HTMLDivElement) {
 		if (!item) {
@@ -84,5 +86,16 @@ export class NrzComponent {
 		data[index] = data[index] === '0' ? '1' : '0'
 
 		this.receiverData = data.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+
+		this.errorDetection()
+	}
+
+	error = output<string>()
+
+	errorDetection() {
+		if (this.data() !== this.receiverData) {
+			this.error.emit('Error could not be detected.')
+		}
 	}
 }

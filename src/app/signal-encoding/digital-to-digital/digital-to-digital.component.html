@@ -1,4 +1,4 @@
-<app-binary-data (binaryDataChange)="data.set($event)"></app-binary-data>
+<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
 
 <p>
 	Choose an encoding scheme to interpret the signal.
@@ -19,19 +19,43 @@
 <div id="current-scheme">
 	@switch (scheme) {
 		@case ('NRZ-L') {
-			<app-nrz [data]="data()"></app-nrz>
+			<app-nrz
+				[data]="data()"
+				(error)="setError($event)"
+				(receiverDataOutput)="setReceiverData($event)">
+			</app-nrz>
 		}
 		@case ('NRZI') {
-			<app-nrzi [data]="data()"></app-nrzi>
+			<app-nrzi
+			[data]="data()"
+			(error)="setError($event)"
+			(receiverDataOutput)="setReceiverData($event)">
+			</app-nrzi>
 		}
 		@case ('Manchester') {
-			<app-manchester [data]="data()"></app-manchester>
+			<app-manchester
+				[data]="data()"
+				(error)="setError($event)"
+				(receiverDataOutput)="setReceiverData($event)">
+			</app-manchester>
 		}
 		@case ('Differential Manchester') {
-			<app-diff-manchester [data]="data()"></app-diff-manchester>
+			<app-diff-manchester
+				[data]="data()"
+				(error)="setError($event)"
+				(receiverDataOutput)="setReceiverData($event)">
+			</app-diff-manchester>
 		}
 		@case ('Bipolar AMI') {
-			<app-bipolar [data]="data()"></app-bipolar>
+			<app-bipolar
+				[data]="data()"
+				(receiverDataOutput)="setReceiverData($event)"
+				(error)="setError($event)">
+			</app-bipolar>
 		}
 	}
 </div>
+
+<p id="explanation">
+	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>. {{ error }}
+</p>

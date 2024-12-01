@@ -1,3 +1,5 @@
+<h3>Sender</h3>
+
 <div class="cell-container">
 	@for (item of senderData(); track $index; let first = $first) {
 	<div class="data-cell">
@@ -17,6 +19,8 @@
 	</div>
 	}
 </div>
+
+<h3>Receiver</h3>
 
 <div class="cell-container">
 	@for (item of receiverSignal; track $index; let first = $first) {
@@ -39,10 +43,3 @@
 	</div>
 	}
 </div>
-
-<p id="explanation">
-	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>.
-	@if (data() !== receiverData) {
-		Error could not be detected.
-	}
-</p>

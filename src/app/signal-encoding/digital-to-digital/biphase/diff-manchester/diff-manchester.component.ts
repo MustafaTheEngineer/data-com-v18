@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { BiphaseService, BiphaseSignal } from '../biphase.service';
 
 @Component({
@@ -16,6 +16,8 @@ export class DiffManchesterComponent {
 
 	receiverData = ''
 	receiverSignal: BiphaseSignal[] = []
+
+	receiverDataOutput = output<string>()
 
 	receivedDataSignal = computed(() => {
 		let shift: 'top' | 'bottom' = 'top'
@@ -129,6 +131,9 @@ export class DiffManchesterComponent {
 			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
 
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+
+		this.errorDetection()
 	}
 
 	activateRightTop(index: number, array: BiphaseSignal[]) {
@@ -146,6 +151,9 @@ export class DiffManchesterComponent {
 		}
 
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+
+		this.errorDetection()
 	}
 
 	activateLeftBottom(index: number, array: BiphaseSignal[]) {
@@ -159,6 +167,8 @@ export class DiffManchesterComponent {
 			dataUpdate[index] = array[index].leftVertical ? '0' : '1'
 
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
 	}
 
 	activateRightBottom(index: number, array: BiphaseSignal[]) {
@@ -176,5 +186,17 @@ export class DiffManchesterComponent {
 		}
 
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
+	}
+
+	error = output<string>()
+
+	errorDetection() {
+		if (this.receiverData.includes('?')) {
+			this.error.emit('Error detected since there is no signal that pass through center.')
+		} else if (this.data() !== this.receiverData) {
+			this.error.emit('Error could not be detected.')
+		}
 	}
 }

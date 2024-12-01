@@ -17,7 +17,7 @@ enum Schemes {
 @Component({
 	selector: 'app-digital-to-digital',
 	standalone: true,
-	imports: [BinaryDataComponent, NrzComponent, NrziComponent,ManchesterComponent, DiffManchesterComponent, BipolarComponent],
+	imports: [BinaryDataComponent, NrzComponent, NrziComponent, ManchesterComponent, DiffManchesterComponent, BipolarComponent],
 	templateUrl: './digital-to-digital.component.html',
 	styleUrl: './digital-to-digital.component.scss'
 })
@@ -26,4 +26,20 @@ export class DigitalToDigitalComponent {
 	scheme: Schemes = Schemes.NRZ;
 
 	schemes = Object.values(Schemes);
+
+	receiverData = '';
+	error = '';
+
+	setSignal(signal: string) {
+		this.data.set(signal)
+		this.receiverData = signal
+	}
+
+	setReceiverData(receiverData: string) {
+		this.receiverData = receiverData;
+	}
+
+	setError(error: string) {
+		this.error = error;
+	}
 }

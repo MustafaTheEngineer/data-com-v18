@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 @Component({
 	selector: 'app-nrzi',
@@ -32,6 +32,8 @@ export class NrziComponent {
 
 	receiverData: string = '';
 	receiverSignal: string[] = [];
+
+	receiverDataOutput = output<string>()
 
 	highlightTop(item: string, element: HTMLDivElement) {
 		if (item !== 'top') {
@@ -123,7 +125,7 @@ export class NrziComponent {
 		return result;
 	}
 
-	toggleSignal(index: number, element: HTMLDivElement) {
+	toggleSignal(index: number) {
 		this.receiverSignal[index] =
 			this.receiverSignal[index] === 'top' ? 'bottom' : 'top';
 		
@@ -140,5 +142,16 @@ export class NrziComponent {
 		}
 
 		this.receiverData = data.join('');
+		this.receiverDataOutput.emit(this.receiverData)
+
+		this.errorDetection()
+	}
+
+	error = output<string>()
+
+	errorDetection () {
+		if (this.data() !== this.receiverData) {
+			this.error.emit('Error could not be detected.')
+		}
 	}
 }

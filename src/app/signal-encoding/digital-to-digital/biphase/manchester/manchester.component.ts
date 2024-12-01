@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { BiphaseService, BiphaseSignal } from '../biphase.service';
 
 @Component({
@@ -13,6 +13,7 @@ export class ManchesterComponent {
 
 	data = input('');
 	receiverData = '';
+	receiverDataOutput = output<string>();
 
 	senderSignal: BiphaseSignal[] = []
 	receiverSignal: BiphaseSignal[] = []
@@ -45,6 +46,8 @@ export class ManchesterComponent {
 		const dataUpdate = this.receiverData.split('')
 		dataUpdate[index] = signals[index].topRight ? '?' : '0'
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
 	}
 
 	activateRightTop(index: number, signals: BiphaseSignal[]) {
@@ -53,6 +56,8 @@ export class ManchesterComponent {
 		const dataUpdate = this.receiverData.split('')
 		dataUpdate[index] = signals[index].topLeft ? '?' : '1'
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
 	}
 
 	activateLeftBottom(index: number, signals: BiphaseSignal[]) {
@@ -61,6 +66,8 @@ export class ManchesterComponent {
 		const dataUpdate = this.receiverData.split('')
 		dataUpdate[index] = signals[index].bottomRight ? '?' : '1'
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
 	}
 
 	activateRightBottom(index: number, signals: BiphaseSignal[]) {
@@ -69,5 +76,18 @@ export class ManchesterComponent {
 		const dataUpdate = this.receiverData.split('')
 		dataUpdate[index] = signals[index].bottomLeft ? '?' : '0'
 		this.receiverData = dataUpdate.join('')
+		this.receiverDataOutput.emit(this.receiverData)
+		this.errorDetection()
+	}
+
+	error = output<string>();
+
+	errorDetection() {
+		if (this.receiverData.includes('?')) {
+			this.error.emit('Error detected since there is no signal that pass through center.')
+		}
+		else if (this.data() !== this.receiverData) {
+			this.error.emit('Error could not be detected.')
+		}
 	}
 }

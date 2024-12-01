@@ -1,4 +1,4 @@
-import { Component, computed, input, Signal } from '@angular/core';
+import { Component, computed, input, output, Signal } from '@angular/core';
 import { last } from 'rxjs';
 
 enum SignalLevel {
@@ -27,6 +27,7 @@ export class BipolarComponent {
 	scramblingLettersReceiver: string[] = [];
 
 	receiverData = '';
+	receiverDataOutput = output<string>()
 
 	senderSignal: MultiLevelSignal[] = []
 	receiverSignal: MultiLevelSignal[] = []
@@ -110,10 +111,13 @@ export class BipolarComponent {
 			this.receiverSignal.push({ ...signal });
 		})
 		this.receiverData = this.data()
+		this.receiverDataOutput.emit(this.receiverData)
 		this.scramblingLettersSender = []
 
 		this.scramblingLettersSender = this.b8zsScrambling(this.senderSignal)
 		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
+
+		this.errorDetected()
 	}
 
 	hdb3() {
@@ -164,10 +168,13 @@ export class BipolarComponent {
 			this.receiverSignal.push({ ...signal });
 		})
 		this.receiverData = this.data()
+		this.receiverDataOutput.emit(this.receiverData)
 		this.scramblingLettersSender = []
 
 		this.scramblingLettersSender = this.hdb3Scrambling(this.senderSignal)
 		this.scramblingLettersReceiver = [...this.scramblingLettersSender]
+
+		this.errorDetected()
 
 		return points;
 	}
@@ -347,8 +354,6 @@ export class BipolarComponent {
 			}
 		}
 
-		console.log(result)
-
 		return result
 	}
 
@@ -370,6 +375,7 @@ export class BipolarComponent {
 			signalArray[index] = this.receiverSignal[index].signalLevel === SignalLevel.CENTER ? '0' : '1'
 
 			this.receiverData = signalArray.join('')
+			this.receiverDataOutput.emit(this.receiverData)
 		} else if (this.scrambling === 'b8zs') {
 			this.scramblingLettersReceiver = []
 
@@ -380,21 +386,32 @@ export class BipolarComponent {
 
 			this.scramblingLettersReceiver = this.hdb3Scrambling(this.receiverSignal)
 		}
+
+		this.errorDetected()
 	}
+
+	error = output<string>();
 
 	errorDetected() {
 		if (this.scrambling === 'none') {
 			const signals = this.receiverSignal.filter((signal) => signal.signalLevel !== SignalLevel.CENTER)
 
 			for (let i = 0; i < signals.length - 1; i++) {
-				if (signals[i].signalLevel === signals[i + 1].signalLevel) return "Error detected since signal was not shifted."
+				if (signals[i].signalLevel === signals[i + 1].signalLevel){
+					this.error.emit("Error detected since signal was not shifted.")
+					return
+				}
 			}
 
-			if (this.data() !== this.receiverData) return "Error could not be detected."
+			if (this.data() !== this.receiverData){
+				this.error.emit("Error could not be detected.")
+				return
+			}
 		} else if (this.scrambling === 'b8zs') {
 			for (let i = 0; i < this.receiverSignal.length - 7; i++) {
 				if (this.is8Zero(i)) {
-					return "Error detected since there are 8 signals that passes from the center."
+					this.error.emit("Error detected since there are 8 signals that passes from the center.")
+					return
 				}
 			}
 
@@ -417,7 +434,8 @@ export class BipolarComponent {
 								continue
 							}
 							if (this.receiverSignal[index].signalLevel === signalLevel) {
-								return "Error detected since signal was not shifted."
+								this.error.emit("Error detected since signal was not shifted.")
+								return
 							}
 							signalLevel = this.receiverSignal[index].signalLevel
 						}
@@ -431,7 +449,8 @@ export class BipolarComponent {
 								continue
 							}
 							if (this.receiverSignal[index].signalLevel === signalLevel) {
-								return "Error detected since signal was not shifted."
+								this.error.emit("Error detected since signal was not shifted.")
+								return
 							}
 							signalLevel = this.receiverSignal[index].signalLevel
 						}
@@ -442,7 +461,8 @@ export class BipolarComponent {
 			for (let index = 0; index < this.receiverSignal.length; index++) {
 				if (this.receiverSignal[index - 3]) {
 					if (this.receiverSignal[index].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 1].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 2].signalLevel === SignalLevel.CENTER && this.receiverSignal[index - 3].signalLevel === SignalLevel.CENTER) {
-						return "There can not be 4 consecutive zeros."
+						this.error.emit("There can not be 4 consecutive zeros.")
+						return
 					}
 
 				}

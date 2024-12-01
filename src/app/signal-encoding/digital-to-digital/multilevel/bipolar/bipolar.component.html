@@ -20,6 +20,8 @@
 	<button (click)="setLastShift(false)" [style.background-color]="hdb3LastShift === 2 ? 'green' : 'inherit'"> Negative </button>
 }
 
+<h3>Sender</h3>
+
 <div class="cell-container">
 		@for (item of senderData(); track $index) {
 		<div class="data-cell">
@@ -53,6 +55,8 @@
 		</div>
 		}
 </div>
+
+<h3>Receiver</h3>
 
 <div class="cell-container">
 	@for (item of receiverData; track $index) {
@@ -95,7 +99,3 @@
 	</div>
 	}
 </div>
-
-<p id="explanation">
-	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>. {{ errorDetected() }}
-</p>
