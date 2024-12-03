@@ -1,1 +1,297 @@
-<p>digital-to-analog works!</p>
+<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+
+<div id="techniques">
+	<button (click)="technique = 'ask'"> Amplitude Shift Keying (ASK) </button>
+	<button (click)="technique = 'bfsk'"> Binary Frequency Shift Keying (BFSK) </button>
+	<button (click)="technique = 'bpsk'"> Binary Phase Shift Keying (BPSK) </button>
+</div>
+
+@if (data().length) {
+	<h3>Sender</h3>
+
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Digital Data
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-signal" [style]="leftVerticalStyle($index)"></div>
+
+				<div class="top-signal" [style]="topSignalStyle($index)"></div>
+				<div class="bottom-signal" [style]="bottomSignalStyle($index)"></div>
+			</div>
+		</div>
+		}
+	</div>
+
+	@switch (technique) {
+		@case ('ask') {
+			<div class="cell-container">
+				<div class="data-cell">
+					<div class="signal-container">
+						Amplitude Shift Keying (ASK)
+					</div>
+				</div>
+				@for (item of data(); track $index) {
+				<div class="data-cell">
+					<div class="bit">
+						{{ data()[$index] }}
+					</div>
+		
+					<div class="signal-container">
+						<div class="top-left-dashed"></div>
+						<div class="bottom-left-dashed"></div>
+		
+						<div class="left-analog-signal"></div>
+		
+						@if (data()[$index] === '0') {
+							<div class="center-signal"></div>
+						} @else {
+							<svg width="140px" height="140px">
+								<path d="M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70" stroke="blue" stroke-width="2"></path>
+							</svg>
+						}
+					</div>
+				</div>
+				}
+			</div>
+
+			<p>
+				In ASK, the two binary values are represented by two different amplitudes of the carrier
+				frequency. Commonly, one of the amplitudes is zero; that is, one binary digit is represented by the
+				presence, at constant amplitude, of the carrier, the other by the absence of the carrier. The resulting transmitted signal for one bit time is
+			</p>
+
+			<div id="ask-function">
+				<table>
+					<tr>
+						<td [innerText]="'S(t) = {'">
+							
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							(A.cos(2.π.f<sub>c</sub>.t) )
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 1
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							0
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 0
+						</td>
+						
+					</tr>
+					<tr>
+						<td [innerText]="'}'">
+							
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<p>
+				where
+			</p>
+			<ul>
+				<li>A: Amplitude of carrier signal</li>
+				<li>f<sub>c</sub>: carrier frequency</li>
+				<li> Carrier signal = A.cos(2.π.f.<sub>c</sub>.t) </li>
+			</ul>
+			<p>
+				ASK is susceptible to sudden gain changes and is a rather inefficient modulation technique. On voicegrade lines, it is typically used only up to 1200 bps.
+			</p>
+			<p>
+				The ASK technique is used to transmit digital data over optical fiber, where one signal element is
+				represented by a light pulse while the other signal element is represented by the absence of light.
+			</p>
+			
+		}
+		@case ('bfsk') {
+			<div class="cell-container">
+				<div class="data-cell">
+					<div class="signal-container">
+						Binary Frequency Shift Keying (BFSK)
+					</div>
+				</div>
+				@for (item of data(); track $index) {
+				<div class="data-cell">
+					<div class="bit">
+						{{ data()[$index] }}
+					</div>
+		
+					<div class="signal-container">
+						<div class="top-left-dashed"></div>
+						<div class="bottom-left-dashed"></div>
+		
+						<div class="left-analog-signal"></div>
+		
+						@if (data()[$index] === '0') {
+							<svg width="140px" height="140px">
+								<path d="M 0 70 Q 35 -70 70 70 T 140 70" stroke="blue" stroke-width="2"></path>
+							</svg>
+						} @else {
+							<svg width="140px" height="140px">
+								<path d="M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70" stroke="blue" stroke-width="2"></path>
+							</svg>
+						}
+					</div>
+				</div>
+				}
+			</div>
+
+			<p>
+				The most common form of FSK is binary FSK (BFSK), in which the two binary values are represented
+				by two different frequencies near the carrier frequency (shown in Figure below) as
+			</p>
+
+			<div id="ask-function">
+				<table>
+					<tr>
+						<td [innerText]="'S(t) = {'">
+							
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							(A.cos(2.π.f<sub>1</sub>.t) )
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 1
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							(A.cos(2.π.f<sub>2</sub>.t) )
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 0
+						</td>
+						
+					</tr>
+					<tr>
+						<td [innerText]="'}'">
+							
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<p>
+				where f<sub>1</sub>, f<sub>2</sub> offset from carrier frequency (fc) by equal but opposite amount
+			</p>
+			<p>
+				BFSK is less susceptible to error than ASK. On voice-grade lines, it is typically used up to 1200
+				bps. It is also commonly used for high-frequency (3 to 30 MHz) radio transmission. It can also be used
+				at even higher frequencies on local area networks that use coaxial cable
+			</p>
+		}
+		@case ('bpsk') {
+			<div class="cell-container">
+				<div class="data-cell">
+					<div class="signal-container">
+						Binary Phase Shift Keying (BPSK)
+					</div>
+				</div>
+				@for (item of data(); track $index) {
+				<div class="data-cell">
+					<div class="bit">
+						{{ data()[$index] }}
+					</div>
+		
+					<div class="signal-container">
+						<div class="top-left-dashed"></div>
+						<div class="bottom-left-dashed"></div>
+		
+						<div class="left-analog-signal"></div>
+		
+						<svg width="140px" height="140px">
+							<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
+						</svg>
+					</div>
+				</div>
+				}
+			</div>
+
+			<p>
+				In PSK, the phase of the carrier signal is shifted to represent data. The simplest scheme uses two
+				phases to represent the two binary digits (Figure below) and is known as binary phase shift keying.
+				The resulting transmitted signal for one bit time is
+			</p>
+
+			<div id="ask-function">
+				<table>
+					<tr>
+						<td [innerText]="'S(t) = {'">
+							
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							A.cos(2.π.f<sub>c</sub>.t + π)
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 1
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							A.cos(2.π.f<sub>c</sub>.t π) = -A.cos(2.π.f<sub>c</sub>.t π)
+						</td>
+						<td>
+							;
+						</td>
+						<td>
+							binary 0
+						</td>
+						
+					</tr>
+					<tr>
+						<td [innerText]="'}'">
+							
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<p>
+				Because a phase shift of 180<sup>o</sup> (π) is equivelent to flipping the sine wave or multiplying it by -1 Acos(2.π.f<sub>c</sub>.t+ π) = -Acos(2.π.f<sub>c</sub>.t) can be used instead.
+			</p>
+		}
+	}
+}

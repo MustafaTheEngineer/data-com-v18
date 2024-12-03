@@ -10,6 +10,7 @@ import { ParityChecksumComponent } from './error-detection/parity-checksum/parit
 import { HomeComponent } from './home/home.component';
 import { AnalogVisualComponent } from './signal-function-visual/analog-visual/analog-visual.component';
 import { DigitalToDigitalComponent } from './signal-encoding/digital-to-digital/digital-to-digital.component';
+import { DigitalToAnalogComponent } from './signal-encoding/digital-to-analog/digital-to-analog.component';
 
 export const routes: Routes = [
 	{
@@ -46,5 +47,8 @@ export const routes: Routes = [
 	},
 	{
 		path: 'digital-to-digital', component: DigitalToDigitalComponent
+	},
+	{
+		path: 'digital-to-analog', component: DigitalToAnalogComponent
 	},
 ];
