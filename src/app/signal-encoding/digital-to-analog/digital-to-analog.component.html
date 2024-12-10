@@ -45,7 +45,7 @@
 						[value]="askSignals().signals[$index].amplitude.toString()"
 						(input)="setAmplitude(signal, $index)">
 						<p>
-							Amplitude {{ askSignals().signals[$index].amplitude }}
+							Amplitude: {{ askSignals().signals[$index].amplitude }}
 						</p>
 					</div>
 
@@ -127,6 +127,11 @@
 			
 		}
 		@case ('bfsk') {
+			<p>
+				Offset Frequency: {{ bfskOffsetFrequency() }}
+			</p>
+			<input #bfskOffset type="range" min="0" max="10000" step="100" [value]="bfskOffsetFrequency().toString()" (input)="setBfskOffsetFrequency(bfskOffset)">
+
 			<div class="cell-container">
 				<div class="data-cell">
 					<div class="signal-container">
@@ -135,29 +140,95 @@
 				</div>
 				@for (item of data(); track $index) {
 				<div class="data-cell">
-					<div class="bit">
-						{{ data()[$index] }}
-					</div>
+					
 		
 					<div class="signal-container">
 						<div class="top-left-dashed"></div>
 						<div class="bottom-left-dashed"></div>
 		
 						<div class="left-analog-signal"></div>
-		
-						@if (data()[$index] === '0') {
-							<svg width="140px" height="140px">
-								<path d="M 0 70 Q 35 -70 70 70 T 140 70" stroke="blue" stroke-width="2"></path>
-							</svg>
-						} @else {
-							<svg width="140px" height="140px">
-								<path d="M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70" stroke="blue" stroke-width="2"></path>
-							</svg>
-						}
+
+						<svg width="140px" height="140px">
+							<path stroke="blue" stroke-width="2"
+							[attr.d]="bfskSignals().signals[$index].signal"></path>
+						</svg>
 					</div>
+
+					<div class="amplitudes">
+						<input type="range" min="0" max="10000" step="100"
+						#signal
+						[value]="bfskSignals().signals[$index].frequency.toString()"
+						(input)="setFrequency(signal, $index)">
+						<p>
+							f: {{ bfskSignals().signals[$index].frequency }}
+						</p>
+					</div>
+
+					<div class="bit">
+						{{ bfskSignals().receiverData[$index] }}
+					</div>
+
 				</div>
 				}
 			</div>
+
+			<svg viewBox="0 0 200 100" width="50%">
+				<text x="170" y="99" font-size="4" fill="white">Frequency (Hz)</text>
+				// create x-axis that have arrow
+				<defs>
+					<marker 
+					  id='head' 
+					  orient="auto" 
+					  markerWidth='3' 
+					  markerHeight='4' 
+					  refX='0.1' 
+					  refY='2'
+					>
+					  <path d='M0,0 V4 L2,2 Z' fill="white" />
+					</marker>
+				  </defs>
+				
+				  <path
+					id='x-axis'
+					marker-end='url(#head)'
+					stroke-width='1'
+					fill='none' stroke='white'
+					d='M0,90, 190 90,120'
+				  />
+
+				  <path
+					id='y-axis'
+					marker-end='url(#head)'
+					stroke-width='1'
+					fill='none' stroke='white'
+					d='M3,90, 3 10,120'
+				  />
+
+				  <path
+					stroke-width='1'
+					fill='none' stroke='white'
+					d='M150,95, 150 90,120'
+				  />
+
+				  <path
+					stroke-width='1'
+					fill='none' stroke='white'
+					d='M3,95, 3 90,120'
+				  />
+
+				  <path
+					stroke-width='1'
+					fill='none' stroke='white'
+					[attr.d]='"M" + bfskOfssetNormalized() + ", 95," + bfskOfssetNormalized() + " 90, 120"'
+				  />
+
+				  <text [attr.x]="bfskOfssetNormalized() - 10" y="99" font-size="5" fill="white">
+					offset: {{ bfskOffsetFrequency() }}
+				  </text>
+
+				  <text x="148" y="99" font-size="5" fill="white">10.000</text>
+				  <text x="2" y="99" font-size="5" fill="white">0</text>
+			</svg>
 
 			<p>
 				The most common form of FSK is binary FSK (BFSK), in which the two binary values are represented

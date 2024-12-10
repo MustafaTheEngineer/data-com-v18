@@ -1,13 +1,23 @@
-import { Component, computed, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, ElementRef, model, signal, viewChild, viewChildren } from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
 
 type ASK = {
-	amplitude: number;
 	signal: string;
+	amplitude: number;
 }
 
 type ASKReceiver = {
 	signals: ASK[];
+	receiverData: string;
+}
+
+type BFSK = {
+	signal: string;
+	frequency: number;
+}
+
+type BFSKReceiver = {
+	signals: BFSK[];
 	receiverData: string;
 }
 
@@ -21,8 +31,14 @@ type ASKReceiver = {
 export class DigitalToAnalogComponent {
 	data = signal('');
 	threshold = 2.5
+	bfskOffsetFrequency = signal(1500)
+	bfskOfssetNormalized = computed(() => 3 + 0.0147 * this.bfskOffsetFrequency())
 
-	waves = viewChildren<ElementRef>('wave')
+	//`M${3 + 0.0147 * this.bfskOffsetFrequency()}, 95, ${3 + 0.0147 * this.bfskOffsetFrequency()} 90, 120`
+
+	setBfskOffsetFrequency(event: HTMLInputElement) {
+		this.bfskOffsetFrequency.set(event.valueAsNumber)
+	}
 
 	askSignals = computed(() => {
 		const result: ASKReceiver = {
@@ -54,6 +70,38 @@ export class DigitalToAnalogComponent {
 
 		return result
 	})
+
+	bfskSignals = computed(() => {
+		const result: BFSKReceiver = {
+			signals: [],
+			receiverData: ''
+		}
+		const data: string[] = []
+
+		for (let i = 0; i < this.data().length; i++) {
+			if (this.data()[i] === '0') {
+				result.signals.push({
+					frequency: 1000,
+					signal: this.calcSignal(1, 1),
+				})
+
+				data.push('0')
+
+			} else {
+				result.signals.push({
+					frequency: 2000,
+					signal: this.calcSignal(1, 2),
+				})
+
+				data.push('1')
+			}
+		}
+
+		result.receiverData = data.join('');
+
+		return result
+	})
+
 	calcSignal(amplitude: number, frequency: number) {
 		if (frequency === 0) return 'M 0 70 L 140 70'
 
@@ -116,6 +164,20 @@ export class DigitalToAnalogComponent {
 		this.askSignals().signals[index] = {
 			amplitude: element.valueAsNumber,
 			signal: this.calcSignal(normalizedValue, 2),
+		}
+		this.askSignals().receiverData = receiverData.join('')
+	}
+
+	setFrequency(element: HTMLInputElement, index: number) {
+		const normalizedValue = Number((parseFloat(element.value) / 1000).toString().slice(0, 5))
+		console.log(normalizedValue)
+
+		const receiverData = this.askSignals().receiverData.split('');
+		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
+
+		this.bfskSignals().signals[index] = {
+			frequency: element.valueAsNumber,
+			signal: this.calcSignal(1, normalizedValue),
 		}
 		this.askSignals().receiverData = receiverData.join('')
 	}
