@@ -1,15 +1,74 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
+
+type ASK = {
+	amplitude: number;
+	signal: string;
+}
+
+type ASKReceiver = {
+	signals: ASK[];
+	receiverData: string;
+}
 
 @Component({
 	selector: 'app-digital-to-analog',
 	standalone: true,
-	imports: [BinaryDataComponent],
+	imports: [BinaryDataComponent,],
 	templateUrl: './digital-to-analog.component.html',
 	styleUrl: './digital-to-analog.component.scss'
 })
 export class DigitalToAnalogComponent {
 	data = signal('');
+	threshold = 2.5
+
+	waves = viewChildren<ElementRef>('wave')
+
+	askSignals = computed(() => {
+		const result: ASKReceiver = {
+			signals: [],
+			receiverData: ''
+		}
+		const data: string[] = []
+
+		for (let i = 0; i < this.data().length; i++) {
+			if (this.data()[i] === '0') {
+				result.signals.push({
+					amplitude: 0,
+					signal: 'M 0 70 L 140 70',
+				})
+
+				data.push('0')
+
+			} else {
+				result.signals.push({
+					amplitude: 5,
+					signal: this.calcSignal(1, 2),
+				})
+
+				data.push('1')
+			}
+		}
+
+		result.receiverData = data.join('');
+
+		return result
+	})
+	calcSignal(amplitude: number, frequency: number) {
+		if (frequency === 0) return 'M 0 70 L 140 70'
+
+		let result = `M 0 70 Q ${35 / frequency} ${-140 * amplitude + 70} ${70 / frequency} 70`
+
+		const shift = 70 / frequency
+		let current = 140 / frequency
+
+		for (let i = 0; i < frequency * 2; i++) {
+			result += ` T ${current} 70`
+			current += shift
+		}
+
+		return result
+	}
 
 	bpsk = computed(() => {
 		const result: string[] = []
@@ -21,13 +80,13 @@ export class DigitalToAnalogComponent {
 			if (this.data()[index] === '0') {
 				if (!shift) {
 					result.push(toTop)
-				} else{
+				} else {
 					result.push(toBottom)
 				}
 			} else {
 				if (!shift) {
 					result.push(toBottom)
-				} else{
+				} else {
 					result.push(toTop)
 				}
 
@@ -44,25 +103,20 @@ export class DigitalToAnalogComponent {
 		this.data.set($event)
 	}
 
-	leftVerticalStyle(index: number) {
-		return {
-			'border-left-style': index === 0 ? 'dashed' : this.data()[index] !== this.data()[index - 1] ? 'solid' : 'dashed',
-			'opacity': index === 0 ? 'dashed' : this.data()[index] !== this.data()[index - 1] ? '1' : '0.3',
-			'border-color': index === 0 ? 'dashed' : this.data()[index] !== this.data()[index - 1] ? 'blue' : 'inherit'
-		}
+	setThreshold(event: Event) {
+		this.threshold = parseFloat((event.target as HTMLInputElement).value)
 	}
 
-	topSignalStyle(index: number) {
-		return {
-			'border-color': this.data()[index] === '0' ? 'blue' : 'white',
-			'opacity': this.data()[index] === '0' ? '1' : '0.3',
-		}
-	}
+	setAmplitude(element: HTMLInputElement, index: number) {
+		const normalizedValue = Number((parseFloat(element.value) / 5).toString().slice(0, 4))
 
-	bottomSignalStyle(index: number) {
-		return {
-			'border-color': this.data()[index] === '1' ? 'blue' : 'white',
-			'opacity': this.data()[index] === '1' ? '1' : '0.3',
+		const receiverData = this.askSignals().receiverData.split('');
+		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
+
+		this.askSignals().signals[index] = {
+			amplitude: element.valueAsNumber,
+			signal: this.calcSignal(normalizedValue, 2),
 		}
+		this.askSignals().receiverData = receiverData.join('')
 	}
 }

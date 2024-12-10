@@ -1,4 +1,6 @@
-<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+<div id="input-data">
+	<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+</div>
 
 <div id="techniques">
 	<button (click)="technique = 'ask'"> Amplitude Shift Keying (ASK) </button>
@@ -7,35 +9,17 @@
 </div>
 
 @if (data().length) {
-	<h3>Sender</h3>
-
-	<div class="cell-container">
-		<div class="data-cell">
-			<div class="signal-container">
-				Digital Data
-			</div>
-		</div>
-		@for (item of data(); track $index) {
-		<div class="data-cell">
-			<div class="bit">
-				{{ data()[$index] }}
-			</div>
-
-			<div class="signal-container">
-				<div class="top-left-dashed"></div>
-				<div class="bottom-left-dashed"></div>
-
-				<div class="left-signal" [style]="leftVerticalStyle($index)"></div>
-
-				<div class="top-signal" [style]="topSignalStyle($index)"></div>
-				<div class="bottom-signal" [style]="bottomSignalStyle($index)"></div>
-			</div>
-		</div>
-		}
-	</div>
-
 	@switch (technique) {
 		@case ('ask') {
+			<p>
+				Threshold: {{ threshold }}
+			</p>
+			<input type="range" min="0" max="5" step="0.01" value="2.5" (input)="setThreshold($event)">
+			<p>
+				If the amplitude of the signal is greater than the threshold, the interpreted bit is 1, otherwise it is 0.
+			</p>
+
+
 			<div class="cell-container">
 				<div class="data-cell">
 					<div class="signal-container">
@@ -44,27 +28,40 @@
 				</div>
 				@for (item of data(); track $index) {
 				<div class="data-cell">
-					<div class="bit">
-						{{ data()[$index] }}
-					</div>
-		
 					<div class="signal-container">
 						<div class="top-left-dashed"></div>
 						<div class="bottom-left-dashed"></div>
 		
 						<div class="left-analog-signal"></div>
-		
-						@if (data()[$index] === '0') {
-							<div class="center-signal"></div>
-						} @else {
-							<svg width="140px" height="140px">
-								<path d="M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70" stroke="blue" stroke-width="2"></path>
-							</svg>
-						}
+
+						<svg width="140px" height="140px">
+							<path [attr.d]="askSignals().signals[$index].signal" stroke="blue" stroke-width="2"></path>
+						</svg>
+					</div>
+
+					<div class="amplitudes">
+						<input type="range" min="0" max="5" step="0.01"
+						#signal
+						[value]="askSignals().signals[$index].amplitude.toString()"
+						(input)="setAmplitude(signal, $index)">
+						<p>
+							Amplitude {{ askSignals().signals[$index].amplitude }}
+						</p>
+					</div>
+
+					<div class="bit">
+						{{ askSignals().receiverData[$index] }}
 					</div>
 				</div>
 				}
 			</div>
+
+			<p>
+				Interpreted data by receiver:
+				@for (item of askSignals().receiverData; track $index) {
+					<span [style.color]="item === this.data()[$index] ? 'inherit' : 'red'"> {{ item }} </span>
+				}
+			</p>
 
 			<p>
 				In ASK, the two binary values are represented by two different amplitudes of the carrier
