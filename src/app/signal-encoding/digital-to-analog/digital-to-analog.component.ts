@@ -31,8 +31,20 @@ type BFSKReceiver = {
 export class DigitalToAnalogComponent {
 	data = signal('');
 	threshold = 2.5
-	bfskOffsetFrequency = signal(1500)
-	bfskOfssetNormalized = computed(() => 3 + 0.0147 * this.bfskOffsetFrequency())
+	bfskCarrierFrequency = signal(1500)
+	bfskOffset = signal(1000)
+	f0 = computed(() => (this.bfskCarrierFrequency() - this.bfskOffset()) * 0.0147 + 3)
+	f1 = computed(() => (this.bfskCarrierFrequency() + this.bfskOffset()) * 0.0147 + 3)
+
+	bfskCarrierNormalized = computed(() => 3 + 0.0147 * this.bfskCarrierFrequency())
+
+	setBfskCarrierFrequency(event: HTMLInputElement) {
+		this.bfskCarrierFrequency.set(event.valueAsNumber)
+	}
+
+	setBfskOffset(event: HTMLInputElement) {
+		this.bfskOffset.set(event.valueAsNumber)
+	}
 
 	askSender = computed(() => this.calcASKSignal())
 	askReceiver = computed(() => this.calcASKSignal())
@@ -177,9 +189,5 @@ export class DigitalToAnalogComponent {
 			signal: this.calcSignal(1, normalizedValue),
 		}
 		this.askReceiver().receiverData = receiverData.join('')
-	}
-
-	setBfskOffsetFrequency(event: HTMLInputElement) {
-		this.bfskOffsetFrequency.set(event.valueAsNumber)
 	}
 }

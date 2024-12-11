@@ -165,51 +165,19 @@
 			
 		}
 		@case ('bfsk') {
-			<p>
-				Offset Frequency: {{ bfskOffsetFrequency() }}
-			</p>
-			<input #bfskOffset type="range" min="0" max="10000" step="100" [value]="bfskOffsetFrequency().toString()" (input)="setBfskOffsetFrequency(bfskOffset)">
 
-			<div class="signal-container">
-				<div class="cell-container">
-					<div class="data-cell">
-						<div class="signal-container">
-							Binary Frequency Shift Keying (BFSK)
-						</div>
-					</div>
-					@for (item of data(); track $index) {
-					<div class="data-cell">
-						
-			
-						<div class="signal-container">
-							<div class="top-left-dashed"></div>
-							<div class="bottom-left-dashed"></div>
-			
-							<div class="left-analog-signal"></div>
-	
-							<svg width="140px" height="140px">
-								<path stroke="blue" stroke-width="2"
-								[attr.d]="bfskSignals().signals[$index].signal"></path>
-							</svg>
-						</div>
-	
-						<div class="amplitudes">
-							<input type="range" min="0" max="10000" step="100"
-							#signal
-							[value]="bfskSignals().signals[$index].frequency.toString()"
-							(input)="setFrequency(signal, $index)">
-							<p>
-								f: {{ bfskSignals().signals[$index].frequency }}
-							</p>
-						</div>
-	
-						<div class="bit">
-							{{ bfskSignals().receiverData[$index] }}
-						</div>
-	
-					</div>
-					}
-				</div>
+			<div>
+				<p>
+					Carrier Frequency: {{ bfskCarrierFrequency() }}
+				</p>
+				<input #bfskCarrier type="range" min="0" max="10000" step="100" [value]="bfskCarrierFrequency().toString()" (input)="setBfskCarrierFrequency(bfskCarrier)">
+			</div>
+
+			<div>
+				<p>
+					Offset: {{ bfskOffset() }}
+				</p>
+				<input #bfskOffsetEl type="range" min="0" max="10000" step="100" [value]="bfskOffset().toString()" (input)="setBfskOffset(bfskOffsetEl)">
 			</div>
 
 			<svg viewBox="0 0 200 100" width="50%">
@@ -259,16 +227,87 @@
 				  <path
 					stroke-width='1'
 					fill='none' stroke='white'
-					[attr.d]='"M" + bfskOfssetNormalized() + ", 95," + bfskOfssetNormalized() + " 90, 120"'
+					[attr.d]='"M" + bfskCarrierNormalized() + ", 95," + bfskCarrierNormalized() + " 90, 120"'
 				  />
 
-				  <text [attr.x]="bfskOfssetNormalized() - 10" y="99" font-size="5" fill="white">
-					offset: {{ bfskOffsetFrequency() }}
+				  <path
+					stroke-width='1'
+					fill='none' stroke='white'
+					[attr.d]='"M" + f0() + ", 95," + f0() + " 90, 120"'
+				  />
+
+				  <text y="85" font-size="5" fill="white"
+				  [attr.x]="f0()">
+					f<tspan dy="2" font-size="4">0</tspan>
 				  </text>
+				  <text y="99" font-size="5" fill="white"
+				  [attr.x]="f0() - 5"> {{ this.bfskCarrierFrequency() - this.bfskOffset() }} </text>
+
+				  <path
+					stroke-width='1'
+					fill='none' stroke='white'
+					[attr.d]='"M" + f1() + ", 95," + f1() + " 90, 120"'
+				  />
+
+				  <text y="85" font-size="5" fill="white"
+				  [attr.x]="f1()">
+					f<tspan dy="2" font-size="4">0</tspan>
+				  </text>
+				  <text y="99" font-size="5" fill="white"
+				  [attr.x]="f1() - 5"> {{ this.bfskCarrierFrequency() + this.bfskOffset() }} </text>
+
+				  <text y="85" font-size="5" fill="white"
+				  [attr.x]="bfskCarrierNormalized()">
+					f<tspan dy="2" font-size="4">c</tspan>
+				  </text>
+				  <text y="99" font-size="5" fill="white"
+				  [attr.x]="bfskCarrierNormalized() - 5"> {{ bfskCarrierFrequency() }} </text>
 
 				  <text x="148" y="99" font-size="5" fill="white">10.000</text>
 				  <text x="2" y="99" font-size="5" fill="white">0</text>
 			</svg>
+
+			<div class="signal-container">
+				<div class="cell-container">
+					<div class="data-cell">
+						<div class="signal-container">
+							Binary Frequency Shift Keying (BFSK)
+						</div>
+					</div>
+					@for (item of data(); track $index) {
+					<div class="data-cell">
+						
+			
+						<div class="signal-container">
+							<div class="top-left-dashed"></div>
+							<div class="bottom-left-dashed"></div>
+			
+							<div class="left-analog-signal"></div>
+	
+							<svg width="140px" height="140px">
+								<path stroke="blue" stroke-width="2"
+								[attr.d]="bfskSignals().signals[$index].signal"></path>
+							</svg>
+						</div>
+	
+						<div class="amplitudes">
+							<input type="range" min="0" max="10000" step="100"
+							#signal
+							[value]="bfskSignals().signals[$index].frequency.toString()"
+							(input)="setFrequency(signal, $index)">
+							<p>
+								f: {{ bfskSignals().signals[$index].frequency }}
+							</p>
+						</div>
+	
+						<div class="bit">
+							{{ bfskSignals().receiverData[$index] }}
+						</div>
+	
+					</div>
+					}
+				</div>
+			</div>
 
 			<p>
 				The most common form of FSK is binary FSK (BFSK), in which the two binary values are represented
