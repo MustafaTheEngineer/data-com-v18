@@ -8,6 +8,20 @@
 	<button (click)="technique = 'bpsk'"> Binary Phase Shift Keying (BPSK) </button>
 </div>
 
+<h1>
+	@switch (technique) {
+		@case ('ask') {
+			Amplitude Shift Keying (ASK)
+		}
+		@case ('bfsk') {
+			Binary Frequency Shift Keying (BFSK)
+		}
+		@case ('bpsk') {
+			Binary Phase Shift Keying (BPSK) 
+		}
+	}
+</h1>
+
 @if (data().length) {
 	@switch (technique) {
 		@case ('ask') {
@@ -19,46 +33,70 @@
 				If the amplitude of the signal is greater than the threshold, the interpreted bit is 1, otherwise it is 0.
 			</p>
 
-
-			<div class="cell-container">
-				<div class="data-cell">
-					<div class="signal-container">
-						Amplitude Shift Keying (ASK)
+			<div class="signal-container">
+				<div class="cell-container">
+					<div class="data-cell">
+						<div class="signal-container">
+							Sender
+						</div>
 					</div>
+					@for (item of data(); track $index) {
+					<div class="data-cell">
+						<div class="signal-container">
+							<div class="top-left-dashed"></div>
+							<div class="bottom-left-dashed"></div>
+			
+							<div class="left-analog-signal"></div>
+	
+							<svg width="140px" height="140px">
+								<path stroke="blue" stroke-width="2"
+								[attr.d]="askSender().signals[$index].signal"></path>
+							</svg>
+						</div>
+					</div>
+					}
 				</div>
-				@for (item of data(); track $index) {
-				<div class="data-cell">
-					<div class="signal-container">
-						<div class="top-left-dashed"></div>
-						<div class="bottom-left-dashed"></div>
-		
-						<div class="left-analog-signal"></div>
-
-						<svg width="140px" height="140px">
-							<path [attr.d]="askSignals().signals[$index].signal" stroke="blue" stroke-width="2"></path>
-						</svg>
+	
+				<div class="cell-container">
+					<div class="data-cell">
+						<div class="signal-container">
+							Receiver
+						</div>
 					</div>
-
-					<div class="amplitudes">
-						<input type="range" min="0" max="5" step="0.01"
-						#signal
-						[value]="askSignals().signals[$index].amplitude.toString()"
-						(input)="setAmplitude(signal, $index)">
-						<p>
-							Amplitude: {{ askSignals().signals[$index].amplitude }}
-						</p>
+					@for (item of data(); track $index) {
+					<div class="data-cell">
+						<div class="signal-container">
+							<div class="top-left-dashed"></div>
+							<div class="bottom-left-dashed"></div>
+			
+							<div class="left-analog-signal"></div>
+	
+							<svg width="140px" height="140px">
+								<path [attr.d]="askReceiver().signals[$index].signal" stroke="blue" stroke-width="2"></path>
+							</svg>
+						</div>
+	
+						<div class="amplitudes">
+							<input type="range" min="0" max="5" step="0.01"
+							#signal
+							[value]="askReceiver().signals[$index].amplitude.toString()"
+							(input)="setAmplitude(signal, $index)">
+							<p>
+								Amplitude: {{ askReceiver().signals[$index].amplitude }}
+							</p>
+						</div>
+	
+						<div class="bit">
+							{{ askReceiver().receiverData[$index] }}
+						</div>
 					</div>
-
-					<div class="bit">
-						{{ askSignals().receiverData[$index] }}
-					</div>
+					}
 				</div>
-				}
 			</div>
 
 			<p>
 				Interpreted data by receiver:
-				@for (item of askSignals().receiverData; track $index) {
+				@for (item of askReceiver().receiverData; track $index) {
 					<span [style.color]="item === this.data()[$index] ? 'inherit' : 'red'"> {{ item }} </span>
 				}
 			</p>
@@ -132,44 +170,46 @@
 			</p>
 			<input #bfskOffset type="range" min="0" max="10000" step="100" [value]="bfskOffsetFrequency().toString()" (input)="setBfskOffsetFrequency(bfskOffset)">
 
-			<div class="cell-container">
-				<div class="data-cell">
-					<div class="signal-container">
-						Binary Frequency Shift Keying (BFSK)
+			<div class="signal-container">
+				<div class="cell-container">
+					<div class="data-cell">
+						<div class="signal-container">
+							Binary Frequency Shift Keying (BFSK)
+						</div>
 					</div>
+					@for (item of data(); track $index) {
+					<div class="data-cell">
+						
+			
+						<div class="signal-container">
+							<div class="top-left-dashed"></div>
+							<div class="bottom-left-dashed"></div>
+			
+							<div class="left-analog-signal"></div>
+	
+							<svg width="140px" height="140px">
+								<path stroke="blue" stroke-width="2"
+								[attr.d]="bfskSignals().signals[$index].signal"></path>
+							</svg>
+						</div>
+	
+						<div class="amplitudes">
+							<input type="range" min="0" max="10000" step="100"
+							#signal
+							[value]="bfskSignals().signals[$index].frequency.toString()"
+							(input)="setFrequency(signal, $index)">
+							<p>
+								f: {{ bfskSignals().signals[$index].frequency }}
+							</p>
+						</div>
+	
+						<div class="bit">
+							{{ bfskSignals().receiverData[$index] }}
+						</div>
+	
+					</div>
+					}
 				</div>
-				@for (item of data(); track $index) {
-				<div class="data-cell">
-					
-		
-					<div class="signal-container">
-						<div class="top-left-dashed"></div>
-						<div class="bottom-left-dashed"></div>
-		
-						<div class="left-analog-signal"></div>
-
-						<svg width="140px" height="140px">
-							<path stroke="blue" stroke-width="2"
-							[attr.d]="bfskSignals().signals[$index].signal"></path>
-						</svg>
-					</div>
-
-					<div class="amplitudes">
-						<input type="range" min="0" max="10000" step="100"
-						#signal
-						[value]="bfskSignals().signals[$index].frequency.toString()"
-						(input)="setFrequency(signal, $index)">
-						<p>
-							f: {{ bfskSignals().signals[$index].frequency }}
-						</p>
-					</div>
-
-					<div class="bit">
-						{{ bfskSignals().receiverData[$index] }}
-					</div>
-
-				</div>
-				}
 			</div>
 
 			<svg viewBox="0 0 200 100" width="50%">
@@ -285,30 +325,32 @@
 			</p>
 		}
 		@case ('bpsk') {
-			<div class="cell-container">
-				<div class="data-cell">
-					<div class="signal-container">
-						Binary Phase Shift Keying (BPSK)
+			<div class="signal-container">
+				<div class="cell-container">
+					<div class="data-cell">
+						<div class="signal-container">
+							Binary Phase Shift Keying (BPSK)
+						</div>
 					</div>
+					@for (item of data(); track $index) {
+					<div class="data-cell">
+						<div class="bit">
+							{{ data()[$index] }}
+						</div>
+			
+						<div class="signal-container">
+							<div class="top-left-dashed"></div>
+							<div class="bottom-left-dashed"></div>
+			
+							<div class="left-analog-signal"></div>
+			
+							<svg width="140px" height="140px">
+								<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
+							</svg>
+						</div>
+					</div>
+					}
 				</div>
-				@for (item of data(); track $index) {
-				<div class="data-cell">
-					<div class="bit">
-						{{ data()[$index] }}
-					</div>
-		
-					<div class="signal-container">
-						<div class="top-left-dashed"></div>
-						<div class="bottom-left-dashed"></div>
-		
-						<div class="left-analog-signal"></div>
-		
-						<svg width="140px" height="140px">
-							<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
-						</svg>
-					</div>
-				</div>
-				}
 			</div>
 
 			<p>

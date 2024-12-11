@@ -34,13 +34,10 @@ export class DigitalToAnalogComponent {
 	bfskOffsetFrequency = signal(1500)
 	bfskOfssetNormalized = computed(() => 3 + 0.0147 * this.bfskOffsetFrequency())
 
-	//`M${3 + 0.0147 * this.bfskOffsetFrequency()}, 95, ${3 + 0.0147 * this.bfskOffsetFrequency()} 90, 120`
+	askSender = computed(() => this.calcASKSignal())
+	askReceiver = computed(() => this.calcASKSignal())
 
-	setBfskOffsetFrequency(event: HTMLInputElement) {
-		this.bfskOffsetFrequency.set(event.valueAsNumber)
-	}
-
-	askSignals = computed(() => {
+	calcASKSignal() {
 		const result: ASKReceiver = {
 			signals: [],
 			receiverData: ''
@@ -69,7 +66,7 @@ export class DigitalToAnalogComponent {
 		result.receiverData = data.join('');
 
 		return result
-	})
+	}
 
 	bfskSignals = computed(() => {
 		const result: BFSKReceiver = {
@@ -158,27 +155,31 @@ export class DigitalToAnalogComponent {
 	setAmplitude(element: HTMLInputElement, index: number) {
 		const normalizedValue = Number((parseFloat(element.value) / 5).toString().slice(0, 4))
 
-		const receiverData = this.askSignals().receiverData.split('');
+		const receiverData = this.askReceiver().receiverData.split('');
 		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
 
-		this.askSignals().signals[index] = {
+		this.askReceiver().signals[index] = {
 			amplitude: element.valueAsNumber,
 			signal: this.calcSignal(normalizedValue, 2),
 		}
-		this.askSignals().receiverData = receiverData.join('')
+		this.askReceiver().receiverData = receiverData.join('')
 	}
 
 	setFrequency(element: HTMLInputElement, index: number) {
 		const normalizedValue = Number((parseFloat(element.value) / 1000).toString().slice(0, 5))
 		console.log(normalizedValue)
 
-		const receiverData = this.askSignals().receiverData.split('');
+		const receiverData = this.askReceiver().receiverData.split('');
 		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
 
 		this.bfskSignals().signals[index] = {
 			frequency: element.valueAsNumber,
 			signal: this.calcSignal(1, normalizedValue),
 		}
-		this.askSignals().receiverData = receiverData.join('')
+		this.askReceiver().receiverData = receiverData.join('')
+	}
+
+	setBfskOffsetFrequency(event: HTMLInputElement) {
+		this.bfskOffsetFrequency.set(event.valueAsNumber)
 	}
 }

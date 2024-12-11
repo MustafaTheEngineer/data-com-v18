@@ -58,42 +58,48 @@ p {
 	border-bottom: 2px solid white;
 }
 
-.cell-container {
+.signal-container {
 	display: flex;
-	margin: 20px 0;
+	flex-direction: column;
+	overflow-x: scroll;
 
-	.data-cell {
-		.bit {
-			text-align: center;
-		}
-
-		.signal-container {
-			width: 140px;
-			height: 140px;
-			position: relative;
-
-			div {
-				position: absolute;
+	.cell-container {
+		display: flex;
+		margin: 20px 0;
+	
+		.data-cell {
+			.bit {
+				text-align: center;
 			}
-
-			.top-left-dashed {
-				border-left: 2px dashed white;
-				left: 0;
-				top: 0;
-				height: 20px;
+	
+			.signal-container {
+				width: 140px;
+				height: 140px;
+				position: relative;
+	
+				div {
+					position: absolute;
+				}
+	
+				.top-left-dashed {
+					border-left: 2px dashed white;
+					left: 0;
+					top: 0;
+					height: 20px;
+				}
+	
+				.bottom-left-dashed {
+					border-left: 2px dashed white;
+					left: 0;
+					bottom: 0;
+					height: 20px;
+				}
 			}
-
-			.bottom-left-dashed {
-				border-left: 2px dashed white;
-				left: 0;
-				bottom: 0;
-				height: 20px;
-			}
-		}
-
-		.amplitudes {
-			input {
-				width: 100px;
+	
+			.amplitudes {
+				input {
+					width: 100px;
+				}
 			}
 		}
 	}
