@@ -29,21 +29,18 @@ type BFSKReceiver = {
 	styleUrl: './digital-to-analog.component.scss'
 })
 export class DigitalToAnalogComponent {
+	technique: 'ask' | 'bfsk' | 'bpsk' = 'ask'
+
 	data = signal('');
-	threshold = 2.5
-	bfskCarrierFrequency = signal(1500)
-	bfskOffset = signal(1000)
-	f0 = computed(() => (this.bfskCarrierFrequency() - this.bfskOffset()) * 0.0147 + 3)
-	f1 = computed(() => (this.bfskCarrierFrequency() + this.bfskOffset()) * 0.0147 + 3)
 
-	bfskCarrierNormalized = computed(() => 3 + 0.0147 * this.bfskCarrierFrequency())
-
-	setBfskCarrierFrequency(event: HTMLInputElement) {
-		this.bfskCarrierFrequency.set(event.valueAsNumber)
+	setSenderData($event: string) {
+		this.data.set($event)
 	}
 
-	setBfskOffset(event: HTMLInputElement) {
-		this.bfskOffset.set(event.valueAsNumber)
+	threshold = 2.5
+
+	setThreshold(event: Event) {
+		this.threshold = parseFloat((event.target as HTMLInputElement).value)
 	}
 
 	askSender = computed(() => this.calcASKSignal())
@@ -80,7 +77,46 @@ export class DigitalToAnalogComponent {
 		return result
 	}
 
-	bfskSignals = computed(() => {
+	setAmplitude(element: HTMLInputElement, index: number) {
+		const normalizedValue = Number((parseFloat(element.value) / 5).toString().slice(0, 4))
+
+		const receiverData = this.askReceiver().receiverData.split('');
+		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
+
+		this.askReceiver().signals[index] = {
+			amplitude: element.valueAsNumber,
+			signal: this.calcSignal(normalizedValue, 2),
+		}
+		this.askReceiver().receiverData = receiverData.join('')
+	}
+
+	bfskCarrier = signal(1500)
+	bfskOffset = signal(1000)
+
+	f1 = computed(() => {
+		const result = (this.bfskCarrier() - this.bfskOffset()) * 0.0217 + 3
+		return result <= 0 ? 3 : result
+	}
+	)
+	f2 = computed(() => (this.bfskCarrier() + this.bfskOffset()) * 0.0217 + 3)
+	bfskRange1 = computed(() => this.bfskCarrier() - this.bfskOffset() <= 0 ? 0 : this.bfskCarrier() - this.bfskOffset())
+
+	bfskRange2 = computed(() => this.bfskCarrier() + this.bfskOffset())
+
+	bfskCarrierNormalized = computed(() => 3 + 0.0217 * this.bfskCarrier())
+
+	setBfskCarrier(event: HTMLInputElement) {
+		this.bfskCarrier.set(event.valueAsNumber)
+	}
+
+	setBfskOffset(event: HTMLInputElement) {
+		this.bfskOffset.set(event.valueAsNumber)
+	}
+
+	bfskSender = computed(() => this.calcBfskSignal())
+	bfskReceiver = computed(() => this.calcBfskSignal())
+
+	calcBfskSignal() {
 		const result: BFSKReceiver = {
 			signals: [],
 			receiverData: ''
@@ -90,7 +126,7 @@ export class DigitalToAnalogComponent {
 		for (let i = 0; i < this.data().length; i++) {
 			if (this.data()[i] === '0') {
 				result.signals.push({
-					frequency: 1000,
+					frequency: (this.bfskCarrier() + this.bfskRange2()) / 2,
 					signal: this.calcSignal(1, 1),
 				})
 
@@ -98,7 +134,7 @@ export class DigitalToAnalogComponent {
 
 			} else {
 				result.signals.push({
-					frequency: 2000,
+					frequency: (this.bfskCarrier() + this.bfskRange1()) / 2,
 					signal: this.calcSignal(1, 2),
 				})
 
@@ -109,7 +145,27 @@ export class DigitalToAnalogComponent {
 		result.receiverData = data.join('');
 
 		return result
-	})
+	}
+
+	setFrequency(element: HTMLInputElement, index: number) {
+		const normalizedValue = Number((parseFloat(element.value) / 1000).toString().slice(0, 5))
+
+		const receiverData = this.bfskReceiver().receiverData.split('');
+		
+		if (element.valueAsNumber >= this.bfskCarrier() - this.bfskOffset() && element.valueAsNumber <= this.bfskCarrier()) {
+			receiverData[index] = '1'
+		} else if (element.valueAsNumber >= this.bfskCarrier() && element.valueAsNumber <= this.bfskCarrier() + this.bfskOffset()) {
+			receiverData[index] = '0'
+		} else {
+			receiverData[index] = '?'
+		}
+
+		this.bfskReceiver().signals[index] = {
+			frequency: element.valueAsNumber,
+			signal: this.calcSignal(1, normalizedValue),
+		}
+		this.bfskReceiver().receiverData = receiverData.join('')
+	}
 
 	calcSignal(amplitude: number, frequency: number) {
 		if (frequency === 0) return 'M 0 70 L 140 70'
@@ -153,41 +209,4 @@ export class DigitalToAnalogComponent {
 
 		return result
 	})
-
-	technique: 'ask' | 'bfsk' | 'bpsk' = 'ask'
-
-	setSignal($event: string) {
-		this.data.set($event)
-	}
-
-	setThreshold(event: Event) {
-		this.threshold = parseFloat((event.target as HTMLInputElement).value)
-	}
-
-	setAmplitude(element: HTMLInputElement, index: number) {
-		const normalizedValue = Number((parseFloat(element.value) / 5).toString().slice(0, 4))
-
-		const receiverData = this.askReceiver().receiverData.split('');
-		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
-
-		this.askReceiver().signals[index] = {
-			amplitude: element.valueAsNumber,
-			signal: this.calcSignal(normalizedValue, 2),
-		}
-		this.askReceiver().receiverData = receiverData.join('')
-	}
-
-	setFrequency(element: HTMLInputElement, index: number) {
-		const normalizedValue = Number((parseFloat(element.value) / 1000).toString().slice(0, 5))
-		console.log(normalizedValue)
-
-		const receiverData = this.askReceiver().receiverData.split('');
-		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
-
-		this.bfskSignals().signals[index] = {
-			frequency: element.valueAsNumber,
-			signal: this.calcSignal(1, normalizedValue),
-		}
-		this.askReceiver().receiverData = receiverData.join('')
-	}
 }

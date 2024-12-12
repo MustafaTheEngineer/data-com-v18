@@ -1,5 +1,5 @@
 <div id="input-data">
-	<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+	<app-binary-data (binaryDataChange)="setSenderData($event)"></app-binary-data>
 </div>
 
 <div id="techniques">
@@ -10,437 +10,433 @@
 
 <h1>
 	@switch (technique) {
-		@case ('ask') {
-			Amplitude Shift Keying (ASK)
-		}
-		@case ('bfsk') {
-			Binary Frequency Shift Keying (BFSK)
-		}
-		@case ('bpsk') {
-			Binary Phase Shift Keying (BPSK) 
-		}
+	@case ('ask') {
+	Amplitude Shift Keying (ASK)
+	}
+	@case ('bfsk') {
+	Binary Frequency Shift Keying (BFSK)
+	}
+	@case ('bpsk') {
+	Binary Phase Shift Keying (BPSK)
+	}
 	}
 </h1>
 
 @if (data().length) {
-	@switch (technique) {
-		@case ('ask') {
-			<p>
-				Threshold: {{ threshold }}
-			</p>
-			<input type="range" min="0" max="5" step="0.01" value="2.5" (input)="setThreshold($event)">
-			<p>
-				If the amplitude of the signal is greater than the threshold, the interpreted bit is 1, otherwise it is 0.
-			</p>
+@switch (technique) {
+@case ('ask') {
+<p>
+	Threshold: {{ threshold }}
+</p>
+<input type="range" min="0" max="5" step="0.01" value="2.5" (input)="setThreshold($event)">
+<p>
+	If the amplitude of the signal is greater than the threshold, the interpreted bit is 1, otherwise it is 0.
+</p>
+
+<div class="signal-container">
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Sender
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
 
 			<div class="signal-container">
-				<div class="cell-container">
-					<div class="data-cell">
-						<div class="signal-container">
-							Sender
-						</div>
-					</div>
-					@for (item of data(); track $index) {
-					<div class="data-cell">
-						<div class="signal-container">
-							<div class="top-left-dashed"></div>
-							<div class="bottom-left-dashed"></div>
-			
-							<div class="left-analog-signal"></div>
-	
-							<svg width="140px" height="140px">
-								<path stroke="blue" stroke-width="2"
-								[attr.d]="askSender().signals[$index].signal"></path>
-							</svg>
-						</div>
-					</div>
-					}
-				</div>
-	
-				<div class="cell-container">
-					<div class="data-cell">
-						<div class="signal-container">
-							Receiver
-						</div>
-					</div>
-					@for (item of data(); track $index) {
-					<div class="data-cell">
-						<div class="signal-container">
-							<div class="top-left-dashed"></div>
-							<div class="bottom-left-dashed"></div>
-			
-							<div class="left-analog-signal"></div>
-	
-							<svg width="140px" height="140px">
-								<path [attr.d]="askReceiver().signals[$index].signal" stroke="blue" stroke-width="2"></path>
-							</svg>
-						</div>
-	
-						<div class="amplitudes">
-							<input type="range" min="0" max="5" step="0.01"
-							#signal
-							[value]="askReceiver().signals[$index].amplitude.toString()"
-							(input)="setAmplitude(signal, $index)">
-							<p>
-								Amplitude: {{ askReceiver().signals[$index].amplitude }}
-							</p>
-						</div>
-	
-						<div class="bit">
-							{{ askReceiver().receiverData[$index] }}
-						</div>
-					</div>
-					}
-				</div>
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path stroke="blue" stroke-width="2" [attr.d]="askSender().signals[$index].signal"></path>
+				</svg>
 			</div>
-
-			<p>
-				Interpreted data by receiver:
-				@for (item of askReceiver().receiverData; track $index) {
-					<span [style.color]="item === this.data()[$index] ? 'inherit' : 'red'"> {{ item }} </span>
-				}
-			</p>
-
-			<p>
-				In ASK, the two binary values are represented by two different amplitudes of the carrier
-				frequency. Commonly, one of the amplitudes is zero; that is, one binary digit is represented by the
-				presence, at constant amplitude, of the carrier, the other by the absence of the carrier. The resulting transmitted signal for one bit time is
-			</p>
-
-			<div id="ask-function">
-				<table>
-					<tr>
-						<td [innerText]="'S(t) = {'">
-							
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							(A.cos(2.π.f<sub>c</sub>.t) )
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 1
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							0
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 0
-						</td>
-						
-					</tr>
-					<tr>
-						<td [innerText]="'}'">
-							
-						</td>
-					</tr>
-				</table>
-			</div>
-
-			<p>
-				where
-			</p>
-			<ul>
-				<li>A: Amplitude of carrier signal</li>
-				<li>f<sub>c</sub>: carrier frequency</li>
-				<li> Carrier signal = A.cos(2.π.f.<sub>c</sub>.t) </li>
-			</ul>
-			<p>
-				ASK is susceptible to sudden gain changes and is a rather inefficient modulation technique. On voicegrade lines, it is typically used only up to 1200 bps.
-			</p>
-			<p>
-				The ASK technique is used to transmit digital data over optical fiber, where one signal element is
-				represented by a light pulse while the other signal element is represented by the absence of light.
-			</p>
-			
+		</div>
 		}
-		@case ('bfsk') {
+	</div>
 
-			<div>
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Receiver
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path [attr.d]="askReceiver().signals[$index].signal" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+
+			<div class="amplitudes">
+				<input type="range" min="0" max="5" step="0.01" #signal
+					[value]="askReceiver().signals[$index].amplitude.toString()" (input)="setAmplitude(signal, $index)">
 				<p>
-					Carrier Frequency: {{ bfskCarrierFrequency() }}
+					Amplitude: {{ askReceiver().signals[$index].amplitude }}
 				</p>
-				<input #bfskCarrier type="range" min="0" max="10000" step="100" [value]="bfskCarrierFrequency().toString()" (input)="setBfskCarrierFrequency(bfskCarrier)">
 			</div>
 
-			<div>
-				<p>
-					Offset: {{ bfskOffset() }}
-				</p>
-				<input #bfskOffsetEl type="range" min="0" max="10000" step="100" [value]="bfskOffset().toString()" (input)="setBfskOffset(bfskOffsetEl)">
+			<div class="bit">
+				{{ askReceiver().receiverData[$index] }}
 			</div>
-
-			<svg viewBox="0 0 200 100" width="50%">
-				<text x="170" y="99" font-size="4" fill="white">Frequency (Hz)</text>
-				// create x-axis that have arrow
-				<defs>
-					<marker 
-					  id='head' 
-					  orient="auto" 
-					  markerWidth='3' 
-					  markerHeight='4' 
-					  refX='0.1' 
-					  refY='2'
-					>
-					  <path d='M0,0 V4 L2,2 Z' fill="white" />
-					</marker>
-				  </defs>
-				
-				  <path
-					id='x-axis'
-					marker-end='url(#head)'
-					stroke-width='1'
-					fill='none' stroke='white'
-					d='M0,90, 190 90,120'
-				  />
-
-				  <path
-					id='y-axis'
-					marker-end='url(#head)'
-					stroke-width='1'
-					fill='none' stroke='white'
-					d='M3,90, 3 10,120'
-				  />
-
-				  <path
-					stroke-width='1'
-					fill='none' stroke='white'
-					d='M150,95, 150 90,120'
-				  />
-
-				  <path
-					stroke-width='1'
-					fill='none' stroke='white'
-					d='M3,95, 3 90,120'
-				  />
-
-				  <path
-					stroke-width='1'
-					fill='none' stroke='white'
-					[attr.d]='"M" + bfskCarrierNormalized() + ", 95," + bfskCarrierNormalized() + " 90, 120"'
-				  />
-
-				  <path
-					stroke-width='1'
-					fill='none' stroke='white'
-					[attr.d]='"M" + f0() + ", 95," + f0() + " 90, 120"'
-				  />
-
-				  <text y="85" font-size="5" fill="white"
-				  [attr.x]="f0()">
-					f<tspan dy="2" font-size="4">0</tspan>
-				  </text>
-				  <text y="99" font-size="5" fill="white"
-				  [attr.x]="f0() - 5"> {{ this.bfskCarrierFrequency() - this.bfskOffset() }} </text>
-
-				  <path
-					stroke-width='1'
-					fill='none' stroke='white'
-					[attr.d]='"M" + f1() + ", 95," + f1() + " 90, 120"'
-				  />
-
-				  <text y="85" font-size="5" fill="white"
-				  [attr.x]="f1()">
-					f<tspan dy="2" font-size="4">0</tspan>
-				  </text>
-				  <text y="99" font-size="5" fill="white"
-				  [attr.x]="f1() - 5"> {{ this.bfskCarrierFrequency() + this.bfskOffset() }} </text>
-
-				  <text y="85" font-size="5" fill="white"
-				  [attr.x]="bfskCarrierNormalized()">
-					f<tspan dy="2" font-size="4">c</tspan>
-				  </text>
-				  <text y="99" font-size="5" fill="white"
-				  [attr.x]="bfskCarrierNormalized() - 5"> {{ bfskCarrierFrequency() }} </text>
-
-				  <text x="148" y="99" font-size="5" fill="white">10.000</text>
-				  <text x="2" y="99" font-size="5" fill="white">0</text>
-			</svg>
-
-			<div class="signal-container">
-				<div class="cell-container">
-					<div class="data-cell">
-						<div class="signal-container">
-							Binary Frequency Shift Keying (BFSK)
-						</div>
-					</div>
-					@for (item of data(); track $index) {
-					<div class="data-cell">
-						
-			
-						<div class="signal-container">
-							<div class="top-left-dashed"></div>
-							<div class="bottom-left-dashed"></div>
-			
-							<div class="left-analog-signal"></div>
-	
-							<svg width="140px" height="140px">
-								<path stroke="blue" stroke-width="2"
-								[attr.d]="bfskSignals().signals[$index].signal"></path>
-							</svg>
-						</div>
-	
-						<div class="amplitudes">
-							<input type="range" min="0" max="10000" step="100"
-							#signal
-							[value]="bfskSignals().signals[$index].frequency.toString()"
-							(input)="setFrequency(signal, $index)">
-							<p>
-								f: {{ bfskSignals().signals[$index].frequency }}
-							</p>
-						</div>
-	
-						<div class="bit">
-							{{ bfskSignals().receiverData[$index] }}
-						</div>
-	
-					</div>
-					}
-				</div>
-			</div>
-
-			<p>
-				The most common form of FSK is binary FSK (BFSK), in which the two binary values are represented
-				by two different frequencies near the carrier frequency (shown in Figure below) as
-			</p>
-
-			<div id="ask-function">
-				<table>
-					<tr>
-						<td [innerText]="'S(t) = {'">
-							
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							(A.cos(2.π.f<sub>1</sub>.t) )
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 1
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							(A.cos(2.π.f<sub>2</sub>.t) )
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 0
-						</td>
-						
-					</tr>
-					<tr>
-						<td [innerText]="'}'">
-							
-						</td>
-					</tr>
-				</table>
-			</div>
-
-			<p>
-				where f<sub>1</sub>, f<sub>2</sub> offset from carrier frequency (fc) by equal but opposite amount
-			</p>
-			<p>
-				BFSK is less susceptible to error than ASK. On voice-grade lines, it is typically used up to 1200
-				bps. It is also commonly used for high-frequency (3 to 30 MHz) radio transmission. It can also be used
-				at even higher frequencies on local area networks that use coaxial cable
-			</p>
+		</div>
 		}
-		@case ('bpsk') {
-			<div class="signal-container">
-				<div class="cell-container">
-					<div class="data-cell">
-						<div class="signal-container">
-							Binary Phase Shift Keying (BPSK)
-						</div>
-					</div>
-					@for (item of data(); track $index) {
-					<div class="data-cell">
-						<div class="bit">
-							{{ data()[$index] }}
-						</div>
-			
-						<div class="signal-container">
-							<div class="top-left-dashed"></div>
-							<div class="bottom-left-dashed"></div>
-			
-							<div class="left-analog-signal"></div>
-			
-							<svg width="140px" height="140px">
-								<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
-							</svg>
-						</div>
-					</div>
-					}
-				</div>
-			</div>
+	</div>
+</div>
 
-			<p>
-				In PSK, the phase of the carrier signal is shifted to represent data. The simplest scheme uses two
-				phases to represent the two binary digits (Figure below) and is known as binary phase shift keying.
-				The resulting transmitted signal for one bit time is
-			</p>
-
-			<div id="ask-function">
-				<table>
-					<tr>
-						<td [innerText]="'S(t) = {'">
-							
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							A.cos(2.π.f<sub>c</sub>.t + π)
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 1
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							A.cos(2.π.f<sub>c</sub>.t π) = -A.cos(2.π.f<sub>c</sub>.t π)
-						</td>
-						<td>
-							;
-						</td>
-						<td>
-							binary 0
-						</td>
-						
-					</tr>
-					<tr>
-						<td [innerText]="'}'">
-							
-						</td>
-					</tr>
-				</table>
-			</div>
-
-			<p>
-				Because a phase shift of 180<sup>o</sup> (π) is equivelent to flipping the sine wave or multiplying it by -1 Acos(2.π.f<sub>c</sub>.t+ π) = -Acos(2.π.f<sub>c</sub>.t) can be used instead.
-			</p>
-		}
+<p>
+	Interpreted data by receiver:
+	@for (item of askReceiver().receiverData; track $index) {
+	<span [style.color]="item === this.data()[$index] ? 'inherit' : 'red'"> {{ item }} </span>
 	}
+</p>
+
+<p>
+	In ASK, the two binary values are represented by two different amplitudes of the carrier
+	frequency. Commonly, one of the amplitudes is zero; that is, one binary digit is represented by the
+	presence, at constant amplitude, of the carrier, the other by the absence of the carrier. The resulting transmitted
+	signal for one bit time is
+</p>
+
+<div id="ask-function">
+	<table>
+		<tr>
+			<td [innerText]="'S(t) = {'">
+
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				(A.cos(2.π.f<sub>c</sub>.t) )
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 1
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				0
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 0
+			</td>
+
+		</tr>
+		<tr>
+			<td [innerText]="'}'">
+
+			</td>
+		</tr>
+	</table>
+</div>
+
+<p>
+	where
+</p>
+<ul>
+	<li>A: Amplitude of carrier signal</li>
+	<li>f<sub>c</sub>: carrier frequency</li>
+	<li> Carrier signal = A.cos(2.π.f.<sub>c</sub>.t) </li>
+</ul>
+<p>
+	ASK is susceptible to sudden gain changes and is a rather inefficient modulation technique. On voicegrade lines, it
+	is typically used only up to 1200 bps.
+</p>
+<p>
+	The ASK technique is used to transmit digital data over optical fiber, where one signal element is
+	represented by a light pulse while the other signal element is represented by the absence of light.
+</p>
+
+}
+@case ('bfsk') {
+<div>
+	<p>
+		Carrier Frequency: {{ this.bfskCarrier() }}
+	</p>
+	<input #bfskCarrierEl type="range" min="0" max="10000" step="100" [value]="bfskCarrier().toString()"
+		(input)="setBfskCarrier(bfskCarrierEl)">
+</div>
+
+<div>
+	<p>
+		Offset: {{ bfskOffset() }}
+	</p>
+	<input #bfskOffsetEl type="range" min="0" max="10000" step="100" [value]="bfskOffset().toString()"
+		(input)="setBfskOffset(bfskOffsetEl)">
+</div>
+
+<svg viewBox="0 0 300 50" class="bfsk-svg">
+	<defs>
+		<marker id='head' orient="auto" markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
+			<path d='M0,0 V4 L2,2 Z' fill="white" />
+		</marker>
+	</defs>
+
+	<path id='x-axis' marker-end='url(#head)' stroke-width='1' fill='none' stroke='white' d='M0,30, 250 30,120' />
+
+	<path id='y-axis' marker-end='url(#head)' stroke-width='1' fill='none' stroke='white' d='M3,35, 3 10,120' />
+
+	<text x="252" y="39" font-size="6" fill="white">Frequency (Hz)</text>
+
+	<path stroke-width='1' fill='none' stroke='white' d='M3,35, 3 30,120' />
+	<text x="2" y="40" font-size="5" fill="white">0</text>
+
+	<path stroke-width='1' fill='none' stroke='white' d='M220,35, 220 30,120' />
+	<text x="220" y="40" font-size="5" fill="white">10.000</text>
+
+	<path stroke-width='1' fill='none' stroke='white'
+		[attr.d]='"M" + bfskCarrierNormalized() + ", 35," + bfskCarrierNormalized() + " 30, 120"' />
+
+	<path stroke-width='1' fill='none' stroke='white'
+	[attr.d]='"M" + f1() + ", 35," + f1() + " 30, 120"' />
+
+	<text y="20" font-size="5" fill="white" [attr.x]="f1()">
+		f<tspan dy="2" font-size="4">1</tspan>
+	</text>
+	<text y="49" font-size="5" fill="white" [attr.x]="f1() - 5"> {{ bfskRange1() }}
+	</text>
+
+	<path stroke-width='1' fill='none' stroke='white' [attr.d]='"M" + f2() + ", 35," + f2() + " 30, 120"' />
+
+	<text y="20" font-size="5" fill="white" [attr.x]="f2()">
+		f<tspan dy="2" font-size="4">2</tspan>
+	</text>
+	<text y="49" font-size="5" fill="white" [attr.x]="f2() - 5"> {{ bfskCarrier() + bfskOffset() }}
+	</text>
+
+	<text y="20" font-size="5" fill="white" [attr.x]="bfskCarrierNormalized()">
+		f<tspan dy="2" font-size="4">c</tspan>
+	</text>
+	<text y="49" font-size="5" fill="white" [attr.x]="bfskCarrierNormalized() - 5"> {{ bfskCarrier() }} </text>
+</svg>
+
+<p>
+	If signal is between {{ bfskRange1() }} and {{ bfskCarrier() }} then interpreted bit is 1, if it is between {{ bfskCarrier() + this.bfskOffset() }} and {{ bfskCarrier() }} then interpreted bit is 0.
+</p>
+
+<div class="signal-container">
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Sender
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path stroke="blue" stroke-width="2" [attr.d]="bfskSender().signals[$index].signal"></path>
+				</svg>
+			</div>
+		</div>
+		}
+	</div>
+
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Receiver
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path stroke="blue" stroke-width="2" [attr.d]="bfskReceiver().signals[$index].signal"></path>
+				</svg>
+			</div>
+
+			<div class="amplitudes">
+				<input type="range" min="0" max="10000" step="100" #signal
+					[value]="bfskReceiver().signals[$index].frequency.toString()" (input)="setFrequency(signal, $index)">
+				<p>
+					f: {{ bfskReceiver().signals[$index].frequency }}
+				</p>
+			</div>
+
+			<div class="bit">
+				{{ bfskReceiver().receiverData[$index] }}
+			</div>
+
+		</div>
+		}
+	</div>
+</div>
+
+<p>
+	The interpreted data by receiver: @for (item of bfskReceiver().receiverData; track $index) {
+	<span [style.color]="item === this.data()[$index] ? 'inherit' : 'red'"> {{ item }} </span>
+	}
+</p>
+
+<p>
+	The most common form of FSK is binary FSK (BFSK), in which the two binary values are represented
+	by two different frequencies near the carrier frequency (shown in Figure below) as
+</p>
+
+<div id="ask-function">
+	<table>
+		<tr>
+			<td [innerText]="'S(t) = {'">
+
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				(A.cos(2.π.f<sub>1</sub>.t) )
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 1
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				(A.cos(2.π.f<sub>2</sub>.t) )
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 0
+			</td>
+
+		</tr>
+		<tr>
+			<td [innerText]="'}'">
+
+			</td>
+		</tr>
+	</table>
+</div>
+
+<p>
+	where f<sub>1</sub>, f<sub>2</sub> offset from carrier frequency (fc) by equal but opposite amount
+</p>
+<p>
+	BFSK is less susceptible to error than ASK. On voice-grade lines, it is typically used up to 1200
+	bps. It is also commonly used for high-frequency (3 to 30 MHz) radio transmission. It can also be used
+	at even higher frequencies on local area networks that use coaxial cable
+</p>
+}
+@case ('bpsk') {
+<div class="signal-container">
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Binary Phase Shift Keying (BPSK)
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+		</div>
+		}
+	</div>
+</div>
+
+<p>
+	In PSK, the phase of the carrier signal is shifted to represent data. The simplest scheme uses two
+	phases to represent the two binary digits (Figure below) and is known as binary phase shift keying.
+	The resulting transmitted signal for one bit time is
+</p>
+
+<div id="ask-function">
+	<table>
+		<tr>
+			<td [innerText]="'S(t) = {'">
+
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				A.cos(2.π.f<sub>c</sub>.t + π)
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 1
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				A.cos(2.π.f<sub>c</sub>.t π) = -A.cos(2.π.f<sub>c</sub>.t π)
+			</td>
+			<td>
+				;
+			</td>
+			<td>
+				binary 0
+			</td>
+
+		</tr>
+		<tr>
+			<td [innerText]="'}'">
+
+			</td>
+		</tr>
+	</table>
+</div>
+
+<p>
+	Because a phase shift of 180<sup>o</sup> (π) is equivelent to flipping the sine wave or multiplying it by -1
+	Acos(2.π.f<sub>c</sub>.t+ π) = -Acos(2.π.f<sub>c</sub>.t) can be used instead.
+</p>
+}
+}
 }
