@@ -1,10 +1,14 @@
+@if (technique !== 'mfsk') {
 <div id="input-data">
 	<app-binary-data (binaryDataChange)="setSenderData($event)"></app-binary-data>
 </div>
+}
+
 
 <div id="techniques">
 	<button (click)="technique = 'ask'"> Amplitude Shift Keying (ASK) </button>
 	<button (click)="technique = 'bfsk'"> Binary Frequency Shift Keying (BFSK) </button>
+	<button (click)="technique = 'mfsk'"> Multiple Frequency Shift Keying (MFSK) </button>
 	<button (click)="technique = 'bpsk'"> Binary Phase Shift Keying (BPSK) </button>
 </div>
 
@@ -16,13 +20,15 @@
 	@case ('bfsk') {
 	Binary Frequency Shift Keying (BFSK)
 	}
+	@case ('mfsk') {
+	Multiple Frequency Shift Keying (MFSK)
+	}
 	@case ('bpsk') {
 	Binary Phase Shift Keying (BPSK)
 	}
 	}
 </h1>
 
-@if (data().length) {
 @switch (technique) {
 @case ('ask') {
 <p>
@@ -191,25 +197,25 @@
 		</marker>
 	</defs>
 
-	<path id='x-axis' marker-end='url(#head)' stroke-width='1' fill='none' stroke='white' d='M0,30, 250 30,120' />
-
-	<path id='y-axis' marker-end='url(#head)' stroke-width='1' fill='none' stroke='white' d='M3,35, 3 10,120' />
+	<g stroke="white">
+		<path id='x-axis' marker-end='url(#head)' stroke-width='1' d='M0,30, 250 30,120' />
+		<path id='y-axis' marker-end='url(#head)' stroke-width='1' d='M3,35, 3 10,120' />
+	</g>
 
 	<text x="252" y="39" font-size="6" fill="white">Frequency (Hz)</text>
 
 	<path stroke-width='1' fill='none' stroke='white' d='M3,35, 3 30,120' />
-	<text x="2" y="40" font-size="5" fill="white">0</text>
+	<text x="2" y="40" font-size="7" fill="white">0</text>
 
 	<path stroke-width='1' fill='none' stroke='white' d='M220,35, 220 30,120' />
-	<text x="220" y="40" font-size="5" fill="white">10.000</text>
+	<text x="220" y="40" font-size="7" fill="white">10.000</text>
 
 	<path stroke-width='1' fill='none' stroke='white'
 		[attr.d]='"M" + bfskCarrierNormalized() + ", 35," + bfskCarrierNormalized() + " 30, 120"' />
 
-	<path stroke-width='1' fill='none' stroke='white'
-	[attr.d]='"M" + f1() + ", 35," + f1() + " 30, 120"' />
+	<path stroke-width='1' fill='none' stroke='white' [attr.d]='"M" + f1() + ", 35," + f1() + " 30, 120"' />
 
-	<text y="20" font-size="5" fill="white" [attr.x]="f1()">
+	<text y="25" font-size="7" fill="white" [attr.x]="f1()">
 		f<tspan dy="2" font-size="4">1</tspan>
 	</text>
 	<text y="49" font-size="5" fill="white" [attr.x]="f1() - 5"> {{ bfskRange1() }}
@@ -217,20 +223,21 @@
 
 	<path stroke-width='1' fill='none' stroke='white' [attr.d]='"M" + f2() + ", 35," + f2() + " 30, 120"' />
 
-	<text y="20" font-size="5" fill="white" [attr.x]="f2()">
+	<text y="25" font-size="7" fill="white" [attr.x]="f2()">
 		f<tspan dy="2" font-size="4">2</tspan>
 	</text>
 	<text y="49" font-size="5" fill="white" [attr.x]="f2() - 5"> {{ bfskCarrier() + bfskOffset() }}
 	</text>
 
-	<text y="20" font-size="5" fill="white" [attr.x]="bfskCarrierNormalized()">
+	<text y="25" font-size="7" fill="white" [attr.x]="bfskCarrierNormalized()">
 		f<tspan dy="2" font-size="4">c</tspan>
 	</text>
 	<text y="49" font-size="5" fill="white" [attr.x]="bfskCarrierNormalized() - 5"> {{ bfskCarrier() }} </text>
 </svg>
 
 <p>
-	If signal is between {{ bfskRange1() }} and {{ bfskCarrier() }} then interpreted bit is 1, if it is between {{ bfskCarrier() + this.bfskOffset() }} and {{ bfskCarrier() }} then interpreted bit is 0.
+	If signal is between {{ bfskRange1() }} and {{ bfskCarrier() }} then interpreted bit is 1, if it is between {{
+	bfskCarrier() + this.bfskOffset() }} and {{ bfskCarrier() }} then interpreted bit is 0.
 </p>
 
 <div class="signal-container">
@@ -283,7 +290,8 @@
 
 			<div class="amplitudes">
 				<input type="range" min="0" max="10000" step="100" #signal
-					[value]="bfskReceiver().signals[$index].frequency.toString()" (input)="setFrequency(signal, $index)">
+					[value]="bfskReceiver().signals[$index].frequency.toString()"
+					(input)="setFrequency(signal, $index)">
 				<p>
 					f: {{ bfskReceiver().signals[$index].frequency }}
 				</p>
@@ -357,6 +365,70 @@
 	bps. It is also commonly used for high-frequency (3 to 30 MHz) radio transmission. It can also be used
 	at even higher frequencies on local area networks that use coaxial cable
 </p>
+}
+@case ('mfsk') {
+	<p>
+		A signal that is more bandwidth efficient, but also more susceptible to error, is multiple FSK (MFSK),
+	in which more than two frequencies are used. In this case each signaling element represents more than
+	one bit. The transmitted MFSK signal for one signal element time can be represented as;
+	</p>
+	
+	<p>
+		S(t) = A.cos(2.π.f<sub>i</sub>.t) 1 ≤ i ≤ M
+	</p>
+	<p>
+		where
+	</p>
+	<p>
+		f<sub>i</sub>: f<sub>c</sub> + (2<sub>i</sub> - 1 - M)f<sub>d</sub>
+	</p>
+	<p>
+		f<sub>c</sub>: Carrier frequency
+	</p>
+	<p>
+		f<sub>d</sub>: Difference frequency
+	</p>
+	<p>
+		M: Number of different signal elements = 2<sup>L</sup>
+	</p>
+	<p>
+		L = Number of bits per signal element
+	</p>
+
+<div>
+	<label for="mfsk-carrier"> Carrier Frequency (f<sub>c</sub>): </label>
+	<app-decimal-data id="mfsk-carrier"
+		placeholder="Carrier Frequency (fc)"
+		[(decimalData)]="mfskCarrier"></app-decimal-data>
+</div>
+
+<div>
+	<label for="mfsk-diff"> Difference Frequency (f<sub>d</sub>): </label>
+	<app-decimal-data id="mfsk-diff"
+		placeholder="Difference Frequency (fd)"
+		[(decimalData)]="mfskDiff"></app-decimal-data>
+</div>
+
+<div>
+	<label for="mfsk-bit-number"> Number of Bits (L): </label>
+	<app-decimal-data id="mfsk-bit-number"
+		placeholder="Number of Bits (L)"
+		[(decimalData)]="numberOfBits"></app-decimal-data>
+</div>
+
+@if (negativeFrequency()) {
+	<p>
+		Since there are zero or negative frequencies, the signal is not real. You may increase the carrier frequency or decrease
+		the difference frequency or decrease the number of bits to make the signal real.
+	</p>
+}
+
+@for (item of combinations(); track $index) {
+	<p>
+		f<sub> {{item.frequencyOrder}} </sub>: {{ item.frequency }} ({{ item.data }})
+	</p>
+}
+
 }
 @case ('bpsk') {
 <div class="signal-container">
@@ -437,6 +509,5 @@
 	Because a phase shift of 180<sup>o</sup> (π) is equivelent to flipping the sine wave or multiplying it by -1
 	Acos(2.π.f<sub>c</sub>.t+ π) = -Acos(2.π.f<sub>c</sub>.t) can be used instead.
 </p>
-}
 }
 }

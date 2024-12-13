@@ -1,212 +1,265 @@
-import { Component, computed, ElementRef, model, signal, viewChild, viewChildren } from '@angular/core';
+import {
+	Component,
+	computed,
+	ElementRef,
+	model,
+	signal,
+	viewChild,
+	viewChildren,
+} from '@angular/core';
 import { BinaryDataComponent } from '../../binary-data/binary-data.component';
+import { DecimalDataComponent } from '../../decimal-data/decimal-data.component';
 
 type ASK = {
 	signal: string;
 	amplitude: number;
-}
+};
 
 type ASKReceiver = {
 	signals: ASK[];
 	receiverData: string;
-}
+};
 
 type BFSK = {
 	signal: string;
 	frequency: number;
-}
+};
 
 type BFSKReceiver = {
 	signals: BFSK[];
 	receiverData: string;
-}
+};
 
 @Component({
 	selector: 'app-digital-to-analog',
 	standalone: true,
-	imports: [BinaryDataComponent,],
+	imports: [BinaryDataComponent, DecimalDataComponent],
 	templateUrl: './digital-to-analog.component.html',
-	styleUrl: './digital-to-analog.component.scss'
+	styleUrl: './digital-to-analog.component.scss',
 })
 export class DigitalToAnalogComponent {
-	technique: 'ask' | 'bfsk' | 'bpsk' = 'ask'
+	technique: 'ask' | 'mfsk' | 'bfsk' | 'bpsk' = 'ask';
 
 	data = signal('');
 
 	setSenderData($event: string) {
-		this.data.set($event)
+		this.data.set($event);
 	}
 
-	threshold = 2.5
+	threshold = 2.5;
 
 	setThreshold(event: Event) {
-		this.threshold = parseFloat((event.target as HTMLInputElement).value)
+		this.threshold = parseFloat((event.target as HTMLInputElement).value);
 	}
 
-	askSender = computed(() => this.calcASKSignal())
-	askReceiver = computed(() => this.calcASKSignal())
+	askSender = computed(() => this.calcASKSignal());
+	askReceiver = computed(() => this.calcASKSignal());
 
 	calcASKSignal() {
 		const result: ASKReceiver = {
 			signals: [],
-			receiverData: ''
-		}
-		const data: string[] = []
+			receiverData: '',
+		};
+		const data: string[] = [];
 
 		for (let i = 0; i < this.data().length; i++) {
 			if (this.data()[i] === '0') {
 				result.signals.push({
 					amplitude: 0,
 					signal: 'M 0 70 L 140 70',
-				})
+				});
 
-				data.push('0')
-
+				data.push('0');
 			} else {
 				result.signals.push({
 					amplitude: 5,
 					signal: this.calcSignal(1, 2),
-				})
+				});
 
-				data.push('1')
+				data.push('1');
 			}
 		}
 
 		result.receiverData = data.join('');
 
-		return result
+		return result;
 	}
 
 	setAmplitude(element: HTMLInputElement, index: number) {
-		const normalizedValue = Number((parseFloat(element.value) / 5).toString().slice(0, 4))
+		const normalizedValue = Number(
+			(parseFloat(element.value) / 5).toString().slice(0, 4)
+		);
 
 		const receiverData = this.askReceiver().receiverData.split('');
-		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1'
+		receiverData[index] = element.valueAsNumber < this.threshold ? '0' : '1';
 
 		this.askReceiver().signals[index] = {
 			amplitude: element.valueAsNumber,
 			signal: this.calcSignal(normalizedValue, 2),
-		}
-		this.askReceiver().receiverData = receiverData.join('')
+		};
+		this.askReceiver().receiverData = receiverData.join('');
 	}
 
-	bfskCarrier = signal(1500)
-	bfskOffset = signal(1000)
+	bfskCarrier = signal(1500);
+	bfskOffset = signal(1000);
 
 	f1 = computed(() => {
-		const result = (this.bfskCarrier() - this.bfskOffset()) * 0.0217 + 3
-		return result <= 0 ? 3 : result
-	}
-	)
-	f2 = computed(() => (this.bfskCarrier() + this.bfskOffset()) * 0.0217 + 3)
-	bfskRange1 = computed(() => this.bfskCarrier() - this.bfskOffset() <= 0 ? 0 : this.bfskCarrier() - this.bfskOffset())
+		const result = (this.bfskCarrier() - this.bfskOffset()) * 0.0217 + 3;
+		return result <= 0 ? 3 : result;
+	});
+	f2 = computed(() => (this.bfskCarrier() + this.bfskOffset()) * 0.0217 + 3);
+	bfskRange1 = computed(() =>
+		this.bfskCarrier() - this.bfskOffset() <= 0
+			? 0
+			: this.bfskCarrier() - this.bfskOffset()
+	);
 
-	bfskRange2 = computed(() => this.bfskCarrier() + this.bfskOffset())
+	bfskRange2 = computed(() => this.bfskCarrier() + this.bfskOffset());
 
-	bfskCarrierNormalized = computed(() => 3 + 0.0217 * this.bfskCarrier())
+	bfskCarrierNormalized = computed(() => 3 + 0.0217 * this.bfskCarrier());
 
 	setBfskCarrier(event: HTMLInputElement) {
-		this.bfskCarrier.set(event.valueAsNumber)
+		this.bfskCarrier.set(event.valueAsNumber);
 	}
 
 	setBfskOffset(event: HTMLInputElement) {
-		this.bfskOffset.set(event.valueAsNumber)
+		this.bfskOffset.set(event.valueAsNumber);
 	}
 
-	bfskSender = computed(() => this.calcBfskSignal())
-	bfskReceiver = computed(() => this.calcBfskSignal())
+	bfskSender = computed(() => this.calcBfskSignal());
+	bfskReceiver = computed(() => this.calcBfskSignal());
 
 	calcBfskSignal() {
 		const result: BFSKReceiver = {
 			signals: [],
-			receiverData: ''
-		}
-		const data: string[] = []
+			receiverData: '',
+		};
+		const data: string[] = [];
 
 		for (let i = 0; i < this.data().length; i++) {
 			if (this.data()[i] === '0') {
 				result.signals.push({
 					frequency: (this.bfskCarrier() + this.bfskRange2()) / 2,
 					signal: this.calcSignal(1, 1),
-				})
+				});
 
-				data.push('0')
-
+				data.push('0');
 			} else {
 				result.signals.push({
 					frequency: (this.bfskCarrier() + this.bfskRange1()) / 2,
 					signal: this.calcSignal(1, 2),
-				})
+				});
 
-				data.push('1')
+				data.push('1');
 			}
 		}
 
 		result.receiverData = data.join('');
 
-		return result
+		return result;
 	}
 
 	setFrequency(element: HTMLInputElement, index: number) {
-		const normalizedValue = Number((parseFloat(element.value) / 1000).toString().slice(0, 5))
+		const normalizedValue = Number(
+			(parseFloat(element.value) / 1000).toString().slice(0, 5)
+		);
 
 		const receiverData = this.bfskReceiver().receiverData.split('');
-		
-		if (element.valueAsNumber >= this.bfskCarrier() - this.bfskOffset() && element.valueAsNumber <= this.bfskCarrier()) {
-			receiverData[index] = '1'
-		} else if (element.valueAsNumber >= this.bfskCarrier() && element.valueAsNumber <= this.bfskCarrier() + this.bfskOffset()) {
-			receiverData[index] = '0'
+
+		if (
+			element.valueAsNumber >= this.bfskCarrier() - this.bfskOffset() &&
+			element.valueAsNumber <= this.bfskCarrier()
+		) {
+			receiverData[index] = '1';
+		} else if (
+			element.valueAsNumber >= this.bfskCarrier() &&
+			element.valueAsNumber <= this.bfskCarrier() + this.bfskOffset()
+		) {
+			receiverData[index] = '0';
 		} else {
-			receiverData[index] = '?'
+			receiverData[index] = '?';
 		}
 
 		this.bfskReceiver().signals[index] = {
 			frequency: element.valueAsNumber,
 			signal: this.calcSignal(1, normalizedValue),
-		}
-		this.bfskReceiver().receiverData = receiverData.join('')
+		};
+		this.bfskReceiver().receiverData = receiverData.join('');
 	}
 
 	calcSignal(amplitude: number, frequency: number) {
-		if (frequency === 0) return 'M 0 70 L 140 70'
+		if (frequency === 0) return 'M 0 70 L 140 70';
 
-		let result = `M 0 70 Q ${35 / frequency} ${-140 * amplitude + 70} ${70 / frequency} 70`
+		let result = `M 0 70 Q ${35 / frequency} ${-140 * amplitude + 70} ${70 / frequency
+			} 70`;
 
-		const shift = 70 / frequency
-		let current = 140 / frequency
+		const shift = 70 / frequency;
+		let current = 140 / frequency;
 
 		for (let i = 0; i < frequency * 2; i++) {
-			result += ` T ${current} 70`
-			current += shift
+			result += ` T ${current} 70`;
+			current += shift;
 		}
 
-		return result
+		return result;
 	}
 
 	bpsk = computed(() => {
-		const result: string[] = []
+		const result: string[] = [];
 		let shift = false;
-		const toTop = "M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70"
-		const toBottom = "M 0 70 Q 17.5 210 35 70 T 70 70 T 105 70 T 140 70"
+		const toTop = 'M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70';
+		const toBottom = 'M 0 70 Q 17.5 210 35 70 T 70 70 T 105 70 T 140 70';
 
 		for (let index = 0; index < this.data().length; index++) {
 			if (this.data()[index] === '0') {
 				if (!shift) {
-					result.push(toTop)
+					result.push(toTop);
 				} else {
-					result.push(toBottom)
+					result.push(toBottom);
 				}
 			} else {
 				if (!shift) {
-					result.push(toBottom)
+					result.push(toBottom);
 				} else {
-					result.push(toTop)
+					result.push(toTop);
 				}
 
-				shift = !shift
+				shift = !shift;
 			}
 		}
 
-		return result
-	})
+		return result;
+	});
+
+	mfskCarrier = signal(250);
+	mfskDiff = signal(25);
+	numberOfBits = signal(3);
+	mfskM = computed(() => 2 ** this.numberOfBits());
+	combinations = computed(() => {
+		const result: {
+			frequencyOrder: number;
+			frequency: number;
+			data: string;
+		}[] = [];
+		let frequency = 0
+
+		for (let i = 0; i < this.mfskM(); i++) {
+			frequency = this.mfskCarrier() + (2 * (i + 1) - 1 - this.mfskM()) * this.mfskDiff();
+			result.push({
+				frequencyOrder: i + 1,
+				frequency,
+				data: (i + 1)
+					.toString(2)
+					.padStart(this.numberOfBits(), '0')
+					.slice(0, this.numberOfBits()),
+			});
+		}
+
+		return result;
+	});
+	mfskTs = computed(() => 1 / (this.mfskDiff() * 2));
+	bandwidth = computed(() => 2 * this.mfskM() * this.mfskDiff());
+	mfskRate = computed(() => 2 * this.numberOfBits() * this.mfskDiff());
+
+	negativeFrequency = computed(() => this.combinations().findIndex((c) => c.frequency <= 0) !== -1);
 }
