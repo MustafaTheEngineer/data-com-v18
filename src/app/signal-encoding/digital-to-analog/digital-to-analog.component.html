@@ -423,9 +423,27 @@
 	</p>
 }
 
+<div id="mfsk-visual">
+	<svg
+	[attr.width]="mfskVisualRes() + 'px'"
+	[attr.height]="mfskVisualRes() + 'px'">
+	<marker id='head' orient="auto" markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
+		<path d='M0,0 V4 L2,2 Z' fill="white" />
+	</marker>
+
+	<text x="110px" y="10px" font-size="12" fill="white">Frequency (Hz)</text>
+
+	<path id='y-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskYAxis()" />
+
+	@for (item of combinations().reverse(); track $index) {
+		<text x="10px" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white"> f<tspan>{{combinations().length - $index}}: </tspan> {{ item.frequency }} </text>
+	}
+</svg>
+</div>
+
 @for (item of combinations(); track $index) {
 	<p>
-		f<sub> {{item.frequencyOrder}} </sub>: {{ item.frequency }} ({{ item.data }})
+		f<sub> {{$index + 1}} </sub>: {{ item.frequency }} ({{ item.data }})
 	</p>
 }
 

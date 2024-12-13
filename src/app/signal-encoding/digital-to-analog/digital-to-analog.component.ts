@@ -237,7 +237,6 @@ export class DigitalToAnalogComponent {
 	mfskM = computed(() => 2 ** this.numberOfBits());
 	combinations = computed(() => {
 		const result: {
-			frequencyOrder: number;
 			frequency: number;
 			data: string;
 		}[] = [];
@@ -246,7 +245,6 @@ export class DigitalToAnalogComponent {
 		for (let i = 0; i < this.mfskM(); i++) {
 			frequency = this.mfskCarrier() + (2 * (i + 1) - 1 - this.mfskM()) * this.mfskDiff();
 			result.push({
-				frequencyOrder: i + 1,
 				frequency,
 				data: (i + 1)
 					.toString(2)
@@ -260,6 +258,8 @@ export class DigitalToAnalogComponent {
 	mfskTs = computed(() => 1 / (this.mfskDiff() * 2));
 	bandwidth = computed(() => 2 * this.mfskM() * this.mfskDiff());
 	mfskRate = computed(() => 2 * this.numberOfBits() * this.mfskDiff());
-
 	negativeFrequency = computed(() => this.combinations().findIndex((c) => c.frequency <= 0) !== -1);
+
+	mfskVisualRes = computed(() => this.mfskM() * 75)
+	mfskYAxis = computed(() => `M100 ${this.mfskVisualRes() - 20}, 100 10,120`)
 }

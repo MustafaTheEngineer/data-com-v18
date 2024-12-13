@@ -124,3 +124,10 @@ canvas {
 .bfsk-svg {
 	width: 50%;
 }
+
+#mfsk-visual {
+	display: grid;
+	width: 90%;
+	height: 75vh;
+	overflow: scroll;
+}
