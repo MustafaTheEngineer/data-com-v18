@@ -423,6 +423,10 @@
 	</p>
 }
 
+<p>
+	We have the frequencies for every combination of bits as follows:
+</p>
+
 <div id="mfsk-visual">
 	<svg
 	[attr.width]="mfskVisualRes() + 'px'"
@@ -434,19 +438,25 @@
 	<text x="110px" y="10px" font-size="12" fill="white">Frequency (Hz)</text>
 
 	<path id='y-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskYAxis()" />
+	<path id='x-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskXAxis()" />
 
 	@for (item of combinations().reverse(); track $index) {
 		<text x="10px" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white"> f<tspan>{{combinations().length - $index}}: </tspan> {{ item.frequency }} </text>
 	}
+
+	@for (item of combinations(); track $index) {
+		<line [attr.x1]="100 + xIntervals() * $index" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="75 * ($index + 1) - 40" style="stroke:red;stroke-width:2" />
+
+		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2" x1="100" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="100 + xIntervals() * $index" [attr.y2]="75 * ($index + 1) - 40"/>
+
+		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2" [attr.x1]="100 + xIntervals() * $index + xIntervals()" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="mfskVisualRes() + xIntervals()" [attr.y2]="75 * ($index + 1) - 40"/>
+
+		<text [attr.x]="120 + xIntervals() * $index" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white"> {{ item.data }} </text>
+
+		<line stroke-dasharray="10,5" [attr.x1]="100 + xIntervals() * $index + xIntervals()" y1="10" [attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="this.mfskVisualRes() - 40" style="stroke:gray;stroke-width:2" />
+	}
 </svg>
 </div>
-
-@for (item of combinations(); track $index) {
-	<p>
-		f<sub> {{$index + 1}} </sub>: {{ item.frequency }} ({{ item.data }})
-	</p>
-}
-
 }
 @case ('bpsk') {
 <div class="signal-container">

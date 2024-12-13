@@ -246,7 +246,7 @@ export class DigitalToAnalogComponent {
 			frequency = this.mfskCarrier() + (2 * (i + 1) - 1 - this.mfskM()) * this.mfskDiff();
 			result.push({
 				frequency,
-				data: (i + 1)
+				data: i
 					.toString(2)
 					.padStart(this.numberOfBits(), '0')
 					.slice(0, this.numberOfBits()),
@@ -262,4 +262,6 @@ export class DigitalToAnalogComponent {
 
 	mfskVisualRes = computed(() => this.mfskM() * 75)
 	mfskYAxis = computed(() => `M100 ${this.mfskVisualRes() - 20}, 100 10,120`)
+	mfskXAxis = computed(() => `M100 ${this.mfskVisualRes() - 30}, ${this.mfskVisualRes() - 20} ${this.mfskVisualRes() - 30},120`)
+	xIntervals = computed(() => (this.mfskVisualRes() - 130) / this.mfskM())
 }
