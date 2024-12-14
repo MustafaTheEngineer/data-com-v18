@@ -131,3 +131,18 @@ canvas {
 	height: 75vh;
 	overflow: scroll;
 }
+
+
+.mfsk-table {
+	overflow: scroll;
+	table {
+		text-align: center;
+		td {
+			padding: 10px;
+		}
+	
+		.table-head {
+			text-align: right;
+		}
+	}
+}

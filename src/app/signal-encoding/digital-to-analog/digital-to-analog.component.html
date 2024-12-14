@@ -1,9 +1,6 @@
-@if (technique !== 'mfsk') {
 <div id="input-data">
 	<app-binary-data (binaryDataChange)="setSenderData($event)"></app-binary-data>
 </div>
-}
-
 
 <div id="techniques">
 	<button (click)="technique = 'ask'"> Amplitude Shift Keying (ASK) </button>
@@ -367,60 +364,58 @@
 </p>
 }
 @case ('mfsk') {
-	<p>
-		A signal that is more bandwidth efficient, but also more susceptible to error, is multiple FSK (MFSK),
+<p>
+	A signal that is more bandwidth efficient, but also more susceptible to error, is multiple FSK (MFSK),
 	in which more than two frequencies are used. In this case each signaling element represents more than
 	one bit. The transmitted MFSK signal for one signal element time can be represented as;
-	</p>
-	
-	<p>
-		S(t) = A.cos(2.π.f<sub>i</sub>.t) 1 ≤ i ≤ M
-	</p>
-	<p>
-		where
-	</p>
-	<p>
-		f<sub>i</sub>: f<sub>c</sub> + (2<sub>i</sub> - 1 - M)f<sub>d</sub>
-	</p>
-	<p>
-		f<sub>c</sub>: Carrier frequency
-	</p>
-	<p>
-		f<sub>d</sub>: Difference frequency
-	</p>
-	<p>
-		M: Number of different signal elements = 2<sup>L</sup>
-	</p>
-	<p>
-		L = Number of bits per signal element
-	</p>
+</p>
+
+<p>
+	S(t) = A.cos(2.π.f<sub>i</sub>.t) 1 ≤ i ≤ M
+</p>
+<p>
+	where
+</p>
+<p>
+	f<sub>i</sub>: f<sub>c</sub> + (2<sub>i</sub> - 1 - M)f<sub>d</sub>
+</p>
+<p>
+	f<sub>c</sub>: Carrier frequency
+</p>
+<p>
+	f<sub>d</sub>: Difference frequency
+</p>
+<p>
+	M: Number of different signal elements = 2<sup>L</sup>
+</p>
+<p>
+	L = Number of bits per signal element
+</p>
 
 <div>
 	<label for="mfsk-carrier"> Carrier Frequency (f<sub>c</sub>): </label>
-	<app-decimal-data id="mfsk-carrier"
-		placeholder="Carrier Frequency (fc)"
+	<app-decimal-data id="mfsk-carrier" placeholder="Carrier Frequency (fc)"
 		[(decimalData)]="mfskCarrier"></app-decimal-data>
 </div>
 
 <div>
 	<label for="mfsk-diff"> Difference Frequency (f<sub>d</sub>): </label>
-	<app-decimal-data id="mfsk-diff"
-		placeholder="Difference Frequency (fd)"
+	<app-decimal-data id="mfsk-diff" placeholder="Difference Frequency (fd)"
 		[(decimalData)]="mfskDiff"></app-decimal-data>
 </div>
 
 <div>
 	<label for="mfsk-bit-number"> Number of Bits (L): </label>
-	<app-decimal-data id="mfsk-bit-number"
-		placeholder="Number of Bits (L)"
+	<app-decimal-data id="mfsk-bit-number" placeholder="Number of Bits (L)"
 		[(decimalData)]="numberOfBits"></app-decimal-data>
 </div>
 
 @if (negativeFrequency()) {
-	<p>
-		Since there are zero or negative frequencies, the signal is not real. You may increase the carrier frequency or decrease
-		the difference frequency or decrease the number of bits to make the signal real.
-	</p>
+<p style="color: red;">
+	Since there are zero or negative frequencies, the signal is not real. You may increase the carrier frequency or
+	decrease
+	the difference frequency or decrease the number of bits to make the signal real.
+</p>
 }
 
 <p>
@@ -428,35 +423,94 @@
 </p>
 
 <div id="mfsk-visual">
-	<svg
-	[attr.width]="mfskVisualRes() + 'px'"
-	[attr.height]="mfskVisualRes() + 'px'">
-	<marker id='head' orient="auto" markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
-		<path d='M0,0 V4 L2,2 Z' fill="white" />
-	</marker>
+	<svg [attr.width]="mfskVisualRes() + 'px'" [attr.height]="mfskVisualRes() + 'px'">
+		<marker id='head' orient="auto" markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
+			<path d='M0,0 V4 L2,2 Z' fill="white" />
+		</marker>
 
-	<text x="110px" y="10px" font-size="12" fill="white">Frequency (Hz)</text>
+		<text x="110px" y="10px" font-size="12" fill="white">Frequency (Hz)</text>
 
-	<path id='y-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskYAxis()" />
-	<path id='x-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskXAxis()" />
+		<path id='y-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskYAxis()" />
+		<path id='x-axis' marker-end='url(#head)' stroke-width='4' stroke='white' [attr.d]="mfskXAxis()" />
+		<text [attr.x]="mfskVisualRes() - 120" [attr.y]="mfskVisualRes() - 10" font-size="12" fill="white">
+			Data Combinations
+		</text>
 
-	@for (item of combinations().reverse(); track $index) {
-		<text x="10px" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white"> f<tspan>{{combinations().length - $index}}: </tspan> {{ item.frequency }} </text>
-	}
+		@for (item of combinations(); track $index) {
+		<text x="10px" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white">
+			f<tspan>
+				{{combinations().length - $index}}:
+			</tspan>
+			{{ combinations()[combinations().length - $index - 1].frequency }}
+		</text>
+		}
 
-	@for (item of combinations(); track $index) {
-		<line [attr.x1]="100 + xIntervals() * $index" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="75 * ($index + 1) - 40" style="stroke:red;stroke-width:2" />
+		@for (item of combinations(); track $index) {
+		<line [attr.x1]="100 + xIntervals() * $index" [attr.y1]="75 * ($index + 1) - 40"
+			[attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="75 * ($index + 1) - 40"
+			style="stroke:red;stroke-width:2" />
 
-		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2" x1="100" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="100 + xIntervals() * $index" [attr.y2]="75 * ($index + 1) - 40"/>
+		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2" x1="100" [attr.y1]="75 * ($index + 1) - 40"
+			[attr.x2]="100 + xIntervals() * $index" [attr.y2]="75 * ($index + 1) - 40" />
 
-		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2" [attr.x1]="100 + xIntervals() * $index + xIntervals()" [attr.y1]="75 * ($index + 1) - 40" [attr.x2]="mfskVisualRes() + xIntervals()" [attr.y2]="75 * ($index + 1) - 40"/>
+		<line stroke-dasharray="10,5" style="stroke:gray;stroke-width:2"
+			[attr.x1]="100 + xIntervals() * $index + xIntervals()" [attr.y1]="75 * ($index + 1) - 40"
+			[attr.x2]="mfskVisualRes() + xIntervals()" [attr.y2]="75 * ($index + 1) - 40" />
 
-		<text [attr.x]="120 + xIntervals() * $index" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12" fill="white"> {{ item.data }} </text>
+		<text [attr.x]="120 + xIntervals() * $index" [attr.y]="75 * ($index + 1) - 40 + 'px'" font-size="12"
+			fill="white"> {{ combinations()[combinations().length - $index - 1].data }} </text>
 
-		<line stroke-dasharray="10,5" [attr.x1]="100 + xIntervals() * $index + xIntervals()" y1="10" [attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="this.mfskVisualRes() - 40" style="stroke:gray;stroke-width:2" />
-	}
-</svg>
+		<line stroke-dasharray="10,5" [attr.x1]="100 + xIntervals() * $index + xIntervals()" y1="10"
+			[attr.x2]="100 + xIntervals() * $index + xIntervals()" [attr.y2]="this.mfskVisualRes() - 40"
+			style="stroke:gray;stroke-width:2" />
+		}
+	</svg>
 </div>
+
+<div class="mfsk-table">
+	<table>
+		<tr>
+			<td class="table-head"> <b> Sender Data </b> </td>
+			@for (item of partialData(); track $index) {
+			<td>{{ item.partial }}</td>
+			}
+		</tr>
+
+		<tr>
+			<td class="table-head"> <b> Frequency Sent by Sender </b> </td>
+			@for (item of partialData(); track $index) {
+			<td>{{ combinations()[item.index].frequency }}</td>
+			}
+		</tr>
+
+		<tr>
+			<td class="table-head"> <b> Receiver Frequency </b> </td>
+			@for (item of mfskReceiver; track $index) {
+			<td>{{ item.frequency }}</td>
+			}
+		</tr>
+
+		<tr>
+			<td class="table-head"> </td>
+			@for (item of mfskReceiver; track $index) {
+			<td>
+				<input type="range" step="10" min="0"
+					[max]="combinations()[combinations().length - 1].frequency + 1000"
+					[value]="item.frequency"
+					(input)="setMfskReceiverFrequency($event, $index)">
+			</td>
+			}
+		</tr>
+
+		<tr>
+			<td class="table-head"> <b> Data Interpreted by Receiver </b> </td>
+			@for (item of mfskReceiver; track $index) {
+			<td [style.color]="item.partial === partialData()[$index].partial ? 'inherit' : 'red'">{{ item.partial }}</td>
+			}
+		</tr>
+	</table>
+</div>
+
 }
 @case ('bpsk') {
 <div class="signal-container">

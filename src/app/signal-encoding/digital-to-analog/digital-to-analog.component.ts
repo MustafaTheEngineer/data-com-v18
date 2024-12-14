@@ -264,4 +264,69 @@ export class DigitalToAnalogComponent {
 	mfskYAxis = computed(() => `M100 ${this.mfskVisualRes() - 20}, 100 10,120`)
 	mfskXAxis = computed(() => `M100 ${this.mfskVisualRes() - 30}, ${this.mfskVisualRes() - 20} ${this.mfskVisualRes() - 30},120`)
 	xIntervals = computed(() => (this.mfskVisualRes() - 130) / this.mfskM())
+
+	mfskReceiver: {
+		partial: string,
+		frequency: number
+	}[] = []; 
+	partialData = computed(() => {
+		let result: {
+			partial: string,
+			index: number
+		}[] = [];
+		this.mfskReceiver = [];
+		let currentPartial = '';
+		for (let i = 0; i < this.data().length; i++) {
+			currentPartial += this.data()[i];
+			if (currentPartial.length === this.numberOfBits()) {
+				result.push({
+					partial: currentPartial,
+					index: parseInt(currentPartial, 2)
+				});
+				this.mfskReceiver.push({
+					partial: currentPartial.padStart(this.numberOfBits(), '0'),
+					frequency: this.combinations()[parseInt(currentPartial, 2)].frequency,
+				});
+				currentPartial = '';
+			}
+		}
+
+		if (currentPartial.length) {
+			result.push({
+				partial: currentPartial.padStart(this.numberOfBits(), '0'),
+				index: parseInt(currentPartial, 2)
+			});
+
+			this.mfskReceiver.push({
+				partial: currentPartial.padStart(this.numberOfBits(), '0'),
+				frequency: this.combinations()[parseInt(currentPartial, 2)].frequency,
+			});
+		}
+
+		return result;
+	})
+
+	setMfskReceiverFrequency(event: Event, index: number) {
+		const value = (event.target as HTMLInputElement).valueAsNumber;
+
+		if (value <= this.combinations()[0].frequency) {
+			this.mfskReceiver[index].frequency = value;
+			this.mfskReceiver[index].partial = this.combinations()[0].data;
+			return;
+			
+		} else if (value >= this.combinations()[this.combinations().length - 1].frequency) {
+			this.mfskReceiver[index].frequency = value
+			this.mfskReceiver[index].partial = this.combinations()[this.combinations().length - 1].data;
+			return;
+		}
+
+		this.mfskReceiver[index].frequency = value;
+
+		for (let i = 0; i < this.combinations().length - 1; i++) {
+			if (value >= this.combinations()[i].frequency && value <= this.combinations()[i + 1].frequency) {
+				this.mfskReceiver[index].partial = this.combinations()[i].data;
+				return;
+			}
+		}
+	}
 }
