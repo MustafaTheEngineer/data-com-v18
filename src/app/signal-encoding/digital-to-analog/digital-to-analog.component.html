@@ -7,6 +7,7 @@
 	<button (click)="technique = 'bfsk'"> Binary Frequency Shift Keying (BFSK) </button>
 	<button (click)="technique = 'mfsk'"> Multiple Frequency Shift Keying (MFSK) </button>
 	<button (click)="technique = 'bpsk'"> Binary Phase Shift Keying (BPSK) </button>
+	<button (click)="technique = 'dpsk'"> Differential Phase Shift Keying (BPSK) </button>
 </div>
 
 <h1>
@@ -22,6 +23,9 @@
 	}
 	@case ('bpsk') {
 	Binary Phase Shift Keying (BPSK)
+	}
+	@case ('dpsk') {
+	Differential Phase Shift Keying (BPSK)
 	}
 	}
 </h1>
@@ -494,10 +498,8 @@
 			<td class="table-head"> </td>
 			@for (item of mfskReceiver; track $index) {
 			<td>
-				<input type="range" step="10" min="0"
-					[max]="combinations()[combinations().length - 1].frequency + 1000"
-					[value]="item.frequency"
-					(input)="setMfskReceiverFrequency($event, $index)">
+				<input type="range" step="10" min="0" [max]="combinations()[combinations().length - 1].frequency + 1000"
+					[value]="item.frequency" (input)="setMfskReceiverFrequency($event, $index)">
 			</td>
 			}
 		</tr>
@@ -505,7 +507,8 @@
 		<tr>
 			<td class="table-head"> <b> Data Interpreted by Receiver </b> </td>
 			@for (item of mfskReceiver; track $index) {
-			<td [style.color]="item.partial === partialData()[$index].partial ? 'inherit' : 'red'">{{ item.partial }}</td>
+			<td [style.color]="item.partial === partialData()[$index].partial ? 'inherit' : 'red'">{{ item.partial }}
+			</td>
 			}
 		</tr>
 	</table>
@@ -517,7 +520,7 @@
 	<div class="cell-container">
 		<div class="data-cell">
 			<div class="signal-container">
-				Binary Phase Shift Keying (BPSK)
+				Sender
 			</div>
 		</div>
 		@for (item of data(); track $index) {
@@ -535,6 +538,32 @@
 				<svg width="140px" height="140px">
 					<path [attr.d]="bpsk()[$index]" stroke="blue" stroke-width="2"></path>
 				</svg>
+			</div>
+		</div>
+		}
+	</div>
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Receiver
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px" (click)="setBpskSignal($index)">
+					<path [attr.d]="bpskReceiver[$index].signal" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+
+			<div class="bit">
+				{{ bpskReceiver[$index].bit }}
 			</div>
 		</div>
 		}
@@ -591,5 +620,69 @@
 	Because a phase shift of 180<sup>o</sup> (π) is equivelent to flipping the sine wave or multiplying it by -1
 	Acos(2.π.f<sub>c</sub>.t+ π) = -Acos(2.π.f<sub>c</sub>.t) can be used instead.
 </p>
+}
+@case ('dpsk') {
+<div class="signal-container">
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Sender
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+			<div class="bit">
+				{{ data()[$index] }}
+			</div>
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path [attr.d]="dpsk()[$index]" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+		</div>
+		}
+	</div>
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Receiver
+			</div>
+		</div>
+		@for (item of data(); track $index) {
+		<div class="data-cell">
+
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px" (click)="setDPSKSignal($index)">
+					<path [attr.d]="dpskReceiver[$index].signal" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+
+			<div class="bit">
+				{{ dpskReceiver[$index].bit }}
+			</div>
+		</div>
+		}
+	</div>
+</div>
+
+<p>
+	An alternative form of two-level PSK is differential PSK (DPSK). In this scheme
+</p>
+
+<ul>
+	<li> Binary 0 : Sending a signal burst of the same phase as the previous signal burst sent. </li>
+	<li> Binary 0 : Sending a signal burst of the same phase as the previous signal burst sent. </li>
+</ul>
 }
 }

@@ -38,7 +38,7 @@ type BFSKReceiver = {
 	styleUrl: './digital-to-analog.component.scss',
 })
 export class DigitalToAnalogComponent {
-	technique: 'ask' | 'mfsk' | 'bfsk' | 'bpsk' = 'ask';
+	technique: 'ask' | 'mfsk' | 'bfsk' | 'bpsk' | 'dpsk' = 'ask';
 
 	data = signal('');
 
@@ -204,32 +204,80 @@ export class DigitalToAnalogComponent {
 		return result;
 	}
 
-	bpsk = computed(() => {
+	readonly pskTop = 'M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70';
+	readonly pskBottom = 'M 0 70 Q 17.5 210 35 70 T 70 70 T 105 70 T 140 70';
+
+	bpsk = computed(() => this.calcBpskSignal());
+	bpskReceiver: { signal: string, bit: string }[] = [];
+
+	calcBpskSignal() {
 		const result: string[] = [];
-		let shift = false;
-		const toTop = 'M 0 70 Q 17.5 -70 35 70 T 70 70 T 105 70 T 140 70';
-		const toBottom = 'M 0 70 Q 17.5 210 35 70 T 70 70 T 105 70 T 140 70';
+		this.bpskReceiver = [];
 
 		for (let index = 0; index < this.data().length; index++) {
 			if (this.data()[index] === '0') {
-				if (!shift) {
-					result.push(toTop);
-				} else {
-					result.push(toBottom);
-				}
+				result.push(this.pskTop);
+				this.bpskReceiver.push({
+					signal: this.pskTop,
+					bit: '0'
+				});
 			} else {
-				if (!shift) {
-					result.push(toBottom);
-				} else {
-					result.push(toTop);
-				}
-
-				shift = !shift;
+				result.push(this.pskBottom);
+				this.bpskReceiver.push({
+					signal: this.pskBottom,
+					bit: '1'
+				});
 			}
 		}
 
 		return result;
-	});
+	}
+
+	setBpskSignal(index: number) {
+		this.bpskReceiver[index].signal = this.bpskReceiver[index].signal === this.pskTop ? this.pskBottom : this.pskTop;
+		this.bpskReceiver[index].bit = this.bpskReceiver[index].bit === '0' ? '1' : '0';
+	}
+
+	dpsk = computed(() => this.calcDPSKSignal());
+	dpskReceiver: { signal: string, bit: string }[] = [];
+
+	calcDPSKSignal() {
+		const result: string[] = [];
+		this.dpskReceiver = [];
+
+		for (let index = 0; index < this.data().length; index++) {
+			if (this.data()[index] === '0') {
+				result.push(index == 0 ? this.pskTop : result[index - 1]);
+				this.dpskReceiver.push({
+					signal: index == 0 ? this.pskTop : result[index - 1],
+					bit: '0'
+				});
+			} else {
+				result.push(index == 0 ? this.pskTop : result[index - 1] === this.pskTop ? this.pskBottom : this.pskTop);
+				this.dpskReceiver.push({
+					signal: index == 0 ? this.pskTop : result[index - 1] === this.pskTop ? this.pskBottom : this.pskTop,
+					bit: '1'
+				});
+			}
+		}
+
+		return result;
+	}
+
+	setDPSKSignal(index: number) {
+		this.dpskReceiver[index].bit = this.dpskReceiver[index].bit === '0' ? '1' : '0';
+		let shift = this.dpskReceiver[0].signal;
+
+		for (let i = 1; i < this.dpskReceiver.length; i++) {
+			if (this.dpskReceiver[i].bit === '0') {
+				this.dpskReceiver[i].signal = shift;
+			}
+			else {
+				this.dpskReceiver[i].signal = shift === this.pskTop ? this.pskBottom : this.pskTop;
+				shift = shift === this.pskTop ? this.pskBottom : this.pskTop;
+			}
+		}
+	}
 
 	mfskCarrier = signal(250);
 	mfskDiff = signal(25);
@@ -268,7 +316,7 @@ export class DigitalToAnalogComponent {
 	mfskReceiver: {
 		partial: string,
 		frequency: number
-	}[] = []; 
+	}[] = [];
 	partialData = computed(() => {
 		let result: {
 			partial: string,
@@ -313,7 +361,7 @@ export class DigitalToAnalogComponent {
 			this.mfskReceiver[index].frequency = value;
 			this.mfskReceiver[index].partial = this.combinations()[0].data;
 			return;
-			
+
 		} else if (value >= this.combinations()[this.combinations().length - 1].frequency) {
 			this.mfskReceiver[index].frequency = value
 			this.mfskReceiver[index].partial = this.combinations()[this.combinations().length - 1].data;
