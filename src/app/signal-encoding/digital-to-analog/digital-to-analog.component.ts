@@ -287,6 +287,7 @@ export class DigitalToAnalogComponent {
 		const result: {
 			frequency: number;
 			data: string;
+			signal: string;
 		}[] = [];
 		let frequency = 0
 
@@ -298,11 +299,15 @@ export class DigitalToAnalogComponent {
 					.toString(2)
 					.padStart(this.numberOfBits(), '0')
 					.slice(0, this.numberOfBits()),
+					signal: this.calcSignal(1, 
+						(this.numberOfBits() / 3) * (frequency / (this.mfskCarrier() + (1 - this.mfskM()) * this.mfskDiff()))
+					)
 			});
 		}
 
 		return result;
 	});
+
 	mfskTs = computed(() => 1 / (this.mfskDiff() * 2));
 	bandwidth = computed(() => 2 * this.mfskM() * this.mfskDiff());
 	mfskRate = computed(() => 2 * this.numberOfBits() * this.mfskDiff());
@@ -315,12 +320,12 @@ export class DigitalToAnalogComponent {
 
 	mfskReceiver: {
 		partial: string,
-		frequency: number
+		frequency: number,
 	}[] = [];
 	partialData = computed(() => {
 		let result: {
 			partial: string,
-			index: number
+			index: number,
 		}[] = [];
 		this.mfskReceiver = [];
 		let currentPartial = '';
@@ -354,21 +359,38 @@ export class DigitalToAnalogComponent {
 		return result;
 	})
 
+	mfskReceiverSignals = computed(() => {
+		const result: string[] = [];
+
+		for (const partial of this.partialData()) {
+			result.push(this.combinations()[partial.index].signal);
+		}
+
+		return result;
+	})
+
 	setMfskReceiverFrequency(event: Event, index: number) {
 		const value = (event.target as HTMLInputElement).valueAsNumber;
 
 		if (value <= this.combinations()[0].frequency) {
 			this.mfskReceiver[index].frequency = value;
 			this.mfskReceiver[index].partial = this.combinations()[0].data;
+			this.mfskReceiverSignals()[index] = this.calcSignal(0, 1);
 			return;
 
 		} else if (value >= this.combinations()[this.combinations().length - 1].frequency) {
 			this.mfskReceiver[index].frequency = value
 			this.mfskReceiver[index].partial = this.combinations()[this.combinations().length - 1].data;
+			this.mfskReceiverSignals()[index] = this.calcSignal(1, 
+				(this.numberOfBits() / 3) * (this.combinations()[this.combinations().length - 1].frequency / (this.mfskCarrier() + (1 - this.mfskM()) * this.mfskDiff()))
+			);
 			return;
 		}
 
 		this.mfskReceiver[index].frequency = value;
+		this.mfskReceiverSignals()[index] = this.calcSignal(1, 
+			(this.numberOfBits() / 3) * (value / (this.mfskCarrier() + (1 - this.mfskM()) * this.mfskDiff()))
+		);
 
 		for (let i = 0; i < this.combinations().length - 1; i++) {
 			if (value >= this.combinations()[i].frequency && value <= this.combinations()[i + 1].frequency) {
@@ -377,4 +399,6 @@ export class DigitalToAnalogComponent {
 			}
 		}
 	}
+	mfskRangeMin = computed(() => Math.round(this.combinations()[0].frequency - this.combinations()[0].frequency * 0.1));
+	mfskRangeMax = computed(() => Math.round(this.combinations()[this.combinations().length - 1].frequency + this.combinations()[this.combinations().length - 1].frequency * 0.1));
 }

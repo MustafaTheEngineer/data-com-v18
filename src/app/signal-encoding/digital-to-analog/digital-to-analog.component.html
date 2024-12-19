@@ -471,49 +471,74 @@
 	</svg>
 </div>
 
-<div class="mfsk-table">
-	<table>
-		<tr>
-			<td class="table-head"> <b> Sender Data </b> </td>
-			@for (item of partialData(); track $index) {
-			<td>{{ item.partial }}</td>
-			}
-		</tr>
+<div class="signal-container">
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Sender
+			</div>
+		</div>
+		@for (item of partialData(); track $index) {
+		<div class="data-cell">
 
-		<tr>
-			<td class="table-head"> <b> Frequency Sent by Sender </b> </td>
-			@for (item of partialData(); track $index) {
-			<td>{{ combinations()[item.index].frequency }}</td>
-			}
-		</tr>
+			<div class="bit">
+				f: {{ combinations()[item.index].frequency }}
+			</div>
+			<div class="bit">
+				{{ item.partial }}
+			</div>
 
-		<tr>
-			<td class="table-head"> <b> Receiver Frequency </b> </td>
-			@for (item of mfskReceiver; track $index) {
-			<td>{{ item.frequency }}</td>
-			}
-		</tr>
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
 
-		<tr>
-			<td class="table-head"> </td>
-			@for (item of mfskReceiver; track $index) {
-			<td>
-				<input type="range" step="10" min="0" [max]="combinations()[combinations().length - 1].frequency + 1000"
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path [attr.d]="combinations()[item.index].signal" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+		</div>
+		}
+	</div>
+	<div class="cell-container">
+		<div class="data-cell">
+			<div class="signal-container">
+				Receiver
+			</div>
+		</div>
+		@for (item of mfskReceiver; track $index) {
+		<div class="data-cell">
+			<div class="signal-container">
+				<div class="top-left-dashed"></div>
+				<div class="bottom-left-dashed"></div>
+
+				<div class="left-analog-signal"></div>
+
+				<svg width="140px" height="140px">
+					<path [attr.d]="mfskReceiverSignals()[$index]" stroke="blue" stroke-width="2"></path>
+				</svg>
+			</div>
+
+			<div class="bit">
+				f: {{ item.frequency }}
+			</div>
+
+			<div class="bit">
+				<input type="range" step="10" [min]="mfskRangeMin()" [max]="mfskRangeMax()"
 					[value]="item.frequency" (input)="setMfskReceiverFrequency($event, $index)">
-			</td>
-			}
-		</tr>
+			</div>
 
-		<tr>
-			<td class="table-head"> <b> Data Interpreted by Receiver </b> </td>
-			@for (item of mfskReceiver; track $index) {
-			<td [style.color]="item.partial === partialData()[$index].partial ? 'inherit' : 'red'">{{ item.partial }}
-			</td>
-			}
-		</tr>
-	</table>
+			<div class="bit" [style.color]="item.partial === this.partialData()[$index].partial ? 'inherit' : 'red'">
+				{{ item.partial }}
+			</div>
+
+		</div>
+		}
+	</div>
 </div>
 
+{{ mfskRangeMin() }}
 }
 @case ('bpsk') {
 <div class="signal-container">

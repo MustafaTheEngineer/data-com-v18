@@ -70,6 +70,10 @@ p {
 		.data-cell {
 			.bit {
 				text-align: center;
+
+				input {
+					width: 130px;
+				}
 			}
 	
 			.signal-container {
