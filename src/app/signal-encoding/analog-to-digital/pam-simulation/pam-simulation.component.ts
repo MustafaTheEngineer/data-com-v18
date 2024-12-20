@@ -8,23 +8,35 @@ import { Component, computed, HostListener, signal } from '@angular/core';
 	styleUrl: './pam-simulation.component.scss'
 })
 export class PamSimulationComponent {
-	bitsPerPeriod = signal(5);
+	bitsPerPeriod = signal(4);
 	dataLevels = computed(() => 2 ** this.bitsPerPeriod());
 
 	svgWidth = signal(500);
 	svgHeight = signal(500);
 
-	coordXStart = 50
+	coordXStart = 75
 	coordXEnd = computed(() => this.svgWidth() - this.coordXStart);
 
-	coordYStart = 50
+	coordYStart = 75
 	coordYEnd = computed(() => this.svgHeight() - this.coordYStart);
 
 	ngAfterViewInit() {
 		this.onResize()
 	}
 
-	yAxisLevelCoords = computed(() => {
+	codeNumberCoords = computed(() => {
+		const result = [];
+
+		const interval = (this.coordYEnd() - this.coordXStart * 2) / (this.dataLevels() - 1)
+
+		for (let i = 0; i < this.dataLevels(); i++) {
+			result.push(this.coordYStart + (this.coordXStart / 2) + interval * i);
+		}
+
+		return result;
+	});
+
+	magnitudeCoords = computed(() => {
 		const result = [];
 
 		const interval = (this.coordYEnd() - this.coordXStart) / (this.dataLevels() - 1)
@@ -33,13 +45,11 @@ export class PamSimulationComponent {
 			result.push(this.coordYStart + interval * i);
 		}
 
-		console.log(result);
-
 		return result;
 	});
 
 	onResize() {
-		this.svgWidth.set(window.innerWidth * 0.95);
-		this.svgHeight.set(window.innerHeight * 0.95);
+		this.svgWidth.set(window.innerWidth * 0.90);
+		this.svgHeight.set(this.dataLevels() * (this.bitsPerPeriod() < 3 ? 100 : 50));
 	}
 }

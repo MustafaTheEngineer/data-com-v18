@@ -3,15 +3,16 @@
 		<svg [attr.width]="svgWidth()" [attr.height]="svgHeight()">
 			<g stroke="white">
 				<!--y-axis-->
-				<line stroke-width="4" x1="20" y1="50" x2="20"
+				<line stroke-width="4" x1="20" [attr.y1]="coordYStart" x2="20"
 				[attr.y2]="coordYEnd()" />
-				<line stroke-width="4" y1="50"
+				<line stroke-width="4"
+				[attr.y1]="coordYStart"
 				[attr.x1]="coordXEnd()"
 				[attr.x2]="coordXEnd()"
 				[attr.y2]="coordYEnd()"
 					/>
 				<!--x-axis-->
-				<line stroke-width="3" x1="20" y1="50" y2="50"
+				<line stroke-width="3" x1="20" [attr.y1]="coordYStart" [attr.y2]="coordYStart"
 				[attr.x2]="coordXEnd()" />
 
 				<line stroke-width="5" x1="20"
@@ -23,20 +24,19 @@
 				<text x="0" y="20" fill="white" font-size="15"> Code </text>
 				<text x="0" y="40" fill="white" font-size="15"> Number </text>
 
-				@for (item of yAxisLevelCoords(); track $index) {
+				@for (item of codeNumberCoords(); track $index) {
 					<!-- Code Numbers -->
-					<line stroke-width="0.5"
-					[attr.x1]="0"
-					[attr.y1]="item"
-					[attr.x2]="20"
-					[attr.y2]="item"
+					<line stroke-width="2" x1="12" x2="20"
+						[attr.y1]="item"
+						[attr.y2]="item"
 					></line>
 
-					<text x="0" [attr.y]="item" fill="white" font-size="10">{{ yAxisLevelCoords().length - $index - 1 }}</text>
+					<text fill="white" font-size="10" x="0" [attr.y]="item">{{ codeNumberCoords().length - $index - 1 }}</text>
+				}
 
-
-				<line [attr.x1]="svgWidth() - 20" [attr.y1]="item" [attr.x2]="svgWidth() - 10" [attr.y2]="item"
-					stroke-width="0.5"></line>
+				@for (item of magnitudeCoords(); track $index) {
+					<line [attr.x1]="coordXEnd()" [attr.y1]="item" [attr.x2]="coordXEnd() + 8" [attr.y2]="item"
+					stroke-width="2"></line>
 				}
 			</g>
 		</svg>
