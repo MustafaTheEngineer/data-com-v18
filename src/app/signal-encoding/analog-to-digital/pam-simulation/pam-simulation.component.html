@@ -1,12 +1,44 @@
 <div id="svg-container">
-	<svg viewBox="0 0 200 100" [attr.height]="svgHeight() + 'px'">
-		<text x="200" y="100" font-size="5" fill="white">Analog Signal</text>
+	<div id="inner-container">
+		<svg [attr.width]="svgWidth()" [attr.height]="svgHeight()">
+			<g stroke="white">
+				<!--y-axis-->
+				<line stroke-width="4" x1="20" y1="50" x2="20"
+				[attr.y2]="coordYEnd()" />
+				<line stroke-width="4" y1="50"
+				[attr.x1]="coordXEnd()"
+				[attr.x2]="coordXEnd()"
+				[attr.y2]="coordYEnd()"
+					/>
+				<!--x-axis-->
+				<line stroke-width="3" x1="20" y1="50" y2="50"
+				[attr.x2]="coordXEnd()" />
 
-		<!--y-axis-->
-		<line x1="0" y1="0" x2="0" y2="100" stroke="white" stroke-width="0.5" />
-		<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="0.5" />
-		<!--x-axis-->
-		<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="1" />
-		<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="1" />
-	</svg>
+				<line stroke-width="5" x1="20"
+				[attr.y1]="coordYEnd()"
+				[attr.x2]="coordXEnd()"
+				[attr.y2]="coordYEnd()"
+					/>
+
+				<text x="0" y="20" fill="white" font-size="15"> Code </text>
+				<text x="0" y="40" fill="white" font-size="15"> Number </text>
+
+				@for (item of yAxisLevelCoords(); track $index) {
+					<!-- Code Numbers -->
+					<line stroke-width="0.5"
+					[attr.x1]="0"
+					[attr.y1]="item"
+					[attr.x2]="20"
+					[attr.y2]="item"
+					></line>
+
+					<text x="0" [attr.y]="item" fill="white" font-size="10">{{ yAxisLevelCoords().length - $index - 1 }}</text>
+
+
+				<line [attr.x1]="svgWidth() - 20" [attr.y1]="item" [attr.x2]="svgWidth() - 10" [attr.y2]="item"
+					stroke-width="0.5"></line>
+				}
+			</g>
+		</svg>
+	</div>
 </div>
