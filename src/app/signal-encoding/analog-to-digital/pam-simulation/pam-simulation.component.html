@@ -1,0 +1,12 @@
+<div id="svg-container">
+	<svg viewBox="0 0 200 100" [attr.height]="svgHeight() + 'px'">
+		<text x="200" y="100" font-size="5" fill="white">Analog Signal</text>
+
+		<!--y-axis-->
+		<line x1="0" y1="0" x2="0" y2="100" stroke="white" stroke-width="0.5" />
+		<line x1="200" y1="0" x2="200" y2="100" stroke="white" stroke-width="0.5" />
+		<!--x-axis-->
+		<line x1="0" y1="0" x2="200" y2="0" stroke="white" stroke-width="1" />
+		<line x1="0" y1="100" x2="200" y2="100" stroke="white" stroke-width="1" />
+	</svg>
+</div>

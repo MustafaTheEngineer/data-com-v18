@@ -11,6 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { AnalogVisualComponent } from './signal-function-visual/analog-visual/analog-visual.component';
 import { DigitalToDigitalComponent } from './signal-encoding/digital-to-digital/digital-to-digital.component';
 import { DigitalToAnalogComponent } from './signal-encoding/digital-to-analog/digital-to-analog.component';
+import { PamSimulationComponent } from './signal-encoding/analog-to-digital/pam-simulation/pam-simulation.component';
 
 export const routes: Routes = [
 	{
@@ -50,5 +51,8 @@ export const routes: Routes = [
 	},
 	{
 		path: 'digital-to-analog', component: DigitalToAnalogComponent
+	},
+	{
+		path: 'analog-to-digital', component: PamSimulationComponent
 	},
 ];
