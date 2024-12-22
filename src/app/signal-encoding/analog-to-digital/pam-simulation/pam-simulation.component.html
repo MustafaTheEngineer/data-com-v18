@@ -1,10 +1,19 @@
-<div id="svg-container">
+<div id="svg-container" (mouseleave)="onMouseUp()">
 	<div id="inner-container">
-		<svg [attr.width]="svgWidth()" [attr.height]="svgHeight()">
+		<svg
+			[attr.width]="svgWidth()"
+			[attr.height]="svgHeight()"
+			(mousemove)="onMouseMove($event)"
+			(mouseup)="onMouseUp()"
+			(mouseleave)="onMouseUp()">
 			<g stroke="white">
 				<!--y-axis-->
-				<line stroke-width="4" x1="20" [attr.y1]="coordYStart" x2="20"
+				<line stroke-width="4"
+				[attr.x1]="coordXStart"
+				[attr.x2]="coordXStart"
+				[attr.y1]="coordYStart"
 				[attr.y2]="coordYEnd()" />
+
 				<line stroke-width="4"
 				[attr.y1]="coordYStart"
 				[attr.x1]="coordXEnd()"
@@ -12,14 +21,18 @@
 				[attr.y2]="coordYEnd()"
 					/>
 				<!--x-axis-->
-				<line stroke-width="3" x1="20" [attr.y1]="coordYStart" [attr.y2]="coordYStart"
+				<line stroke-width="3"
+				[attr.x1]="coordXStart"
+				[attr.y1]="coordYStart"
+				[attr.y2]="coordYStart"
 				[attr.x2]="coordXEnd()" />
 
-				<line stroke-width="5" x1="20"
+				<line stroke-width="5"
+				[attr.x1]="coordXStart"
 				[attr.y1]="coordYEnd()"
 				[attr.x2]="coordXEnd()"
 				[attr.y2]="coordYEnd()"
-					/>
+				/>
 
 				<text x="0" y="20" fill="white" font-size="15"> Code </text>
 				<text x="0" y="40" fill="white" font-size="15"> Number </text>
@@ -31,14 +44,51 @@
 						[attr.y2]="item"
 					></line>
 
-					<text fill="white" font-size="10" x="0" [attr.y]="item">{{ codeNumberCoords().length - $index - 1 }}</text>
+					<text fill="white" font-size="10" x="0"
+					[attr.y]="item">{{ codeNumberCoords().length - $index - 1 }}</text>
 				}
 
 				@for (item of magnitudeCoords(); track $index) {
-					<line [attr.x1]="coordXEnd()" [attr.y1]="item" [attr.x2]="coordXEnd() + 8" [attr.y2]="item"
-					stroke-width="2"></line>
+					<line stroke-width="2"
+					[attr.x1]="coordXEnd()"
+					[attr.y1]="item"
+					[attr.x2]="coordXEnd() + 8"
+					[attr.y2]="item"
+					></line>
+
+					<text fill="white" font-size="10" [attr.x]="coordXEnd() + 10"
+					[attr.y]="item">{{ magnitudeCoords().length - $index }}</text>
 				}
 			</g>
+
+			<path stroke="blue" stroke-width="2"
+			[attr.d]="bezierPath()"></path>
+
+			<circle r="10" fill="blue"
+					#startControlPoint
+					[attr.cx]="coordXStart"
+					[attr.cy]="firstPointY"
+					(mousedown)="onMouseDown($event, 0)"
+			/>
+
+			@for (item of signalCoords(); track $index; let last = $last) {
+				@if (!$last) {
+					<circle r="5" fill="blue"
+					[attr.cx]="item.firstControlX"
+					[attr.cy]="item.firstControlY"
+				/>
+
+				<circle r="5" fill="blue"
+					[attr.cx]="item.secondControlX"
+					[attr.cy]="item.secondControlY"
+				/>
+				<circle r="10" fill="blue"
+					[attr.cx]="item.endX"
+					[attr.cy]="item.endY"
+					(mousedown)="onMouseDown($event, $index + 1)"
+				/>
+				}
+			}
 		</svg>
 	</div>
 </div>

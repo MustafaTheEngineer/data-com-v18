@@ -1,4 +1,4 @@
-import { Component, computed, HostListener, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 
 @Component({
 	selector: 'app-pam-simulation',
@@ -14,7 +14,7 @@ export class PamSimulationComponent {
 	svgWidth = signal(500);
 	svgHeight = signal(500);
 
-	coordXStart = 75
+	coordXStart = 20
 	coordXEnd = computed(() => this.svgWidth() - this.coordXStart);
 
 	coordYStart = 75
@@ -22,15 +22,16 @@ export class PamSimulationComponent {
 
 	ngAfterViewInit() {
 		this.onResize()
+		this.firstPointY = this.startY()
 	}
 
 	codeNumberCoords = computed(() => {
 		const result = [];
 
-		const interval = (this.coordYEnd() - this.coordXStart * 2) / (this.dataLevels() - 1)
+		const interval = (this.coordYEnd() - this.coordYStart * 2) / (this.dataLevels() - 1)
 
 		for (let i = 0; i < this.dataLevels(); i++) {
-			result.push(this.coordYStart + (this.coordXStart / 2) + interval * i);
+			result.push(this.coordYStart + (this.coordYStart / 2) + interval * i);
 		}
 
 		return result;
@@ -39,7 +40,7 @@ export class PamSimulationComponent {
 	magnitudeCoords = computed(() => {
 		const result = [];
 
-		const interval = (this.coordYEnd() - this.coordXStart) / (this.dataLevels() - 1)
+		const interval = (this.coordYEnd() - this.coordYStart) / (this.dataLevels() - 1)
 
 		for (let i = 0; i < this.dataLevels(); i++) {
 			result.push(this.coordYStart + interval * i);
@@ -49,7 +50,78 @@ export class PamSimulationComponent {
 	});
 
 	onResize() {
-		this.svgWidth.set(window.innerWidth * 0.90);
-		this.svgHeight.set(this.dataLevels() * (this.bitsPerPeriod() < 3 ? 100 : 50));
+		this.svgWidth.set(window.innerWidth * 0.9);
+		this.svgHeight.set(this.dataLevels() * (this.bitsPerPeriod() <= 3 ? 100 : 50));
+	}
+
+	tsLength = computed(() => (this.coordXEnd() - this.coordXStart) / 7);
+	startY = computed(() => this.coordYStart + (this.coordYEnd() - this.coordYStart) / 2);
+
+	startControlX = computed(() => this.tsLength() / 3);
+	startControlY = computed(() => this.startY());
+
+	endControlX = computed(() => (this.tsLength() / 3) * 2);
+	endControlY = computed(() => this.startY());
+
+	signalCoords = computed(() => {
+		const result = [];
+
+		for (let i = 0; i < 8; i++) {
+			result.push({
+				firstControlX: this.coordXStart + this.tsLength() * i + this.startControlX(),
+				firstControlY: this.startY(),
+
+				secondControlX: this.coordXStart + this.tsLength() * i + this.endControlX(),
+				secondControlY: this.startY(),
+
+				endX: this.coordXStart + this.tsLength() * (i + 1),
+				endY: this.startY(),
+			})
+		}
+
+		return result;
+	})
+
+	selectedPointIndex = -1;
+	firstPointY = this.startY()
+
+	bezierPath(): string {
+		let result = `M${this.coordXStart} ${this.firstPointY}`
+
+		for (let i = 0; i < this.signalCoords().length - 1; i++) {
+			result += ` C
+				${this.signalCoords()[i].firstControlX} ${this.signalCoords()[i].firstControlY},
+				${this.signalCoords()[i].secondControlX} ${this.signalCoords()[i].secondControlY},
+				${this.signalCoords()[i].endX} ${this.signalCoords()[i].endY}`
+		}
+
+		return result
+	}
+
+	onMouseDown(event: MouseEvent, index: number) {
+		this.selectedPointIndex = index;
+	}
+
+	onMouseMove(event: MouseEvent) {
+		if (this.selectedPointIndex === -1) return;
+
+		let coordY = event.offsetY;
+
+		if (event.offsetY < this.coordYStart) {
+			coordY = this.coordYStart;
+		} else if (event.offsetY > this.coordYEnd()) {
+			coordY = this.coordYEnd();
+		}
+		
+		if (this.selectedPointIndex === 0) {
+			this.firstPointY = coordY
+			return;
+		}
+
+		this.signalCoords()[this.selectedPointIndex - 1].endY = coordY
+	}
+
+	onMouseUp() {
+		this.selectedPointIndex = -1;
 	}
 }
