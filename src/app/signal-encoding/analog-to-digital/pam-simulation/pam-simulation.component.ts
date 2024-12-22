@@ -57,11 +57,8 @@ export class PamSimulationComponent {
 	tsLength = computed(() => (this.coordXEnd() - this.coordXStart) / 7);
 	startY = computed(() => this.coordYStart + (this.coordYEnd() - this.coordYStart) / 2);
 
-	startControlX = computed(() => this.tsLength() / 3);
+	startControlX = computed(() => this.tsLength() / 2);
 	startControlY = computed(() => this.startY());
-
-	endControlX = computed(() => (this.tsLength() / 3) * 2);
-	endControlY = computed(() => this.startY());
 
 	signalCoords = computed(() => {
 		const result = [];
@@ -71,7 +68,7 @@ export class PamSimulationComponent {
 				firstControlX: this.coordXStart + this.tsLength() * i + this.startControlX(),
 				firstControlY: this.startY(),
 
-				secondControlX: this.coordXStart + this.tsLength() * i + this.endControlX(),
+				secondControlX: this.coordXStart + this.tsLength() * i + this.startControlX(),
 				secondControlY: this.startY(),
 
 				endX: this.coordXStart + this.tsLength() * (i + 1),
@@ -112,13 +109,40 @@ export class PamSimulationComponent {
 		} else if (event.offsetY > this.coordYEnd()) {
 			coordY = this.coordYEnd();
 		}
-		
 		if (this.selectedPointIndex === 0) {
 			this.firstPointY = coordY
+			this.calcControlPoints()
 			return;
 		}
 
 		this.signalCoords()[this.selectedPointIndex - 1].endY = coordY
+
+		this.calcControlPoints()
+	}
+
+	calcControlPoints() {
+		let interval = 0;
+		for (let i = this.signalCoords().length - 1; i > 0; i--) {
+			interval = Math.abs(this.signalCoords()[i].endY - this.signalCoords()[i - 1].endY);
+
+			if (this.signalCoords()[i].endY >= this.signalCoords()[i - 1].endY) {
+				this.signalCoords()[i].firstControlY = this.signalCoords()[i - 1].endY + (interval / 8);
+				this.signalCoords()[i].secondControlY = this.signalCoords()[i].endY - (interval / 8);
+			} else {
+				this.signalCoords()[i].firstControlY = this.signalCoords()[i - 1].endY - (interval / 8);
+				this.signalCoords()[i].secondControlY = this.signalCoords()[i].endY + (interval / 8);
+			}
+		}
+
+		interval = Math.abs(this.firstPointY - this.signalCoords()[0].endY);
+
+		if (this.firstPointY >= this.signalCoords()[0].endY) {
+			this.signalCoords()[0].firstControlY = this.firstPointY - (interval / 8)
+			this.signalCoords()[0].secondControlY = this.signalCoords()[0].endY + (interval / 8)
+		} else {
+			this.signalCoords()[0].firstControlY = this.firstPointY + (interval / 8)
+			this.signalCoords()[0].secondControlY = this.signalCoords()[0].endY - (interval / 8)
+		}
 	}
 
 	onMouseUp() {
