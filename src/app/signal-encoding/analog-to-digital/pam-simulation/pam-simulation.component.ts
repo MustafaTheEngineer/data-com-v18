@@ -14,7 +14,7 @@ export class PamSimulationComponent {
 	svgWidth = signal(500);
 	svgHeight = signal(500);
 
-	coordXStart = 20
+	coordXStart = 30
 	coordXEnd = computed(() => this.svgWidth() - this.coordXStart);
 
 	coordYStart = 75
@@ -79,6 +79,8 @@ export class PamSimulationComponent {
 		return result;
 	})
 
+	tsVerticalLines = computed(() => this.signalCoords().slice(0,7).map((value) => ({ endX: value.endX, endY: value.endY })));
+
 	selectedPointIndex = -1;
 	firstPointY = this.startY()
 
@@ -116,6 +118,7 @@ export class PamSimulationComponent {
 		}
 
 		this.signalCoords()[this.selectedPointIndex - 1].endY = coordY
+		this.tsVerticalLines()[this.selectedPointIndex - 1].endY = coordY
 
 		this.calcControlPoints()
 	}
@@ -148,4 +151,6 @@ export class PamSimulationComponent {
 	onMouseUp() {
 		this.selectedPointIndex = -1;
 	}
+
+	timeText = computed(() => `M ${this.coordXEnd() - 100} ${this.coordYEnd() + 30}, ${this.coordXEnd() - 30} ${this.coordYEnd() + 30}, 120`)
 }

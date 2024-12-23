@@ -37,9 +37,12 @@
 				<text x="0" y="20" fill="white" font-size="15"> Code </text>
 				<text x="0" y="40" fill="white" font-size="15"> Number </text>
 
+				<text [attr.x]="coordXEnd() - 50" y="20" fill="white" font-size="15"> Normalized </text>
+				<text [attr.x]="coordXEnd() - 50" y="40" fill="white" font-size="15"> Magnitude </text>
+
 				@for (item of codeNumberCoords(); track $index) {
 					<!-- Code Numbers -->
-					<line stroke-width="2" x1="12" x2="20"
+					<line stroke-width="2" [attr.x1]="coordXStart - 8" [attr.x2]="coordXStart"
 						[attr.y1]="item"
 						[attr.y2]="item"
 					></line>
@@ -71,9 +74,29 @@
 					(mousedown)="onMouseDown($event, 0)"
 			/>
 
+			@for (item of tsVerticalLines(); track $index; let last = $last) {
+				@if (!$last) {
+					<line stroke-width="2" stroke="gray"
+					[attr.x1]="item.endX"
+					[attr.y1]="item.endY"
+					[attr.x2]="item.endX"
+					[attr.y2]="coordYEnd()"
+					></line>
+				}
+			}
+
+			@for (item of codeNumberCoords(); track $index) {
+				<line stroke-width="2" stroke-dasharray="5,5" stroke="gray"
+				[attr.x1]="coordXStart"
+				[attr.y1]="item"
+				[attr.x2]="coordXEnd()"
+				[attr.y2]="item"
+				></line>
+			}
+
 			@for (item of signalCoords(); track $index; let last = $last) {
 				@if (!$last) {
-					<circle r="5" fill="blue"
+					<!--<circle r="5" fill="blue"
 					[attr.cx]="item.firstControlX"
 					[attr.cy]="item.firstControlY"
 				/>
@@ -81,7 +104,7 @@
 				<circle r="5" fill="blue"
 					[attr.cx]="item.secondControlX"
 					[attr.cy]="item.secondControlY"
-				/>
+				/>-->
 				<circle r="10" fill="blue"
 					[attr.cx]="item.endX"
 					[attr.cy]="item.endY"
@@ -89,6 +112,55 @@
 				/>
 				}
 			}
+
+			<line stroke-width="2" stroke="blue"
+			[attr.x1]="tsVerticalLines()[0].endX"
+			[attr.y1]="coordYEnd() + 10"
+			[attr.x2]="tsVerticalLines()[0].endX"
+			[attr.y2]="svgHeight()"
+			></line>
+
+			<line stroke-width="2" stroke="blue"
+			[attr.x1]="tsVerticalLines()[1].endX"
+			[attr.y1]="coordYEnd() + 10"
+			[attr.x2]="tsVerticalLines()[1].endX"
+			[attr.y2]="svgHeight()"
+			></line>
+
+			<defs>
+				<marker
+				  id='head'
+				  orient="auto"
+				  markerWidth='3'
+				  markerHeight='4'
+				  refX='0.1'
+				  refY='2'
+				>
+				  <path d='M0,0 V4 L2,2 Z' fill="blue" />
+				</marker>
+			  </defs>
+
+			<line stroke-width="2" stroke="blue"
+			[attr.x1]="tsVerticalLines()[0].endX"
+			[attr.y1]="coordYEnd() + 20"
+			[attr.x2]="tsVerticalLines()[1].endX"
+			[attr.y2]="coordYEnd() + 20"
+			></line>
+
+			<text [attr.x]="tsVerticalLines()[0].endX + 10" [attr.y]="coordYEnd() + 40" fill="white" font-size="10">
+				T<tspan>s</tspan> = 1 / (2B) </text>
+
+				<path
+				id='arrow-line'
+				marker-end='url(#head)'
+				stroke-width='4'
+				fill='none' stroke='blue'
+				[attr.d]="timeText()"
+				/>
+
+				<text [attr.x]="coordXEnd() - 50" [attr.y]="coordYEnd() + 50" fill="blue">
+					time
+				</text>
 		</svg>
 	</div>
 </div>
