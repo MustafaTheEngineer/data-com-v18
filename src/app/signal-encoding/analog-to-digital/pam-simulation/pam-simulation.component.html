@@ -60,19 +60,12 @@
 					></line>
 
 					<text fill="white" font-size="10" [attr.x]="coordXEnd() + 10"
-					[attr.y]="item">{{ magnitudeCoords().length - $index }}</text>
+					[attr.y]="item">{{ magnitudeCoords().length - $index - 1 }}</text>
 				}
 			</g>
 
 			<path stroke="blue" stroke-width="2"
 			[attr.d]="bezierPath()"></path>
-
-			<circle r="10" fill="blue"
-					#startControlPoint
-					[attr.cx]="coordXStart"
-					[attr.cy]="firstPointY"
-					(mousedown)="onMouseDown($event, 0)"
-			/>
 
 			@for (item of tsVerticalLines(); track $index; let last = $last) {
 				@if (!$last) {
@@ -85,14 +78,13 @@
 				}
 			}
 
-			@for (item of codeNumberCoords(); track $index) {
-				<line stroke-width="2" stroke-dasharray="5,5" stroke="gray"
-				[attr.x1]="coordXStart"
-				[attr.y1]="item"
-				[attr.x2]="coordXEnd()"
-				[attr.y2]="item"
-				></line>
-			}
+			<circle r="10" fill="blue"
+					#startControlPoint
+					[attr.cx]="coordXStart"
+					[attr.cy]="firstPointY()"
+					(mousedown)="onMouseDown($event, 0)"
+			/>
+			
 
 			@for (item of signalCoords(); track $index; let last = $last) {
 				@if (!$last) {
@@ -105,11 +97,34 @@
 					[attr.cx]="item.secondControlX"
 					[attr.cy]="item.secondControlY"
 				/>-->
+
 				<circle r="10" fill="blue"
 					[attr.cx]="item.endX"
 					[attr.cy]="item.endY"
 					(mousedown)="onMouseDown($event, $index + 1)"
 				/>
+				}
+			}
+
+			@for (item of codeNumberCoords(); track $index) {
+				<line stroke-width="2" stroke-dasharray="5,5" stroke="gray"
+				[attr.x1]="coordXStart"
+				[attr.y1]="item"
+				[attr.x2]="coordXEnd()"
+				[attr.y2]="item"
+				></line>
+			}
+
+
+			<text fill="white" font-size="10"
+					[attr.x]="coordXStart + 10"
+					[attr.y]="firstPointY() - 10">{{ (dataLevels() - normalizedValues()[0]).toString().slice(0, 3) }}</text>
+
+			@for (item of signalCoords(); track $index; let last = $last) {
+				@if (!last) {
+					<text fill="white" font-size="10"
+					[attr.x]="item.endX - 10"
+					[attr.y]="item.endY - 10">{{ (dataLevels() - normalizedValues()[$index + 1]).toString().slice(0, 3) }}</text>
 				}
 			}
 

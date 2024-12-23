@@ -8,7 +8,7 @@ import { Component, computed, signal } from '@angular/core';
 	styleUrl: './pam-simulation.component.scss'
 })
 export class PamSimulationComponent {
-	bitsPerPeriod = signal(4);
+	bitsPerPeriod = signal(3);
 	dataLevels = computed(() => 2 ** this.bitsPerPeriod());
 
 	svgWidth = signal(500);
@@ -22,28 +22,28 @@ export class PamSimulationComponent {
 
 	ngAfterViewInit() {
 		this.onResize()
-		this.firstPointY = this.startY()
+		this.firstPointY.set(this.startY());
 	}
 
-	codeNumberCoords = computed(() => {
+	magnitudeCoords = computed(() => {
 		const result = [];
 
-		const interval = (this.coordYEnd() - this.coordYStart * 2) / (this.dataLevels() - 1)
+		const interval = (this.coordYEnd() - this.coordYStart) / (this.dataLevels())
 
-		for (let i = 0; i < this.dataLevels(); i++) {
-			result.push(this.coordYStart + (this.coordYStart / 2) + interval * i);
+		for (let i = 0; i <= this.dataLevels(); i++) {
+			result.push(this.coordYStart + interval * i);
 		}
 
 		return result;
 	});
 
-	magnitudeCoords = computed(() => {
+	codeNumberCoords = computed(() => {
 		const result = [];
 
-		const interval = (this.coordYEnd() - this.coordYStart) / (this.dataLevels() - 1)
+		const interval = this.magnitudeCoords()[1] - this.magnitudeCoords()[0];
 
 		for (let i = 0; i < this.dataLevels(); i++) {
-			result.push(this.coordYStart + interval * i);
+			result.push(this.coordYStart + (interval / 2) + interval * i);
 		}
 
 		return result;
@@ -79,13 +79,29 @@ export class PamSimulationComponent {
 		return result;
 	})
 
+	normalizedValues = computed(() => {
+		const result: number[] = [];
+
+		result.push(
+			0 + (this.firstPointY() - this.coordYStart) / (this.coordYEnd() - this.coordYStart) * (this.dataLevels())
+		);
+
+		for (const signal of this.signalCoords()) {
+			result.push(
+				0 + (signal.endY - this.coordYStart) / (this.coordYEnd() - this.coordYStart) * (this.dataLevels())
+			);
+		}
+
+		return result;
+	})
+
 	tsVerticalLines = computed(() => this.signalCoords().slice(0,7).map((value) => ({ endX: value.endX, endY: value.endY })));
 
 	selectedPointIndex = -1;
-	firstPointY = this.startY()
+	firstPointY = signal(this.startY())
 
 	bezierPath(): string {
-		let result = `M${this.coordXStart} ${this.firstPointY}`
+		let result = `M${this.coordXStart} ${this.firstPointY()}`
 
 		for (let i = 0; i < this.signalCoords().length - 1; i++) {
 			result += ` C
@@ -112,7 +128,7 @@ export class PamSimulationComponent {
 			coordY = this.coordYEnd();
 		}
 		if (this.selectedPointIndex === 0) {
-			this.firstPointY = coordY
+			this.firstPointY.set(coordY)
 			this.calcControlPoints()
 			return;
 		}
@@ -121,6 +137,8 @@ export class PamSimulationComponent {
 		this.tsVerticalLines()[this.selectedPointIndex - 1].endY = coordY
 
 		this.calcControlPoints()
+
+		this.normalizedValues()[this.selectedPointIndex] = 0 + (coordY - this.coordYStart) / (this.coordYEnd() - this.coordYStart) * (this.dataLevels())
 	}
 
 	calcControlPoints() {
@@ -137,13 +155,13 @@ export class PamSimulationComponent {
 			}
 		}
 
-		interval = Math.abs(this.firstPointY - this.signalCoords()[0].endY);
+		interval = Math.abs(this.firstPointY() - this.signalCoords()[0].endY);
 
-		if (this.firstPointY >= this.signalCoords()[0].endY) {
-			this.signalCoords()[0].firstControlY = this.firstPointY - (interval / 8)
+		if (this.firstPointY() >= this.signalCoords()[0].endY) {
+			this.signalCoords()[0].firstControlY = this.firstPointY() - (interval / 8)
 			this.signalCoords()[0].secondControlY = this.signalCoords()[0].endY + (interval / 8)
 		} else {
-			this.signalCoords()[0].firstControlY = this.firstPointY + (interval / 8)
+			this.signalCoords()[0].firstControlY = this.firstPointY() + (interval / 8)
 			this.signalCoords()[0].secondControlY = this.signalCoords()[0].endY - (interval / 8)
 		}
 	}
