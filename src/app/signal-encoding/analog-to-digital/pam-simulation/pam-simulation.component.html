@@ -1,11 +1,25 @@
+	<div id="user-input">
+		<span> Bits per period </span>
+		<app-decimal-data (decimalDataChange)="setBitsPerPeriod($event)"></app-decimal-data>
+	</div>
+
+	<p>
+		You can use the mouse to drag the blue control points to change the signal. The blue line represents the signal.
+	</p>
+
 <div id="svg-container" (mouseleave)="onMouseUp()">
 	<div id="inner-container">
 		<svg
+			#svgElement
 			[attr.width]="svgWidth()"
 			[attr.height]="svgHeight()"
 			(mousemove)="onMouseMove($event)"
 			(mouseup)="onMouseUp()"
-			(mouseleave)="onMouseUp()">
+			(mouseleave)="onMouseUp()"
+
+			(touchend)="onMouseUp()"
+			(touchmove)="onTouchMove($event)"
+			>
 			<g stroke="white">
 				<!--y-axis-->
 				<line stroke-width="4"
@@ -82,9 +96,10 @@
 					#startControlPoint
 					[attr.cx]="coordXStart"
 					[attr.cy]="firstPointY()"
-					(mousedown)="onMouseDown($event, 0)"
+					(mousedown)="onMouseDown(0)"
+
+					(touchstart)="onMouseDown(0)"
 			/>
-			
 
 			@for (item of signalCoords(); track $index; let last = $last) {
 				@if (!$last) {
@@ -101,7 +116,8 @@
 				<circle r="10" fill="blue"
 					[attr.cx]="item.endX"
 					[attr.cy]="item.endY"
-					(mousedown)="onMouseDown($event, $index + 1)"
+					(mousedown)="onMouseDown($index + 1)"
+					(touchstart)="onMouseDown($index + 1)"
 				/>
 				}
 			}
@@ -118,13 +134,13 @@
 
 			<text fill="white" font-size="10"
 					[attr.x]="coordXStart + 10"
-					[attr.y]="firstPointY() - 10">{{ (dataLevels() - normalizedValues()[0]).toString().slice(0, 3) }}</text>
+					[attr.y]="firstPointY() - 10">{{ (dataLevels() - normalizedValues()[0]).toFixed(1) }}</text>
 
 			@for (item of signalCoords(); track $index; let last = $last) {
 				@if (!last) {
 					<text fill="white" font-size="10"
 					[attr.x]="item.endX - 10"
-					[attr.y]="item.endY - 10">{{ (dataLevels() - normalizedValues()[$index + 1]).toString().slice(0, 3) }}</text>
+					[attr.y]="item.endY - 10">{{ (dataLevels() - normalizedValues()[$index + 1]).toFixed(1) }}</text>
 				}
 			}
 
@@ -178,4 +194,40 @@
 				</text>
 		</svg>
 	</div>
+</div>
+
+<div id="values">
+	<table>
+		<tr>
+			<td> Pam Value </td>
+
+			@for (item of normalizedValues(); track $index; let last = $last) {
+				@if (!last) {
+					<td> {{ (dataLevels() - item).toFixed(1) }} </td>
+				}
+			}
+		</tr>
+
+		<tr>
+			<td> Quantized code number </td>
+
+			@for (item of normalizedValues(); track $index; let last = $last) {
+				@if (!last) {
+					<td> {{ floorValue(dataLevels() - item) }} </td>
+				}
+			}
+		</tr>
+
+		<tr>
+			<td>
+				PCM Code
+			</td>
+
+			@for (item of normalizedValues(); track $index; let last = $last) {
+				@if (!last) {
+					<td> {{ pcmCodes()[floorValue(dataLevels() - item)] }} </td>
+				}
+			}
+		</tr>
+	</table>
 </div>

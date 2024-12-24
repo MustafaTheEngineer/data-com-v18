@@ -12,3 +12,23 @@
 		overflow: scroll;
 	}
 }
+
+#user-input {
+	display: grid;
+	justify-content: center;
+	align-items: center;
+}
+
+#values {
+	table {
+		tr {
+			td {
+				padding: 20px 20px;
+
+				&:first-child {
+					text-align: right;
+				}
+			}
+		}
+	}
+}

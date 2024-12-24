@@ -1,15 +1,35 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, ElementRef, signal, viewChild } from '@angular/core';
+import { DecimalDataComponent } from '../../../decimal-data/decimal-data.component';
 
 @Component({
 	selector: 'app-pam-simulation',
 	standalone: true,
-	imports: [],
+	imports: [DecimalDataComponent],
 	templateUrl: './pam-simulation.component.html',
 	styleUrl: './pam-simulation.component.scss'
 })
 export class PamSimulationComponent {
 	bitsPerPeriod = signal(3);
+
+	setBitsPerPeriod(value: number | null) {
+		if (value) {
+			this.bitsPerPeriod.set(value);
+		}
+	}
+
 	dataLevels = computed(() => 2 ** this.bitsPerPeriod());
+
+	pcmCodes = computed(() => {
+		const result = [];
+
+		for (let i = 0; i < this.dataLevels(); i++) {
+			result.push(
+				i.toString(2).padStart(this.bitsPerPeriod(), '0')
+			);
+		}
+
+		return result;
+	})
 
 	svgWidth = signal(500);
 	svgHeight = signal(500);
@@ -113,8 +133,14 @@ export class PamSimulationComponent {
 		return result
 	}
 
-	onMouseDown(event: MouseEvent, index: number) {
+	floorValue(value: number) {
+		return Math.floor(value)
+	}
+
+	onMouseDown(index: number) {
 		this.selectedPointIndex = index;
+
+		console.log('touchstart')
 	}
 
 	onMouseMove(event: MouseEvent) {
@@ -125,6 +151,34 @@ export class PamSimulationComponent {
 		if (event.offsetY < this.coordYStart) {
 			coordY = this.coordYStart;
 		} else if (event.offsetY > this.coordYEnd()) {
+			coordY = this.coordYEnd();
+		}
+		if (this.selectedPointIndex === 0) {
+			this.firstPointY.set(coordY)
+			this.calcControlPoints()
+			return;
+		}
+
+		this.signalCoords()[this.selectedPointIndex - 1].endY = coordY
+		this.tsVerticalLines()[this.selectedPointIndex - 1].endY = coordY
+
+		this.calcControlPoints()
+
+		this.normalizedValues()[this.selectedPointIndex] = 0 + (coordY - this.coordYStart) / (this.coordYEnd() - this.coordYStart) * (this.dataLevels())
+	}
+
+	svg = viewChild.required<ElementRef>('svgElement');
+
+	onTouchMove(event: TouchEvent) {
+		event.preventDefault();
+
+		if (this.selectedPointIndex === -1) return;
+
+		let coordY = event.touches[0].clientY - this.svg().nativeElement.getBoundingClientRect().top;
+
+		if (coordY < this.coordYStart) {
+			coordY = this.coordYStart;
+		} else if (coordY > this.coordYEnd()) {
 			coordY = this.coordYEnd();
 		}
 		if (this.selectedPointIndex === 0) {
@@ -168,6 +222,8 @@ export class PamSimulationComponent {
 
 	onMouseUp() {
 		this.selectedPointIndex = -1;
+
+		console.log('touchend')
 	}
 
 	timeText = computed(() => `M ${this.coordXEnd() - 100} ${this.coordYEnd() + 30}, ${this.coordXEnd() - 30} ${this.coordYEnd() + 30}, 120`)
