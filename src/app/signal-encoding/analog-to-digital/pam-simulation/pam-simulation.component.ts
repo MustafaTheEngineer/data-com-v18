@@ -166,9 +166,8 @@ export class PamSimulationComponent {
 
 		this.scalableChart.signalCoords[this.constChart.selectedPointIndex].endY = (this.constChart.signalCoords[this.constChart.selectedPointIndex].endY - this.constChart.coordYStart) / (this.constChart.coordYEnd() - this.constChart.coordYStart) * (this.scalableChart.coordYEnd() - this.scalableChart.coordYStart) + this.scalableChart.coordYStart;
 
-		this.scalableChart.normalizedValues[this.constChart.selectedPointIndex] = 
+		this.scalableChart.normalizedValues[this.constChart.selectedPointIndex] =
 			this.dataLevels() - ((this.scalableChart.signalCoords[this.constChart.selectedPointIndex].endY - this.scalableChart.coordYStart) / (this.scalableChart.coordYEnd() - this.scalableChart.coordYStart) * (this.dataLevels()))
-		
 
 		Chart.calcControlPoints(this.scalableChart.signalCoords)
 	}
@@ -199,7 +198,9 @@ class Chart implements IChart {
 		this.svgWidth.set(window.innerWidth * 0.9);
 	}
 
-	bezierPath(): string {
+	bezierPath = computed(() => {
+		this.selectedPointCoordY()
+		this.tsLength()
 		let result = `M${this.signalCoords[0].endX} ${this.signalCoords[0].endY}`
 
 		for (let i = 1; i < this.signalCoords.length; i++) {
@@ -210,7 +211,7 @@ class Chart implements IChart {
 		}
 
 		return result
-	}
+	})
 
 	static calcControlPoints(signalCoords: Bezier[]) {
 		let interval = 0;
@@ -298,9 +299,9 @@ class ConstChart extends Chart implements IConstChart {
 
 		Chart.calcControlPoints(this.signalCoords)
 
-		this.normalizedValues[this.selectedPointIndex] = 
+		this.normalizedValues[this.selectedPointIndex] =
 			this.magnitude() - ((this.signalCoords[this.selectedPointIndex].endY - this.coordYStart) / (this.coordYEnd() - this.coordYStart) * (this.magnitude()))
-		
+
 	}
 
 	normalizeValues = computed(() => {

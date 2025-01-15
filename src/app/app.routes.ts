@@ -12,6 +12,7 @@ import { AnalogVisualComponent } from './signal-function-visual/analog-visual/an
 import { DigitalToDigitalComponent } from './signal-encoding/digital-to-digital/digital-to-digital.component';
 import { DigitalToAnalogComponent } from './signal-encoding/digital-to-analog/digital-to-analog.component';
 import { PamSimulationComponent } from './signal-encoding/analog-to-digital/pam-simulation/pam-simulation.component';
+import { HammingComponent } from './error-correction/hamming/hamming.component';
 
 export const routes: Routes = [
 	{
@@ -55,4 +56,7 @@ export const routes: Routes = [
 	{
 		path: 'analog-to-digital', component: PamSimulationComponent
 	},
+	{
+		path: 'hamming', component: HammingComponent
+	}
 ];

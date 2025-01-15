@@ -1,43 +1,30 @@
 @if (!sidebar()) {
-	<button id="sidebar-icon" (click)="sidebarClick()">
-		<img src="icons/list.svg" alt="Settings" />
-	  </button>
+<button id="sidebar-icon" (click)="sidebarClick()">
+	<img src="icons/list.svg" alt="Settings" />
+</button>
 }
 
 @if (sidebar()) {
 <div id="sidebar-container">
-  <div id="sidebar">
-    <ul>
-      <li>
-        <a routerLink=""> Home </a>
-      </li>
-	  <li>
-        <a routerLink="settings"> Settings </a>
-      </li>
-	  <li>
-        <a routerLink="hex-data"> Hex Data </a>
-      </li>
-	  <li>
-        <a routerLink="internet-checksum"> Internet Checksum </a>
-      </li>
-	  <li>
-        <a routerLink="crc"> CRC </a>
-      </li>
-	  <li>
-        <a routerLink="sliding-window"> Sliding Window </a>
-      </li>
-	  <li>
-        <a routerLink="hdlc"> HDLC </a>
-      </li>
-	  <li>
-        <a routerLink="stop-and-wait"> Stop and Wait </a>
-      </li>
-	  <li>
-        <a routerLink="parity-checksum"> Parity Checksum </a>
-      </li>
-    </ul>
-  </div>
+	<div id="sidebar">
+		<a routerLink="" id="#home"> Home </a>
+		@for (section of sections; track $index) {
+		<div>
+			<h4>{{ section.name }}</h4>
 
-  <div id="sidebar-blank" (click)="sidebarClick()"></div>
+			<ul>
+				@for (part of section.parts; track $index) {
+				<li>
+					<a [routerLink]="part.route">
+						{{ part.name }}
+					</a>
+				</li>
+				}
+			</ul>
+		</div>
+		}
+	</div>
+
+	<div id="sidebar-blank" (click)="sidebarClick()"></div>
 </div>
 }

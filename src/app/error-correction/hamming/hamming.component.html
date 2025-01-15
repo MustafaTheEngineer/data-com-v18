@@ -1,0 +1,131 @@
+<h1>
+	Hamming
+</h1>
+
+<p>
+	The most common method for error correction
+</p>
+
+<p>
+	The most known code is Hamming (7, 4). This code is made 7 bits of which 4 data bits and 3 check bits
+</p>
+
+<p>
+	Code: I<sub>1</sub>
+	I<sub>2</sub>
+	I<sub>3</sub>
+	I<sub>4</sub>
+	C<sub>1</sub>
+	C<sub>2</sub>
+	C<sub>3</sub>
+</p>
+
+<p>
+	C<sub>1</sub> = Parity for I<sub>1</sub>I<sub>2</sub>I<sub>4</sub>
+</p>
+
+<p>
+	C<sub>2</sub> = Parity for I<sub>1</sub>I<sub>3</sub>I<sub>4</sub>
+</p>
+
+<p>
+	C<sub>3</sub> = Parity for I<sub>2</sub>I<sub>3</sub>I<sub>4</sub>
+</p>
+
+<p>
+	For parity check, XOR is used
+</p>
+
+<p>
+	C<sub>1</sub> = I<sub>1</sub> XOR I<sub>2</sub> XOR I<sub>4</sub>
+</p>
+
+<p>
+	C<sub>2</sub> = I<sub>1</sub> XOR I<sub>3</sub> XOR I<sub>4</sub>
+</p>
+
+<p>
+	C<sub>3</sub> = I<sub>2</sub> XOR I<sub>3</sub> XOR I<sub>4</sub>
+</p>
+
+<table>
+	<tr>
+		<td></td>
+		<td>
+			I<sub>1</sub>
+		</td>
+		<td>
+			I<sub>2</sub>
+		</td>
+		<td>
+			I<sub>3</sub>
+		</td>
+		<td>
+			I<sub>4</sub>
+		</td>
+		<td>
+			C<sub>1</sub>
+		</td>
+		<td>
+			C<sub>2</sub>
+		</td>
+		<td>
+			C<sub>3</sub>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Sender
+		</td>
+		@for (item of senderData; track $index) {
+			<td (click)="toogleSender7_4($index)">
+				{{ item }}
+			</td>
+		}
+		<td>
+			{{ this.calculateParityBits(this.senderData)[0] }}
+		</td>
+		<td>
+			{{ this.calculateParityBits(this.senderData)[1] }}
+		</td>
+		<td>
+			{{ this.calculateParityBits(this.senderData)[2] }}
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Receiver
+		</td>
+		@for (item of receiverData; track $index) {
+			@if ($index < 4) {
+				<td (click)="toogleReceiver7_4($index)" [style.background-color]="item !== this.senderData[$index] ? 'red' : 'inherit'">
+					{{ item }}
+				</td>
+			} @else {
+				<td>
+					{{ item }}
+				</td>
+			}
+		}
+	</tr>
+</table>
+
+<p>
+	Calculation on receiver side
+</p>
+
+<p>
+	C<sub>1</sub> = I<sub>1</sub> XOR I<sub>2</sub> XOR I<sub>4</sub> = {{ receiverData[0] }} XOR {{ receiverData[1] }} XOR {{ receiverData[3] }} = {{ this.calculateParityBits(this.receiverData)[0] }} (sent {{ receiverData[4] }})
+</p>
+
+<p>
+	C<sub>2</sub> = I<sub>1</sub> XOR I<sub>3</sub> XOR I<sub>4</sub> = {{ receiverData[0] }} XOR {{ receiverData[2] }} XOR {{ receiverData[3] }} = {{ this.calculateParityBits(this.receiverData)[1] }} (sent {{ receiverData[5] }})
+</p>
+
+<p>
+	C<sub>3</sub> = I<sub>2</sub> XOR I<sub>3</sub> XOR I<sub>4</sub> = {{ receiverData[1] }} XOR {{ receiverData[2] }} XOR {{ receiverData[3] }} = {{ this.calculateParityBits(this.receiverData)[2] }} (sent {{ receiverData[6] }})
+</p>
+
+@if (is7_4Equal() == false) {
+	Error position: {{ decodeHamming(ordered7_4()).errorPosition }}
+}

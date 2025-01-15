@@ -3,36 +3,28 @@
 </h1>
 
 <p>
-	Welcome to the Data Communications course. This course is designed to simulate common Data Communications concepts. 
+	Welcome to the Data Communications course. This course is designed to simulate common Data Communications concepts.
 </p>
 
 <div id="concept-container">
+	@for (section of sections; track $index) {
 	<div class="concept-class">
 		<h3>
-			Error Detection
+			{{ section.name }}
 		</h3>
 		<div>
-			<a routerLink="parity-checksum"> Parity Checksum </a>
-			<a routerLink="internet-checksum"> Internet Checksum </a>
-			<a routerLink="crc"> CRC </a>
+			@for (part of section.parts; track $index) {
+			<a [routerLink]="part.route"> {{ part.name }} </a>
+			}
 		</div>
 	</div>
-	<div class="concept-class">
+	}
+	<!--<div class="concept-class">
 		<h3>
-			Visualization
+			Error Correction
 		</h3>
 		<div>
-			<a routerLink="analog-visual"> Analog Signal </a>
+			<a routerLink="hamming"> Hamming </a>
 		</div>
-	</div>
-	<div class="concept-class">
-		<h3>
-			Signal Encoding Techniques
-		</h3>
-		<div>
-			<a routerLink="digital-to-digital"> Digital to digital </a>
-			<a routerLink="digital-to-analog"> Digital to analog </a>
-			<a routerLink="analog-to-digital"> Analog to digital </a>
-		</div>
-	</div>
+	</div>-->
 </div>

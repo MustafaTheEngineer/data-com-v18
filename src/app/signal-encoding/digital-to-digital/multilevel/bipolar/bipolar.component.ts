@@ -135,6 +135,19 @@ export class BipolarComponent {
 			this.senderSignal[3].signalLevel = this.hdb3LastShift
 		}
 
+		if(points.length === 1) {
+			if (this.previousShiftNumber) {
+				nonZeroPulse += 2
+			} else
+				nonZeroPulse++
+
+			if (nonZeroPulse % 2 === 0) {
+				this.senderSignal[points[0] + 3].signalLevel = lastPulse
+			} else {
+				this.senderSignal[points[0] + 3].signalLevel = lastPulse === SignalLevel.TOP ? SignalLevel.BOTTOM : SignalLevel.TOP;
+			}
+		}
+
 		for (let i = 1; i < points.length; i++) {
 			lastPulse = this.senderSignal[points[i - 1] + 3].signalLevel;
 			for (var j = points[i - 1] + 4; j < points[i]; j++) {
@@ -182,9 +195,9 @@ export class BipolarComponent {
 	applyScrambling(scrambling: 'none' | 'b8zs' | 'hdb3') {
 		if (scrambling === this.scrambling) {
 			this.scrambling = 'none';
-			return this.computeSignal();
+		} else {
+			this.scrambling = scrambling;
 		}
-		this.scrambling = scrambling;
 
 		return this.computeSignal()
 	}
@@ -393,6 +406,18 @@ export class BipolarComponent {
 	error = output<string>();
 
 	errorDetected() {
+		let isSame = true;
+		for (let i = 0; i < this.senderSignal.length; i++) {
+			if (this.senderSignal[i].signalLevel !== this.receiverSignal[i].signalLevel) {
+				isSame = false;
+			}
+		}
+
+		if (isSame) {
+			this.error.emit("");
+			return
+		}
+
 		if (this.scrambling === 'none') {
 			const signals = this.receiverSignal.filter((signal) => signal.signalLevel !== SignalLevel.CENTER)
 

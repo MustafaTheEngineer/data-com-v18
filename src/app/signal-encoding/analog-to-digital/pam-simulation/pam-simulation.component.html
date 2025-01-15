@@ -286,7 +286,7 @@
 			<text fill="white" font-size="10"
 				[attr.x]="scalableChart.recalcSignalCoords()[0].endX + 10"
 				[attr.y]="scalableChart.coordYEnd() + 40">
-				T<tspan>s</tspan> = 1 / (2B) 
+				T<tspan>s</tspan> = 1 / (2B)
 			</text>
 
 			<path id='arrow-line' marker-end='url(#head)' stroke-width='4' fill='none' stroke='blue'
@@ -304,11 +304,11 @@
 			<td> Pam Value </td>
 
 			@for (item of scalableChart.normalizeValues(); track $index; let last = $last) {
-			@if (!last) {
+			
 			<td>
 				{{ item.toFixed(1) }}
 			</td>
-			}
+			
 			}
 		</tr>
 
@@ -316,11 +316,11 @@
 			<td> Quantized code number </td>
 
 			@for (item of scalableChart.normalizeValues(); track $index; let last = $last) {
-			@if (!last) {
+			
 			<td>
 				{{ floorValue(item).toFixed(0) }}
 			</td>
-			}
+			
 			}
 		</tr>
 
@@ -330,7 +330,7 @@
 			</td>
 
 			@for (item of scalableChart.normalizeValues(); track $index; let last = $last) {
-			@if (!last) {
+		
 				@if (floorValue(item) === dataLevels()) {
 					<td>
 						{{ pcmCodes()[floorValue(item) - 1] }}
@@ -340,7 +340,7 @@
 						{{ pcmCodes()[floorValue(item)] }}
 					</td>
 				}
-			}
+			
 			}
 		</tr>
 	</table>
@@ -443,7 +443,7 @@
 			/>
 		}
 
-		@for (item of toAnalogChart.recalcSignalCoords(); track $index; let last = $last) {
+		@for (item of toAnalogChart.recalcSignalCoords(); track $index) {
 			<text fill="white" font-size="10"
 				[attr.x]="item.endX - 10"
 				[attr.y]="item.endY - 10">
@@ -451,7 +451,7 @@
 			</text>
 		}
 
-		@for (item of toAnalogCodeNumberCoords(); track $index; let first = $first , last = $last) {
+		@for (item of toAnalogCodeNumberCoords(); track $index) {
 			<line stroke-width="2" stroke-dasharray="5,5" stroke="gray"
 				[attr.x1]="toAnalogChart.coordXStart"
 				[attr.y1]="item"
