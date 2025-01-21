@@ -54,3 +54,12 @@ p {
 #current-encoding {
 	margin: var(--margin-xl);
 }
+
+.user-input {
+	display: flex;
+	justify-content: center;
+}
+
+#current-scheme {
+	margin: 0 var(--margin-xl);
+}

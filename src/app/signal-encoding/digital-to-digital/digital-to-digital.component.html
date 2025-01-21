@@ -1,4 +1,6 @@
-<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+<div class="user-input">
+	<app-binary-data (binaryDataChange)="setSignal($event)"></app-binary-data>
+</div>
 
 <p>
 	Choose an encoding scheme to interpret the signal.
@@ -16,46 +18,54 @@
 	{{ scheme }}
 </h3>
 
-<div id="current-scheme">
-	@switch (scheme) {
-		@case ('NRZ-L') {
-			<app-nrz
+@if (data().length) {
+	<div id="current-scheme">
+		@switch (scheme) {
+			@case ('NRZ-L') {
+				<app-nrz
+					[data]="data()"
+					(error)="setError($event)"
+					(receiverDataOutput)="setReceiverData($event)">
+				</app-nrz>
+			}
+			@case ('NRZI') {
+				<app-nrzi
 				[data]="data()"
 				(error)="setError($event)"
 				(receiverDataOutput)="setReceiverData($event)">
-			</app-nrz>
+				</app-nrzi>
+			}
+			@case ('Manchester') {
+				<app-manchester
+					[data]="data()"
+					(error)="setError($event)"
+					(receiverDataOutput)="setReceiverData($event)">
+				</app-manchester>
+			}
+			@case ('Differential Manchester') {
+				<app-diff-manchester
+					[data]="data()"
+					(error)="setError($event)"
+					(receiverDataOutput)="setReceiverData($event)">
+				</app-diff-manchester>
+			}
+			@case ('Bipolar AMI') {
+				<app-bipolar
+					[data]="data()"
+					(receiverDataOutput)="setReceiverData($event)"
+					(error)="setError($event)">
+				</app-bipolar>
+			}
 		}
-		@case ('NRZI') {
-			<app-nrzi
-			[data]="data()"
-			(error)="setError($event)"
-			(receiverDataOutput)="setReceiverData($event)">
-			</app-nrzi>
-		}
-		@case ('Manchester') {
-			<app-manchester
-				[data]="data()"
-				(error)="setError($event)"
-				(receiverDataOutput)="setReceiverData($event)">
-			</app-manchester>
-		}
-		@case ('Differential Manchester') {
-			<app-diff-manchester
-				[data]="data()"
-				(error)="setError($event)"
-				(receiverDataOutput)="setReceiverData($event)">
-			</app-diff-manchester>
-		}
-		@case ('Bipolar AMI') {
-			<app-bipolar
-				[data]="data()"
-				(receiverDataOutput)="setReceiverData($event)"
-				(error)="setError($event)">
-			</app-bipolar>
-		}
-	}
-</div>
-
-<p id="explanation">
-	Interpreted signal by receiver is <strong>{{ receiverData }}</strong>. {{ error }}
-</p>
+	</div>
+	
+	<p id="explanation">
+		Interpreted signal by receiver is <strong>
+			@for (item of data(); track $index) {
+				<span [style.background-color]="item === receiverData[$index] ? 'inherit' : 'red'">
+					{{ item }}
+				</span>
+			}
+		</strong>. {{ error }}
+	</p>
+}

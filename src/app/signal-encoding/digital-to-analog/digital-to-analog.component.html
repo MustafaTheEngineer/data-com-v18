@@ -7,7 +7,7 @@
 	<button (click)="technique = 'bfsk'"> Binary Frequency Shift Keying (BFSK) </button>
 	<button (click)="technique = 'mfsk'"> Multiple Frequency Shift Keying (MFSK) </button>
 	<button (click)="technique = 'bpsk'"> Binary Phase Shift Keying (BPSK) </button>
-	<button (click)="technique = 'dpsk'"> Differential Phase Shift Keying (BPSK) </button>
+	<button (click)="technique = 'dpsk'"> Differential Phase Shift Keying (DPSK) </button>
 </div>
 
 <h1>
@@ -25,7 +25,7 @@
 	Binary Phase Shift Keying (BPSK)
 	}
 	@case ('dpsk') {
-	Differential Phase Shift Keying (BPSK)
+	Differential Phase Shift Keying (DPSK)
 	}
 	}
 </h1>
@@ -707,7 +707,7 @@
 
 <ul>
 	<li> Binary 0 : Sending a signal burst of the same phase as the previous signal burst sent. </li>
-	<li> Binary 0 : Sending a signal burst of the same phase as the previous signal burst sent. </li>
+	<li> Binary 1 : Shifting the signal in opposite way of the previous signal. </li>
 </ul>
 }
 }
